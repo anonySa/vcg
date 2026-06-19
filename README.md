@@ -80,9 +80,14 @@ Node 18+ is required for the snapshot script (it uses the global `fetch`).
 
 ## Deployment
 
-The recommended setup is **GitHub Pages + the daily Action**. Full step-by-step
-instructions — including the required `TMDB_TOKEN` secret, Cloudflare Pages, and
-self-hosting on a NAS via Cloudflare Tunnel — are in **[DEPLOY.md](DEPLOY.md)**.
+The recommended setup is **GitHub Pages + the daily Action**:
+
+1. Push this repo to GitHub (make it public for free Pages + Actions)
+2. **Settings → Secrets and variables → Actions → New secret** — name `TMDB_TOKEN`, value: your TMDB read access token
+3. **Settings → Pages** → Source: Deploy from branch `main`, folder `/`
+4. **Actions → "Update data.json" → Run workflow** to fetch fresh data on day one
+
+After that the Action runs every day at 04:17 UTC automatically.
 
 > **Security note:** Never commit a TMDB token. It belongs only in the
 > `TMDB_TOKEN` GitHub Actions secret. `data.json` contains nothing but public
