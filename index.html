@@ -149,8 +149,8 @@
     }
     .chip:hover  { border-color: var(--acc); color: var(--acc); }
     .chip.on     { background: var(--acc-d); border-color: var(--acc); color: var(--acc); }
-    .fbar-right  { margin-left: auto; display: flex; align-items: center; gap: .75rem; }
-    .fbar-stat   { font-size: .66rem; color: var(--muted); white-space: nowrap; }
+    .fbar-right  { display: flex; align-items: center; gap: .75rem; }
+    .fbar-stat   { font-size: .66rem; color: var(--muted); white-space: nowrap; margin-left: auto; }
     #genre-chips { display: flex; flex-wrap: wrap; gap: .3rem; }
     .genre-toggle { display: none; }
     .gt-arrow { display: inline-block; margin-left: .25rem; transition: transform .2s; }
@@ -586,9 +586,9 @@
       .filter-bar-inner { padding: .55rem .65rem; gap: .4rem; }
       .chip { font-size: .78rem; padding: .42rem .85rem; min-height: 36px; line-height: 1; }
       .filter-lbl { display: none; }
-      .fbar-stat  { display: none; }
-      /* stack the region + view toggles vertically — no room side by side */
-      .fbar-right { margin-left: auto; flex-direction: column; align-items: stretch; gap: .4rem; }
+      .fbar-stat  { margin-left: .4rem; }
+      /* genre-toggle + stat on row 1; fbar-right wraps to its own full-width row */
+      .fbar-right { flex-basis: 100%; flex-direction: column; align-items: stretch; gap: .4rem; }
       .fbar-right .seg { width: 100%; }
       .fbar-right .seg button { flex: 1; justify-content: center; }
       .genre-toggle { display: inline-flex; align-items: center; }
@@ -615,7 +615,6 @@
       </div>
       <span class="result-count" id="res-count"></span>
       <div class="nav-right">
-        <button class="btn" id="reload-btn" onclick="reloadFromTMDB()">↻ Reload</button>
         <button class="btn" id="theme-btn" onclick="toggleTheme()">◑ Light</button>
       </div>
     </div>
@@ -626,9 +625,9 @@
     <div class="filter-bar-inner" id="filter-bar-inner">
       <span class="filter-lbl">Genre</span>
       <button class="chip genre-toggle" id="genre-toggle" onclick="toggleGenres()">All <span class="gt-arrow">▾</span></button>
+      <span class="fbar-stat" id="fbar-stat"></span>
       <div id="genre-chips"></div>
       <div class="fbar-right">
-        <span class="fbar-stat" id="fbar-stat"></span>
         <div class="seg" id="region-seg">
           <button id="reg-dach" onclick="setRegion('dach')">🇩🇪🇦🇹🇨🇭 DACH</button>
           <button id="reg-gb"   onclick="setRegion('gb')">🇬🇧 UK</button>
