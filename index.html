@@ -69,7 +69,7 @@
 
     /* ── NAV ── */
     nav {
-      position: sticky; top: 0; z-index: 200;
+      position: relative; z-index: 200;
       background: color-mix(in srgb, var(--bg) 86%, transparent);
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
@@ -89,7 +89,7 @@
     .nav-divider { width: 1px; height: 24px; background: var(--border); flex-shrink: 0; }
     /* search */
     .nav-search-wrap {
-      flex: 1; max-width: 320px;
+      width: 100%;
       position: relative; display: flex; align-items: center;
     }
     .nav-search-icon {
@@ -107,12 +107,6 @@
     }
     .nav-search::placeholder { color: var(--muted); }
     .nav-search:focus { border-color: var(--acc); background: var(--surface); }
-    .result-count {
-      font-size: .7rem; color: var(--muted);
-      white-space: nowrap; flex-shrink: 0;
-      font-variant-numeric: tabular-nums;
-    }
-    .result-count strong { color: var(--acc); font-weight: 600; }
     .nav-right { margin-left: auto; display: flex; align-items: center; gap: .5rem; }
     .btn {
       background: none; border: 1px solid var(--border2);
@@ -124,17 +118,26 @@
     .btn:hover { border-color: var(--acc); color: var(--acc); }
     .btn:disabled { opacity: .5; cursor: default; }
 
+    /* ── HERO MOUNT ── */
+    #hero-mount { max-width: 1280px; margin: 0 auto; padding: 1rem 1.25rem 0; }
+    #hero-mount:empty { display: none; }
+
     /* ── FILTER BAR ── */
     .filter-bar {
+      position: sticky; top: 0; z-index: 190;
       border-bottom: 1px solid var(--border);
-      background: color-mix(in srgb, var(--bg2) 75%, transparent);
+      background: color-mix(in srgb, var(--bg2) 92%, transparent);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
       transition: background .3s;
     }
     .filter-bar-inner {
       max-width: 1280px; margin: 0 auto;
       padding: .55rem 1.25rem;
-      display: flex; align-items: center; gap: .5rem; flex-wrap: wrap;
+      display: flex; flex-direction: column; gap: .5rem;
     }
+    .fbar-genre { display: flex; align-items: flex-start; gap: .5rem; flex-wrap: wrap; }
+    .nav-stat   { font-size: .68rem; color: var(--muted); white-space: nowrap; }
     .filter-lbl {
       font-size: .62rem; font-weight: 600; color: var(--muted);
       letter-spacing: .18em; text-transform: uppercase;
@@ -149,12 +152,54 @@
     }
     .chip:hover  { border-color: var(--acc); color: var(--acc); }
     .chip.on     { background: var(--acc-d); border-color: var(--acc); color: var(--acc); }
-    .fbar-right  { display: flex; align-items: center; gap: .75rem; }
-    .fbar-stat   { font-size: .66rem; color: var(--muted); white-space: nowrap; margin-left: auto; }
-    #genre-chips { display: flex; flex-wrap: wrap; gap: .3rem; }
-    .genre-toggle { display: none; }
-    .gt-arrow { display: inline-block; margin-left: .25rem; transition: transform .2s; }
-    .genres-open .gt-arrow { transform: rotate(180deg); }
+    .result-count {
+      font-size: .7rem; color: var(--muted);
+      white-space: nowrap; flex-shrink: 0;
+      font-variant-numeric: tabular-nums;
+    }
+    .result-count strong { color: var(--acc); font-weight: 600; }
+    .nav-info { display: flex; align-items: center; gap: .4rem; }
+    .nav-info .result-count::before { content: '· '; color: var(--muted); }
+
+    /* settings dropdown (region + view) */
+    .fbar-right { position: relative; flex-shrink: 0; }
+    .settings-toggle { display: inline-flex; align-items: center; gap: .4rem; }
+    .settings-panel {
+      display: none;
+      position: absolute; top: calc(100% + .55rem); right: 0; z-index: 300;
+      min-width: 240px; max-width: calc(100vw - 1.4rem);
+      background: var(--surface); border: 1px solid var(--border2);
+      border-radius: 12px; padding: .9rem;
+      box-shadow: 0 14px 34px rgba(0,0,0,.45);
+      flex-direction: column; gap: .85rem;
+      animation: fadeUp .16s ease both;
+    }
+    .fbar-right.open .settings-panel { display: flex; }
+    .fbar-right.open .settings-toggle { border-color: var(--acc); color: var(--acc); }
+    .sp-group { display: flex; flex-direction: column; gap: .4rem; }
+    .sp-label {
+      font-size: .58rem; font-weight: 700; color: var(--muted);
+      letter-spacing: .16em; text-transform: uppercase;
+    }
+    .settings-panel .seg { width: 100%; }
+    .settings-panel .seg button { flex: 1; justify-content: center; }
+
+    #genre-chips {
+      display: flex; flex-wrap: wrap; gap: .3rem; flex: 1;
+      overflow: hidden; transition: max-height .25s ease;
+    }
+    .genre-more {
+      margin-left: auto; align-self: flex-end;
+      display: inline-flex; align-items: center; gap: .25rem;
+      background: none; border: none; cursor: pointer;
+      font-family: inherit; font-size: .66rem; font-weight: 600;
+      letter-spacing: .04em; text-transform: uppercase;
+      color: var(--muted); padding: .15rem 0;
+      transition: color .15s;
+    }
+    .genre-more:hover { color: var(--acc); }
+    .gt-arrow { display: inline-block; margin-left: .1rem; transition: transform .2s; }
+    #genre-chips.expanded ~ .genre-more .gt-arrow { transform: rotate(180deg); }
 
     /* view-mode segmented control */
     .seg {
@@ -289,13 +334,15 @@
       display: flex; align-items: center; gap: .35rem;
     }
     .hslide-btn {
-      margin-top: .25rem;
-      font-size: .72rem; font-weight: 700; letter-spacing: .03em;
-      color: #1a1206; background: var(--acc);
-      text-decoration: none; padding: .42rem .9rem; border-radius: 7px;
-      transition: background .15s, transform .15s;
+      display: inline-flex; align-items: center; gap: .3rem;
+      margin-top: .35rem;
+      font-size: .7rem; font-weight: 600; letter-spacing: .03em;
+      color: #f4ecda; background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.32);
+      text-decoration: none; padding: .34rem .7rem; border-radius: 6px;
+      transition: all .15s;
     }
-    .hslide-btn:hover { background: var(--acc-h); transform: translateY(-1px); }
+    .hslide-btn:hover { color: #1a1206; background: var(--acc); border-color: var(--acc); }
 
     .hero-arrow {
       position: absolute; top: 50%; transform: translateY(-50%);
@@ -335,7 +382,7 @@
       min-height: 44px;
       cursor: pointer; user-select: none;
       border-bottom: 1px solid var(--border);
-      position: sticky; top: 53px; z-index: 50;
+      position: sticky; top: var(--mhead-top, 96px); z-index: 50;
       background: color-mix(in srgb, var(--bg) 92%, transparent);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
@@ -547,12 +594,27 @@
       to   { opacity: 1; transform: translateY(0); }
     }
 
+    /* ── BACK TO TOP (mobile) ── */
+    .to-top {
+      position: fixed; right: 1rem; bottom: 1rem; z-index: 250;
+      width: 46px; height: 46px; border-radius: 50%;
+      display: none; align-items: center; justify-content: center;
+      background: var(--acc); color: #1a1206; border: none;
+      font-size: 1.3rem; line-height: 1; cursor: pointer;
+      box-shadow: 0 6px 20px rgba(0,0,0,.45);
+      opacity: 0; transform: translateY(10px) scale(.9);
+      transition: opacity .22s, transform .22s;
+    }
+    .to-top.show { opacity: 1; transform: translateY(0) scale(1); }
+    .to-top:active { transform: translateY(0) scale(.92); }
+
     /* ── RESPONSIVE ── */
     @media (max-width: 768px) {
+      .to-top { display: flex; }
       .page-wrap { padding: .5rem .65rem 5rem; }
       .m-grid { grid-template-columns: 1fr; gap: .45rem; padding: .6rem 0 1.1rem; }
       .view-detail .m-grid { grid-template-columns: 1fr; gap: .55rem; }
-      .m-head { top: 96px; padding: .65rem .2rem; }
+      .m-head { padding: .65rem .2rem; }
       .m-label { font-size: .95rem; }
       .card { padding: .55rem .6rem; border-radius: 10px; }
 
@@ -566,34 +628,22 @@
         rgba(8,7,5,.2); }
       .hero-dots { right: 50%; transform: translateX(50%); bottom: .45rem; }
 
-      /* nav: two lines — logo+buttons / search+count */
-      nav { height: auto; }
-      .nav-inner {
-        flex-wrap: wrap;
-        padding: .65rem .85rem;
-        row-gap: .5rem; column-gap: .5rem;
-        align-items: center;
-      }
-      .nav-inner::after { content: ''; order: 2; flex: 0 0 100%; height: 0; }
-      .nav-divider     { display: none; }
-      .logo            { order: 1; flex: 1; }
-      .nav-right       { order: 2; margin-left: 0; }
-      .nav-search-wrap { order: 3; flex: 1; max-width: none; }
-      .result-count    { order: 4; }
-      .nav-search { padding: .5rem .8rem .5rem 2rem; font-size: .85rem; }
+      /* nav: controls on line 1, region/film info wraps to line 2 */
+      .nav-inner { padding: .6rem .75rem; }
+      #hero-mount { padding: .65rem .65rem 0; }
+      .nav-right { flex-wrap: wrap; justify-content: flex-end; row-gap: .35rem; }
+      #theme-btn  { order: 1; }
+      .fbar-right { order: 2; }
+      .nav-info   { order: 3; flex-basis: 100%; justify-content: flex-end; }
+      .tb-label   { display: none; }      /* icon-only buttons on mobile */
+      .st-label   { display: none; }
+      #theme-btn, .settings-toggle { padding: .42rem .55rem; }
 
       /* filter bar */
-      .filter-bar-inner { padding: .55rem .65rem; gap: .4rem; }
-      .chip { font-size: .78rem; padding: .42rem .85rem; min-height: 36px; line-height: 1; }
+      .filter-bar-inner { padding: .55rem .65rem; gap: .5rem; }
+      .nav-search { padding: .5rem .8rem .5rem 2rem; font-size: .85rem; }
+      .chip { font-size: .78rem; padding: .42rem .8rem; min-height: 34px; line-height: 1; }
       .filter-lbl { display: none; }
-      .fbar-stat  { margin-left: .4rem; }
-      /* genre-toggle + stat on row 1; fbar-right wraps to its own full-width row */
-      .fbar-right { flex-basis: 100%; flex-direction: column; align-items: stretch; gap: .4rem; }
-      .fbar-right .seg { width: 100%; }
-      .fbar-right .seg button { flex: 1; justify-content: center; }
-      .genre-toggle { display: inline-flex; align-items: center; }
-      #genre-chips  { display: none; flex-basis: 100%; gap: .35rem; }
-      .genres-open #genre-chips { display: flex; }
       .seg button { padding: .4rem .65rem; min-height: 32px; }
     }
   </style>
@@ -608,35 +658,53 @@
         <svg class="logo-img logo-dark" viewBox="0 0 132 44" fill="none" xmlns="http://www.w3.org/2000/svg" role="img"><g clip-path="url(#clip0_5302_279)"><mask id="mask0_5302_279" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="132" height="44"><path d="M132 0H0V44H132V0Z" fill="white"/></mask><g mask="url(#mask0_5302_279)"><path d="M22.9444 20.7505L30.5118 1.58154H45.085L22.9444 43.6196L0.804688 1.58154H15.378L22.9444 20.7505ZM64.2784 0.380371C72.3133 0.380371 79.3001 4.86801 82.8702 11.4731C83.3003 12.269 82.444 13.1316 81.5704 12.897C75.1922 11.1817 66.8047 13.234 66.8047 20.9604C66.8048 29.7087 74.3939 32.4467 82.0284 29.1772C82.8757 28.8144 83.8082 29.6019 83.418 30.437C82.4006 32.6146 81.0237 34.5899 79.3623 36.2847C78.4613 37.2037 77.4821 38.0358 76.4248 38.7808H87.3184V42.6206H64.2784C52.6145 42.6205 43.1582 33.1644 43.1582 21.5005C43.1583 9.83664 52.6145 0.380521 64.2784 0.380371ZM110.785 0.460449C113.774 0.460449 116.409 0.909342 118.688 1.80615C121.005 2.70296 123.023 3.89839 124.742 5.39307C126.498 6.85035 128.03 8.49475 129.338 10.3257L117.847 15.4819C117.175 14.2489 116.297 13.1651 115.214 12.231C114.13 11.2968 112.653 10.8296 110.785 10.8296C108.954 10.8296 107.273 11.2227 105.741 12.0073C104.209 12.7547 102.976 13.8942 102.042 15.4263C101.145 16.9582 100.696 18.8822 100.696 21.1987C100.696 23.4781 101.107 25.4403 101.93 27.0845C102.789 28.7286 103.966 29.9809 105.461 30.8403C106.993 31.6996 108.767 32.1294 110.785 32.1294C111.906 32.1294 112.916 32.0167 113.812 31.7925C114.709 31.5683 115.475 31.2513 116.11 30.8403C116.783 30.4293 117.362 29.9245 117.847 29.3267C118.333 28.7288 118.745 28.0747 119.081 27.3647H110.224V18.397H131.076C131.375 21.7598 131.113 24.8985 130.291 27.813C129.506 30.7275 128.217 33.2871 126.424 35.4917C124.63 37.6963 122.369 39.4158 119.641 40.6489C116.914 41.882 113.774 42.4985 110.224 42.4985C106.936 42.4985 103.929 41.9937 101.201 40.9849C98.4734 39.976 96.0999 38.5378 94.0821 36.6694C92.1016 34.8011 90.5507 32.5585 89.4297 29.9429C88.3462 27.3273 87.8047 24.4122 87.8047 21.1987C87.8048 17.9856 88.3839 15.1086 89.542 12.5679C90.7004 9.98957 92.3072 7.80289 94.3623 6.00928C96.4549 4.21566 98.8843 2.85166 101.649 1.91748C104.452 0.946031 107.497 0.460479 110.785 0.460449ZM64.2784 27.2603C63.2601 27.2603 62.2836 27.6653 61.5635 28.3853C60.8434 29.1054 60.4385 30.0826 60.4385 31.1011C60.4386 32.1193 60.8435 33.0959 61.5635 33.8159C62.2836 34.5359 63.2601 34.9408 64.2784 34.9409C65.2968 34.9409 66.274 34.5361 66.9942 33.8159C67.7141 33.0959 68.1181 32.1193 68.1182 31.1011C68.1182 30.0827 67.7143 29.1054 66.9942 28.3853C66.274 27.6651 65.2968 27.2603 64.2784 27.2603ZM54.6788 17.6606C53.6603 17.6606 52.6831 18.0655 51.9629 18.7856C51.2431 19.5057 50.8389 20.4823 50.8389 21.5005C50.8389 22.5189 51.2428 23.4962 51.9629 24.2163C52.6831 24.9364 53.6603 25.3403 54.6788 25.3403C55.697 25.3403 56.6735 24.9362 57.3936 24.2163C58.1137 23.4962 58.5186 22.5189 58.5186 21.5005C58.5186 20.4821 58.1137 19.5058 57.3936 18.7856C56.6735 18.0655 55.6971 17.6607 54.6788 17.6606ZM64.2784 8.06104C63.2601 8.06111 62.2836 8.46512 61.5635 9.18506C60.8434 9.9052 60.4385 10.8824 60.4385 11.9009C60.4386 12.9192 60.8434 13.8956 61.5635 14.6157C62.2836 15.3358 63.26 15.7406 64.2784 15.7407C65.2968 15.7407 66.274 15.3359 66.9942 14.6157C67.7141 13.8957 68.1181 12.9191 68.1182 11.9009C68.1182 10.8824 67.7143 9.9052 66.9942 9.18506C66.274 8.46492 65.2968 8.06104 64.2784 8.06104Z" fill="white"/></g></g><defs><clipPath id="clip0_5302_279"><rect width="132" height="44" fill="white"/></clipPath></defs></svg>
         <svg class="logo-img logo-light" viewBox="0 0 132 44" fill="none" xmlns="http://www.w3.org/2000/svg" role="img"><g clip-path="url(#clip0_5302_285)"><mask id="mask0_5302_285" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="132" height="44"><path d="M132 0H0V44H132V0Z" fill="white"/></mask><g mask="url(#mask0_5302_285)"><path d="M22.9444 20.7505L30.5118 1.58154H45.085L22.9444 43.6196L0.804688 1.58154H15.378L22.9444 20.7505ZM64.2784 0.380371C72.3133 0.380371 79.3001 4.86801 82.8702 11.4731C83.3003 12.269 82.444 13.1316 81.5704 12.897C75.1922 11.1817 66.8047 13.234 66.8047 20.9604C66.8048 29.7087 74.3939 32.4467 82.0284 29.1772C82.8757 28.8144 83.8082 29.6019 83.418 30.437C82.4006 32.6146 81.0237 34.5899 79.3623 36.2847C78.4613 37.2037 77.4821 38.0358 76.4248 38.7808H87.3184V42.6206H64.2784C52.6145 42.6205 43.1582 33.1644 43.1582 21.5005C43.1583 9.83664 52.6145 0.380521 64.2784 0.380371ZM110.785 0.460449C113.774 0.460449 116.409 0.909342 118.688 1.80615C121.005 2.70296 123.023 3.89839 124.742 5.39307C126.498 6.85035 128.03 8.49475 129.338 10.3257L117.847 15.4819C117.175 14.2489 116.297 13.1651 115.214 12.231C114.13 11.2968 112.653 10.8296 110.785 10.8296C108.954 10.8296 107.273 11.2227 105.741 12.0073C104.209 12.7547 102.976 13.8942 102.042 15.4263C101.145 16.9582 100.696 18.8822 100.696 21.1987C100.696 23.4781 101.107 25.4403 101.93 27.0845C102.789 28.7286 103.966 29.9809 105.461 30.8403C106.993 31.6996 108.767 32.1294 110.785 32.1294C111.906 32.1294 112.916 32.0167 113.812 31.7925C114.709 31.5683 115.475 31.2513 116.11 30.8403C116.783 30.4293 117.362 29.9245 117.847 29.3267C118.333 28.7288 118.745 28.0747 119.081 27.3647H110.224V18.397H131.076C131.375 21.7598 131.113 24.8985 130.291 27.813C129.506 30.7275 128.217 33.2871 126.424 35.4917C124.63 37.6963 122.369 39.4158 119.641 40.6489C116.914 41.882 113.774 42.4985 110.224 42.4985C106.936 42.4985 103.929 41.9937 101.201 40.9849C98.4734 39.976 96.0999 38.5378 94.0821 36.6694C92.1016 34.8011 90.5507 32.5585 89.4297 29.9429C88.3462 27.3273 87.8047 24.4122 87.8047 21.1987C87.8048 17.9856 88.3839 15.1086 89.542 12.5679C90.7004 9.98957 92.3072 7.80289 94.3623 6.00928C96.4549 4.21566 98.8843 2.85166 101.649 1.91748C104.452 0.946031 107.497 0.460479 110.785 0.460449ZM64.2784 27.2603C63.2601 27.2603 62.2836 27.6653 61.5635 28.3853C60.8434 29.1054 60.4385 30.0826 60.4385 31.1011C60.4386 32.1193 60.8435 33.0959 61.5635 33.8159C62.2836 34.5359 63.2601 34.9408 64.2784 34.9409C65.2968 34.9409 66.274 34.5361 66.9942 33.8159C67.7141 33.0959 68.1181 32.1193 68.1182 31.1011C68.1182 30.0827 67.7143 29.1054 66.9942 28.3853C66.274 27.6651 65.2968 27.2603 64.2784 27.2603ZM54.6788 17.6606C53.6603 17.6606 52.6831 18.0655 51.9629 18.7856C51.2431 19.5057 50.8389 20.4823 50.8389 21.5005C50.8389 22.5189 51.2428 23.4962 51.9629 24.2163C52.6831 24.9364 53.6603 25.3403 54.6788 25.3403C55.697 25.3403 56.6735 24.9362 57.3936 24.2163C58.1137 23.4962 58.5186 22.5189 58.5186 21.5005C58.5186 20.4821 58.1137 19.5058 57.3936 18.7856C56.6735 18.0655 55.6971 17.6607 54.6788 17.6606ZM64.2784 8.06104C63.2601 8.06111 62.2836 8.46512 61.5635 9.18506C60.8434 9.9052 60.4385 10.8824 60.4385 11.9009C60.4386 12.9192 60.8434 13.8956 61.5635 14.6157C62.2836 15.3358 63.26 15.7406 64.2784 15.7407C65.2968 15.7407 66.274 15.3359 66.9942 14.6157C67.7141 13.8957 68.1181 12.9191 68.1182 11.9009C68.1182 10.8824 67.7143 9.9052 66.9942 9.18506C66.274 8.46492 65.2968 8.06104 64.2784 8.06104Z" fill="black"/></g></g><defs><clipPath id="clip0_5302_285"><rect width="132" height="44" fill="white"/></clipPath></defs></svg>
       </span>
-      <div class="nav-divider"></div>
-      <div class="nav-search-wrap">
-        <span class="nav-search-icon">⌕</span>
-        <input class="nav-search" id="q" type="text" placeholder="Search title or director…" oninput="applyFilters()">
-      </div>
-      <span class="result-count" id="res-count"></span>
       <div class="nav-right">
-        <button class="btn" id="theme-btn" onclick="toggleTheme()">◑ Light</button>
+        <div class="nav-info">
+          <span class="nav-stat" id="fbar-stat"></span>
+          <span class="result-count" id="res-count"></span>
+        </div>
+        <button class="btn" id="theme-btn" onclick="toggleTheme()"><span class="tb-ic">◑</span> <span class="tb-label">Light</span></button>
+        <div class="fbar-right" id="fbar-right">
+          <button class="btn settings-toggle" id="settings-toggle" onclick="toggleSettings(event)" aria-haspopup="true" aria-label="Settings">
+            <svg class="set-ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            <span class="st-label">Settings</span>
+          </button>
+          <div class="settings-panel" id="settings-panel">
+            <div class="sp-group">
+              <span class="sp-label">Release region</span>
+              <div class="seg" id="region-seg">
+                <button id="reg-dach" onclick="setRegion('dach')">🇩🇪🇦🇹🇨🇭 DACH</button>
+                <button id="reg-gb"   onclick="setRegion('gb')">🇬🇧 UK</button>
+                <button id="reg-us"   onclick="setRegion('us')">🇺🇸 USA</button>
+              </div>
+            </div>
+            <div class="sp-group">
+              <span class="sp-label">Card view</span>
+              <div class="seg" id="view-seg">
+                <button id="seg-compact" onclick="setView('compact')"><span class="seg-ic"><svg viewBox="0 0 30 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 14C13.1046 14 14 14.8954 14 16V22C14 23.1046 13.1046 24 12 24H2C0.895431 24 1.61066e-08 23.1046 0 22V16C0 14.8954 0.895431 14 2 14H12ZM28 14C29.1046 14 30 14.8954 30 16V22C30 23.1046 29.1046 24 28 24H18C16.8954 24 16 23.1046 16 22V16C16 14.8954 16.8954 14 18 14H28ZM12 0C13.1046 0 14 0.895431 14 2V8C14 9.10457 13.1046 10 12 10H2C0.895431 10 1.61066e-08 9.10457 0 8V2C0 0.895431 0.895431 4.83192e-08 2 0H12ZM28 0C29.1046 0 30 0.895431 30 2V8C30 9.10457 29.1046 10 28 10H18C16.8954 10 16 9.10457 16 8V2C16 0.895431 16.8954 4.83192e-08 18 0H28Z" fill="currentColor"/></svg></span> Overview</button>
+                <button id="seg-detail" onclick="setView('detail')"><span class="seg-ic"><svg viewBox="0 0 30 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M28 14C29.1046 14 30 14.8954 30 16V22C30 23.1046 29.1046 24 28 24H2C0.895431 24 1.61066e-08 23.1046 0 22V16C0 14.8954 0.895431 14 2 14H28ZM28 0C29.1046 0 30 0.895431 30 2V8C30 9.10457 29.1046 10 28 10H2C0.895431 10 1.61066e-08 9.10457 0 8V2C0 0.895431 0.895431 5.63724e-08 2 0H28Z" fill="currentColor"/></svg></span> Detailed</button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </nav>
 
+  <!-- HERO SLIDER -->
+  <div id="hero-mount"></div>
+
   <!-- FILTER BAR -->
   <div class="filter-bar" id="filter-bar">
     <div class="filter-bar-inner" id="filter-bar-inner">
-      <span class="filter-lbl">Genre</span>
-      <button class="chip genre-toggle" id="genre-toggle" onclick="toggleGenres()">All <span class="gt-arrow">▾</span></button>
-      <span class="fbar-stat" id="fbar-stat"></span>
-      <div id="genre-chips"></div>
-      <div class="fbar-right">
-        <div class="seg" id="region-seg">
-          <button id="reg-dach" onclick="setRegion('dach')">🇩🇪🇦🇹🇨🇭 DACH</button>
-          <button id="reg-gb"   onclick="setRegion('gb')">🇬🇧 UK</button>
-          <button id="reg-us"   onclick="setRegion('us')">🇺🇸 USA</button>
-        </div>
-        <div class="seg" id="view-seg">
-          <button id="seg-compact" onclick="setView('compact')"><span class="seg-ic"><svg viewBox="0 0 30 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 14C13.1046 14 14 14.8954 14 16V22C14 23.1046 13.1046 24 12 24H2C0.895431 24 1.61066e-08 23.1046 0 22V16C0 14.8954 0.895431 14 2 14H12ZM28 14C29.1046 14 30 14.8954 30 16V22C30 23.1046 29.1046 24 28 24H18C16.8954 24 16 23.1046 16 22V16C16 14.8954 16.8954 14 18 14H28ZM12 0C13.1046 0 14 0.895431 14 2V8C14 9.10457 13.1046 10 12 10H2C0.895431 10 1.61066e-08 9.10457 0 8V2C0 0.895431 0.895431 4.83192e-08 2 0H12ZM28 0C29.1046 0 30 0.895431 30 2V8C30 9.10457 29.1046 10 28 10H18C16.8954 10 16 9.10457 16 8V2C16 0.895431 16.8954 4.83192e-08 18 0H28Z" fill="currentColor"/></svg></span> Overview</button>
-          <button id="seg-detail" onclick="setView('detail')"><span class="seg-ic"><svg viewBox="0 0 30 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M28 14C29.1046 14 30 14.8954 30 16V22C30 23.1046 29.1046 24 28 24H2C0.895431 24 1.61066e-08 23.1046 0 22V16C0 14.8954 0.895431 14 2 14H28ZM28 0C29.1046 0 30 0.895431 30 2V8C30 9.10457 29.1046 10 28 10H2C0.895431 10 1.61066e-08 9.10457 0 8V2C0 0.895431 0.895431 5.63724e-08 2 0H28Z" fill="currentColor"/></svg></span> Detailed</button>
-        </div>
+      <div class="nav-search-wrap">
+        <span class="nav-search-icon">⌕</span>
+        <input class="nav-search" id="q" type="text" placeholder="Search title or director…" oninput="applyFilters()">
+      </div>
+      <div class="fbar-genre">
+        <span class="filter-lbl">Genre</span>
+        <div id="genre-chips"></div>
+        <button class="genre-more" id="genre-more" onclick="toggleGenres()" style="display:none">Show more <span class="gt-arrow">▾</span></button>
       </div>
     </div>
   </div>
@@ -684,6 +752,8 @@
   </footer>
 
 </div>
+
+<button id="to-top" class="to-top" aria-label="Back to top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
 
 <script>
 /* ═══════════════════════════════════════════════
@@ -818,7 +888,7 @@ function toggleTheme() {
 function applyTheme() {
   document.getElementById('hr').classList.toggle('light', !isDark);
   const b = document.getElementById('theme-btn');
-  if (b) b.textContent = isDark ? '◑ Light' : '◑ Dark';
+  if (b) b.innerHTML = `<span class="tb-ic">◑</span> <span class="tb-label">${isDark ? 'Light' : 'Dark'}</span>`;
 }
 
 /* ═══════════════════════════════════════════════
@@ -828,6 +898,7 @@ function setView(mode) {
   viewMode = mode;
   localStorage.setItem('vcg_view', mode);
   applyView();
+  closeSettings();
 }
 function applyView() {
   const app = document.getElementById('app');
@@ -843,6 +914,7 @@ function applyView() {
    RELEASE REGION
 ═══════════════════════════════════════════════ */
 function setRegion(r) {
+  closeSettings();
   if (!REGION_SETS[r] || r === regionF) return;
   regionF = r;
   localStorage.setItem('vcg_region', r);
@@ -855,10 +927,31 @@ function applyRegion() {
 }
 
 /* ═══════════════════════════════════════════════
+   SETTINGS DROPDOWN (region + view)
+═══════════════════════════════════════════════ */
+function toggleSettings(e) {
+  if (e) e.stopPropagation();
+  document.getElementById('fbar-right')?.classList.toggle('open');
+}
+function closeSettings() {
+  document.getElementById('fbar-right')?.classList.remove('open');
+}
+/* Keep month-section headers tucked right under the sticky filter bar,
+   whatever its height (genre chips wrap, mobile stacks, etc.). */
+function syncStickyOffset() {
+  const fb = document.getElementById('filter-bar');
+  if (fb) document.documentElement.style.setProperty('--mhead-top', fb.offsetHeight + 'px');
+}
+
+/* ═══════════════════════════════════════════════
    ROUTER
 ═══════════════════════════════════════════════ */
 function go(hash) { window.location.hash = hash; }
 function route() {
+  const today = todayISO();
+  const sixM  = new Date(); sixM.setMonth(sixM.getMonth() + 6);
+  const cap   = sixM.toISOString().slice(0, 10);
+  document.getElementById('hero-mount').innerHTML = heroHTML(today, today, cap);
   document.getElementById('app').innerHTML = pageHome();
   buildGenreChips();
   applyRegion();
@@ -866,6 +959,8 @@ function route() {
   applyFilters();
   applyTheme();
   startHero();
+  syncGenreClamp();
+  syncStickyOffset();
   window.scrollTo(0, 0);
 }
 
@@ -909,15 +1004,37 @@ function setGenre(el, g) {
   genreF = g;
   document.querySelectorAll('[data-genre]').forEach(b => b.classList.remove('on'));
   if (el) el.classList.add('on');
-  const tog = document.getElementById('genre-toggle');
-  if (tog) tog.innerHTML = (g === 'all' ? 'All' : esc(g)) + ' <span class="gt-arrow">▾</span>';
-  const fb = document.getElementById('filter-bar-inner');
-  if (fb) fb.classList.remove('genres-open');
   applyFilters();
 }
+/* Genre chips are clamped to two lines; "Show more" reveals the rest. */
 function toggleGenres() {
-  const fb = document.getElementById('filter-bar-inner');
-  if (fb) fb.classList.toggle('genres-open');
+  const wrap = document.getElementById('genre-chips');
+  const more = document.getElementById('genre-more');
+  if (!wrap) return;
+  const expanded = wrap.classList.toggle('expanded');
+  wrap.style.maxHeight = expanded ? wrap.scrollHeight + 'px' : (wrap.dataset.clampPx || 0) + 'px';
+  if (more) more.innerHTML = `${expanded ? 'Show less' : 'Show more'} <span class="gt-arrow">▾</span>`;
+}
+function syncGenreClamp() {
+  const wrap = document.getElementById('genre-chips');
+  const more = document.getElementById('genre-more');
+  if (!wrap || !more) return;
+  wrap.classList.remove('expanded');
+  wrap.style.maxHeight = 'none';
+  const chip = wrap.querySelector('.chip');
+  if (!chip) { more.style.display = 'none'; return; }
+  const cs  = getComputedStyle(wrap);
+  const gap = parseFloat(cs.rowGap) || parseFloat(cs.gap) || 5;
+  const twoLines = Math.round(chip.offsetHeight * 2 + gap);
+  wrap.dataset.clampPx = twoLines;
+  if (wrap.scrollHeight > twoLines + 2) {
+    wrap.style.maxHeight = twoLines + 'px';
+    more.style.display = 'inline-flex';
+    more.innerHTML = 'Show more <span class="gt-arrow">▾</span>';
+  } else {
+    wrap.style.maxHeight = 'none';
+    more.style.display = 'none';
+  }
 }
 
 function applyFilters() {
@@ -940,7 +1057,7 @@ function applyFilters() {
   const fs = document.getElementById('fbar-stat');
   if (fs) {
     const updated = DB.fetched_at ? `Updated ${timeAgo(DB.fetched_at)}` : 'Offline · seed data';
-    fs.textContent = `${REGION_SETS[regionF].flags} ${REGION_SETS[regionF].label} Kinostart · ${updated}`;
+    fs.textContent = `${REGION_SETS[regionF].label} Kinostart · ${updated}`;
   }
 
   // Show/hide cards
@@ -1109,7 +1226,6 @@ function pageHome() {
   }
 
   let h = `<div class="page-wrap">`;
-  h += heroHTML(today, lo, cap);
   monthKeys.forEach(ym => {
     const films  = groups[ym];
     const isJust = ym === JS_KEY;
@@ -1176,29 +1292,14 @@ function startHero() {
   if (!heroResizeBound) {
     let rt;
     window.addEventListener('resize', () => {
+      syncGenreClamp();
+      syncStickyOffset();
       clearTimeout(rt);
       rt = setTimeout(() => { const el = heroEl(); if (el) el.scrollTo({ left: heroIdx * el.clientWidth }); }, 120);
     });
     heroResizeBound = true;
   }
   armHero();
-}
-
-/* ═══════════════════════════════════════════════
-   RELOAD
-═══════════════════════════════════════════════ */
-async function reloadFromTMDB() {
-  const btn = document.getElementById('reload-btn');
-  if (btn) { btn.disabled = true; btn.textContent = '↻ Loading…'; }
-  try {
-    await loadData();
-    initCollapsed();
-    route();
-  } catch (e) {
-    alert('Reload failed: ' + (e.message || e));
-  } finally {
-    if (btn) { btn.disabled = false; btn.textContent = '↻ Reload'; }
-  }
 }
 
 /* ═══════════════════════════════════════════════
@@ -1217,6 +1318,14 @@ async function init() {
   initCollapsed();
   const fy = document.getElementById('footer-year');
   if (fy) fy.textContent = new Date().getFullYear();
+  const toTop = document.getElementById('to-top');
+  if (toTop) window.addEventListener('scroll',
+    () => toTop.classList.toggle('show', window.scrollY > 500), { passive: true });
+  // close the settings dropdown on any outside click
+  document.addEventListener('click', e => {
+    const fr = document.getElementById('fbar-right');
+    if (fr && fr.classList.contains('open') && !fr.contains(e.target)) fr.classList.remove('open');
+  });
   window.addEventListener('hashchange', route);
   route();
 }
