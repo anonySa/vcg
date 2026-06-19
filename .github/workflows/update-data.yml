@@ -1,0 +1,42 @@
+name: Update data.json
+
+# Rebuilds the daily TMDB snapshot and commits it. Because GitHub Pages
+# serves from this branch, committing data.json updates the live site.
+on:
+  schedule:
+    - cron: '17 4 * * *'      # every day at 04:17 UTC
+  workflow_dispatch: {}        # manual "Run workflow" button
+
+permissions:
+  contents: write              # allow the job to commit data.json
+
+concurrency:
+  group: update-data
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build snapshot
+        env:
+          TMDB_TOKEN: ${{ secrets.TMDB_TOKEN }}
+        run: node scripts/fetch-data.mjs
+
+      - name: Commit if changed
+        run: |
+          git config user.name  "vcg-bot"
+          git config user.email "actions@users.noreply.github.com"
+          if git status --porcelain data.json | grep -q .; then
+            git add data.json
+            git commit -m "chore: refresh data.json ($(date -u +%Y-%m-%d))"
+            git push
+          else
+            echo "No changes in data.json"
+          fi
