@@ -11,6 +11,14 @@
  * In CI:         token comes from a GitHub Actions secret.
  *
  * Node 18+ required (uses global fetch).
+ *
+ * ── Deploy (GitHub Pages) ─────────────────────────────────────────────
+ * 1. Push to GitHub (public repo → free Pages + Actions).
+ * 2. Settings → Secrets and variables → Actions → new secret
+ *      name  TMDB_TOKEN   value  <your TMDB read access token>
+ * 3. Settings → Pages → Source: Deploy from branch `main`, folder `/`.
+ * 4. Actions → "Update data.json" → Run workflow (seeds fresh data once).
+ * After that the workflow refreshes data.json daily at 04:17 UTC.
  */
 import { writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
