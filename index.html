@@ -522,9 +522,40 @@
     }
     .ci-lbd:hover { color: var(--acc); border-color: var(--acc); }
 
+    /* ── VCG community rating ── */
+    .ci-rate {
+      display: flex; align-items: center; gap: .35rem;
+      font-size: .66rem; color: var(--text2);
+      font-variant-numeric: tabular-nums;
+    }
+    .ci-rate:empty { display: none; }
+    .rt-logo { height: 9px; width: 27px; color: var(--muted); flex-shrink: 0; }
+    .stars {
+      position: relative; display: inline-block;
+      line-height: 1; font-size: .72rem; letter-spacing: .05em;
+    }
+    .stars-bg { color: var(--border2); }
+    .stars-fg {
+      position: absolute; top: 0; left: 0; bottom: 0;
+      overflow: hidden; white-space: nowrap;
+      color: var(--acc); width: 0;
+    }
+    .rt-num   { font-weight: 600; color: var(--text); }
+    .rt-count { color: var(--muted); }
+
+    /* interactive vote widget (expanded / detailed cards) */
+    .rt-widget { display: flex; align-items: center; gap: .45rem; margin-top: .1rem; }
+    .rt-lbl {
+      font-size: .6rem; font-weight: 700; color: var(--muted);
+      letter-spacing: .1em; text-transform: uppercase;
+    }
+    .rt-stars-hit { cursor: pointer; touch-action: manipulation; }
+    .rt-stars-hit .stars { font-size: 1.05rem; letter-spacing: .08em; }
+    .rt-your { font-size: .66rem; font-weight: 600; color: var(--acc); font-variant-numeric: tabular-nums; }
+
     /* compact mode hides detail-only fields (flags stay visible) */
     .view-compact .ci-dir, .view-compact .ci-meta,
-    .view-compact .ci-lbd { display: none; }
+    .view-compact .ci-lbd, .view-compact .rt-widget { display: none; }
 
     /* per-card expand/collapse (overrides view mode) */
     .card { cursor: pointer; }
@@ -536,6 +567,7 @@
     .card.expanded .ci-dir  { display: block; }
     .card.expanded .ci-meta { display: flex; }
     .card.expanded .ci-lbd  { display: inline-flex; }
+    .card.expanded .rt-widget { display: flex; }
     .card.expanded .cp img,
     .card.expanded .cp-empty { width: 78px; height: 117px; }
     .cp img, .cp-empty {
@@ -543,7 +575,8 @@
     }
     .card.expanded .ci-dir,
     .card.expanded .ci-meta,
-    .card.expanded .ci-lbd { animation: expandIn .22s ease both; }
+    .card.expanded .ci-lbd,
+    .card.expanded .rt-widget { animation: expandIn .22s ease both; }
     @keyframes expandIn {
       from { opacity: 0; transform: translateY(-3px); }
       to   { opacity: 1; transform: translateY(0); }
@@ -645,10 +678,12 @@
       .chip { font-size: .78rem; padding: .42rem .8rem; min-height: 34px; line-height: 1; }
       .filter-lbl { display: none; }
       .seg button { padding: .4rem .65rem; min-height: 32px; }
+      .rt-stars-hit .stars { font-size: 1.35rem; }
     }
   </style>
 </head>
 <body>
+<svg style="display:none" aria-hidden="true"><symbol id="vcg-mark" viewBox="0 0 132 44"><path d="M22.9444 20.7505L30.5118 1.58154H45.085L22.9444 43.6196L0.804688 1.58154H15.378L22.9444 20.7505ZM64.2784 0.380371C72.3133 0.380371 79.3001 4.86801 82.8702 11.4731C83.3003 12.269 82.444 13.1316 81.5704 12.897C75.1922 11.1817 66.8047 13.234 66.8047 20.9604C66.8048 29.7087 74.3939 32.4467 82.0284 29.1772C82.8757 28.8144 83.8082 29.6019 83.418 30.437C82.4006 32.6146 81.0237 34.5899 79.3623 36.2847C78.4613 37.2037 77.4821 38.0358 76.4248 38.7808H87.3184V42.6206H64.2784C52.6145 42.6205 43.1582 33.1644 43.1582 21.5005C43.1583 9.83664 52.6145 0.380521 64.2784 0.380371ZM110.785 0.460449C113.774 0.460449 116.409 0.909342 118.688 1.80615C121.005 2.70296 123.023 3.89839 124.742 5.39307C126.498 6.85035 128.03 8.49475 129.338 10.3257L117.847 15.4819C117.175 14.2489 116.297 13.1651 115.214 12.231C114.13 11.2968 112.653 10.8296 110.785 10.8296C108.954 10.8296 107.273 11.2227 105.741 12.0073C104.209 12.7547 102.976 13.8942 102.042 15.4263C101.145 16.9582 100.696 18.8822 100.696 21.1987C100.696 23.4781 101.107 25.4403 101.93 27.0845C102.789 28.7286 103.966 29.9809 105.461 30.8403C106.993 31.6996 108.767 32.1294 110.785 32.1294C111.906 32.1294 112.916 32.0167 113.812 31.7925C114.709 31.5683 115.475 31.2513 116.11 30.8403C116.783 30.4293 117.362 29.9245 117.847 29.3267C118.333 28.7288 118.745 28.0747 119.081 27.3647H110.224V18.397H131.076C131.375 21.7598 131.113 24.8985 130.291 27.813C129.506 30.7275 128.217 33.2871 126.424 35.4917C124.63 37.6963 122.369 39.4158 119.641 40.6489C116.914 41.882 113.774 42.4985 110.224 42.4985C106.936 42.4985 103.929 41.9937 101.201 40.9849C98.4734 39.976 96.0999 38.5378 94.0821 36.6694C92.1016 34.8011 90.5507 32.5585 89.4297 29.9429C88.3462 27.3273 87.8047 24.4122 87.8047 21.1987C87.8048 17.9856 88.3839 15.1086 89.542 12.5679C90.7004 9.98957 92.3072 7.80289 94.3623 6.00928C96.4549 4.21566 98.8843 2.85166 101.649 1.91748C104.452 0.946031 107.497 0.460479 110.785 0.460449ZM64.2784 27.2603C63.2601 27.2603 62.2836 27.6653 61.5635 28.3853C60.8434 29.1054 60.4385 30.0826 60.4385 31.1011C60.4386 32.1193 60.8435 33.0959 61.5635 33.8159C62.2836 34.5359 63.2601 34.9408 64.2784 34.9409C65.2968 34.9409 66.274 34.5361 66.9942 33.8159C67.7141 33.0959 68.1181 32.1193 68.1182 31.1011C68.1182 30.0827 67.7143 29.1054 66.9942 28.3853C66.274 27.6651 65.2968 27.2603 64.2784 27.2603ZM54.6788 17.6606C53.6603 17.6606 52.6831 18.0655 51.9629 18.7856C51.2431 19.5057 50.8389 20.4823 50.8389 21.5005C50.8389 22.5189 51.2428 23.4962 51.9629 24.2163C52.6831 24.9364 53.6603 25.3403 54.6788 25.3403C55.697 25.3403 56.6735 24.9362 57.3936 24.2163C58.1137 23.4962 58.5186 22.5189 58.5186 21.5005C58.5186 20.4821 58.1137 19.5058 57.3936 18.7856C56.6735 18.0655 55.6971 17.6607 54.6788 17.6606ZM64.2784 8.06104C63.2601 8.06111 62.2836 8.46512 61.5635 9.18506C60.8434 9.9052 60.4385 10.8824 60.4385 11.9009C60.4386 12.9192 60.8434 13.8956 61.5635 14.6157C62.2836 15.3358 63.26 15.7406 64.2784 15.7407C65.2968 15.7407 66.274 15.3359 66.9942 14.6157C67.7141 13.8957 68.1181 12.9191 68.1182 11.9009C68.1182 10.8824 67.7143 9.9052 66.9942 9.18506C66.274 8.46492 65.2968 8.06104 64.2784 8.06104Z" fill="currentColor"/></symbol></svg>
 <div id="wrap">
 
   <!-- NAV -->
@@ -871,6 +906,99 @@ function timeAgo(ts) {
   if (sec < 3600)  return Math.floor(sec / 60)   + ' min ago';
   if (sec < 86400) return Math.floor(sec / 3600) + ' h ago';
   return new Date(ts).toISOString().slice(0,10);
+}
+
+/* ═══════════════════════════════════════════════
+   COMMUNITY RATINGS (Cloudflare Worker + KV)
+   Set RATING_API to the deployed worker URL to enable;
+   empty string hides the whole feature.
+═══════════════════════════════════════════════ */
+const RATING_API = 'https://vcg-ratings.xamuel1804.workers.dev';
+let RATINGS  = {};                            // id → { avg, count }, fetched from the worker
+let MY_VOTES = {};                            // id → stars, this browser's own votes (for UI state)
+try { MY_VOTES = JSON.parse(localStorage.getItem('vcg_votes') || '{}'); } catch {}
+
+const ratingsEnabled = () => !!RATING_API;
+
+async function loadRatings() {
+  if (!ratingsEnabled()) return;
+  try {
+    const r = await fetch(RATING_API + '/ratings');
+    if (r.ok) RATINGS = await r.json();
+  } catch (e) { console.warn('ratings unavailable', e); }
+}
+
+/* 5 stars with a fractional amber fill (half-star capable via width %) */
+function starsHTML(v) {
+  const pct = Math.max(0, Math.min(5, v)) / 5 * 100;
+  return `<span class="stars"><span class="stars-bg">★★★★★</span><span class="stars-fg" style="width:${pct}%">★★★★★</span></span>`;
+}
+
+/* Read-only average row shown on every card (incl. compact overview) */
+function rateRowInnerHTML(id) {
+  const rt = RATINGS[id];
+  if (!rt || !rt.count) return '';
+  return `<svg class="rt-logo" viewBox="0 0 132 44" role="img" aria-label="VCG community rating"><use href="#vcg-mark"/></svg>` +
+    starsHTML(rt.avg) +
+    `<span class="rt-num">${(Math.round(rt.avg * 10) / 10).toFixed(1)}</span>` +
+    `<span class="rt-count">(${rt.count})</span>`;
+}
+
+/* Interactive vote widget (expanded / detailed cards) */
+function rateWidgetHTML(id) {
+  const mine = MY_VOTES[id] || 0;
+  return `<div class="rt-widget">
+    <span class="rt-lbl">Rate</span>
+    <span class="rt-stars-hit" data-rid="${id}"
+      onmousemove="rtHover(event,this)" onmouseleave="rtLeave(this)" onclick="rtClick(event,this)">
+      <span class="stars"><span class="stars-bg">★★★★★</span><span class="stars-fg" style="width:${mine / 5 * 100}%">★★★★★</span></span>
+    </span>
+    <span class="rt-your">${mine ? mine.toFixed(1) : ''}</span>
+  </div>`;
+}
+
+function rtStarsFromEvent(e, hit) {
+  const r = hit.querySelector('.stars').getBoundingClientRect();
+  const frac = (e.clientX - r.left) / r.width;
+  return Math.min(5, Math.max(0.5, Math.ceil(frac * 10) / 2));   // 0.5 … 5.0 in halves
+}
+function rtPaint(hit, v) {
+  hit.querySelector('.stars-fg').style.width = (v / 5 * 100) + '%';
+}
+function rtHover(e, hit) { rtPaint(hit, rtStarsFromEvent(e, hit)); }
+function rtLeave(hit)    { rtPaint(hit, MY_VOTES[hit.dataset.rid] || 0); }
+function rtClick(e, hit) {
+  e.stopPropagation();
+  vote(hit.dataset.rid, rtStarsFromEvent(e, hit));
+}
+
+async function vote(id, stars) {
+  if (!ratingsEnabled()) return;
+  MY_VOTES[id] = stars;                                   // optimistic UI
+  try { localStorage.setItem('vcg_votes', JSON.stringify(MY_VOTES)); } catch {}
+  syncRatingUI(id);
+  try {
+    const r = await fetch(RATING_API + '/vote', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, stars }),
+    });
+    if (r.ok) {
+      const d = await r.json();                           // worker returns the new aggregate
+      RATINGS[id] = { avg: d.avg, count: d.count };
+      syncRatingUI(id);
+    }
+  } catch (e) { console.warn('vote failed', e); }
+}
+
+function syncRatingUI(id) {
+  document.querySelectorAll(`[data-rrow="${CSS.escape(id)}"]`)
+    .forEach(el => { el.innerHTML = rateRowInnerHTML(id); });
+  document.querySelectorAll(`.rt-stars-hit[data-rid="${CSS.escape(id)}"]`).forEach(hit => {
+    rtPaint(hit, MY_VOTES[id] || 0);
+    const y = hit.parentElement.querySelector('.rt-your');
+    if (y) y.textContent = MY_VOTES[id] ? MY_VOTES[id].toFixed(1) : '';
+  });
 }
 
 /* ═══════════════════════════════════════════════
@@ -1155,10 +1283,12 @@ function cardHTML(f, today, ym) {
       ${f.director ? `<div class="ci-dir">${esc(f.director)}</div>` : ''}
       <div class="ci-tags">${f.genre.map(g=>`<span class="${gtClass(g)}">${esc(g)}</span>`).join('')}</div>
       <div class="ci-flags">${flagsRowHTML(f)}</div>
+      ${ratingsEnabled() ? `<div class="ci-rate" data-rrow="${f.id}">${rateRowInnerHTML(f.id)}</div>` : ''}
       <div class="ci-meta">
         ${f.runtime ? `<span>${f.runtime} min</span>` : ''}
         ${certHTML(f)}
       </div>
+      ${ratingsEnabled() ? rateWidgetHTML(f.id) : ''}
       <a class="ci-lbd" href="https://letterboxd.com/search/${encodeURIComponent(f.title)}/" target="_blank" rel="noopener">↗ Letterboxd</a>
     </div>
   </article>`;
@@ -1250,8 +1380,8 @@ function pageHome() {
    CARD TOGGLE
 ═══════════════════════════════════════════════ */
 function toggleCard(e, card) {
-  // Don't toggle when clicking links inside the card
-  if (e.target.closest('a')) return;
+  // Don't toggle when clicking links or the rating stars inside the card
+  if (e.target.closest('a, .rt-stars-hit')) return;
   card.classList.toggle('expanded');
 }
 
@@ -1310,7 +1440,7 @@ async function init() {
     '<div class="loading-state">Loading…</div>';
   loadTheme();
   try {
-    await loadData();
+    await Promise.all([loadData(), loadRatings()]);   // loadRatings never throws
   } catch (e) {
     console.error('Snapshot load failed, using SEED', e);
     DB = { releases: SEED, fetched_at: 0 };
