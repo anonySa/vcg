@@ -530,20 +530,21 @@
     }
     .ci-rate:empty { display: none; }
     .rt-logo   { height: 10px; width: 30px; color: var(--muted); flex-shrink: 0; }
-    .grade-ic  { height: 21px; width: 26px; flex-shrink: 0; }
+    .grade-ic  { height: 17px; width: 21px; flex-shrink: 0; }
     .rt-num    { font-weight: 700; color: var(--text); }
     .rt-count  { color: var(--muted); }
 
     /* interactive vote widget (expanded / detailed cards) */
-    .rt-widget { display: flex; align-items: center; gap: .55rem; margin-top: .15rem; }
+    .rt-widget { display: flex; align-items: center; gap: .5rem; margin-top: .15rem; flex-wrap: wrap; }
     .rt-lbl {
       font-size: .6rem; font-weight: 700; color: var(--muted);
       letter-spacing: .1em; text-transform: uppercase; flex-shrink: 0;
     }
-    /* one continuous blue gradient revealed left→right (not per-segment) */
+    /* one continuous blue gradient revealed left→right (not per-segment);
+       flexes to fit the card column so it's never clipped */
     .exc-track {
-      position: relative; width: 150px; height: 12px; flex-shrink: 0;
-      background: var(--border2); border-radius: 6px; overflow: hidden;
+      position: relative; flex: 1 1 90px; min-width: 80px; max-width: 170px;
+      height: 12px; background: var(--border2); border-radius: 6px; overflow: hidden;
       cursor: pointer; touch-action: manipulation;
     }
     .exc-grad {
@@ -564,7 +565,7 @@
       font-size: .66rem; font-weight: 700; color: var(--text);
       font-variant-numeric: tabular-nums;
     }
-    .rt-your .grade-ic { height: 23px; width: 29px; }
+    .rt-your .grade-ic { height: 19px; width: 24px; }
 
     /* ── bookmark ── */
     .card-bm {
@@ -722,7 +723,7 @@
       .filter-lbl { display: none; }
       .seg button { padding: .4rem .65rem; min-height: 32px; }
       .rt-widget { gap: .45rem; }
-      .exc-track { width: 120px; height: 14px; }
+      .exc-track { height: 14px; max-width: none; }
       .rt-your .grade-ic { display: none; }   /* community row already shows the badge */
     }
   </style>
