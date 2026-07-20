@@ -522,36 +522,73 @@
     }
     .ci-lbd:hover { color: var(--acc); border-color: var(--acc); }
 
-    /* ── VCG community rating ── */
+    /* ── VCG community excitement meter ── */
     .ci-rate {
-      display: flex; align-items: center; gap: .35rem;
+      display: flex; align-items: center; gap: .4rem;
       font-size: .66rem; color: var(--text2);
       font-variant-numeric: tabular-nums;
     }
     .ci-rate:empty { display: none; }
     .rt-logo { height: 9px; width: 27px; color: var(--muted); flex-shrink: 0; }
-    .stars {
-      position: relative; display: inline-block;
-      line-height: 1; font-size: .72rem; letter-spacing: .05em;
+    .exc-bar {
+      position: relative; width: 54px; height: 5px; flex-shrink: 0;
+      background: var(--border2); border-radius: 3px; overflow: hidden;
     }
-    .stars-bg { color: var(--border2); }
-    .stars-fg {
-      position: absolute; top: 0; left: 0; bottom: 0;
-      overflow: hidden; white-space: nowrap;
-      color: var(--acc); width: 0;
+    .exc-fill {
+      position: absolute; inset: 0 auto 0 0; width: 0;
+      background: linear-gradient(90deg, #e0662e, var(--acc));
+      border-radius: 3px; transition: width .3s ease;
     }
-    .rt-num   { font-weight: 600; color: var(--text); }
+    .rt-num   { font-weight: 700; color: var(--text); }
     .rt-count { color: var(--muted); }
 
     /* interactive vote widget (expanded / detailed cards) */
-    .rt-widget { display: flex; align-items: center; gap: .45rem; margin-top: .1rem; }
+    .rt-widget { display: flex; align-items: center; gap: .5rem; margin-top: .15rem; }
     .rt-lbl {
       font-size: .6rem; font-weight: 700; color: var(--muted);
-      letter-spacing: .1em; text-transform: uppercase;
+      letter-spacing: .1em; text-transform: uppercase; flex-shrink: 0;
     }
-    .rt-stars-hit { cursor: pointer; touch-action: manipulation; }
-    .rt-stars-hit .stars { font-size: 1.05rem; letter-spacing: .08em; }
-    .rt-your { font-size: .66rem; font-weight: 600; color: var(--acc); font-variant-numeric: tabular-nums; }
+    .exc-pick {
+      display: inline-flex; gap: 3px; cursor: pointer;
+      touch-action: manipulation; padding: 2px 0;
+    }
+    .exc-seg {
+      width: 22px; height: 11px; border-radius: 3px;
+      background: var(--border2); transition: background .12s, transform .12s;
+    }
+    .exc-seg.on { background: linear-gradient(90deg, #e0662e, var(--acc)); }
+    .exc-pick:hover .exc-seg { transform: translateY(-1px); }
+    .rt-your { font-size: .66rem; font-weight: 700; color: var(--acc); font-variant-numeric: tabular-nums; }
+
+    /* ── bookmark ── */
+    .card-bm {
+      position: absolute; top: .4rem; right: .5rem; z-index: 3;
+      width: 26px; height: 26px; padding: 0; border: none; background: none;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: var(--muted);
+      transition: color .15s, transform .15s;
+    }
+    .card-bm svg { width: 14px; height: 17px; fill: none; stroke: currentColor; stroke-width: 2; }
+    .card-bm:hover { color: var(--acc); transform: scale(1.12); }
+    .card-bm.on { color: var(--acc); }
+    .card-bm.on svg { fill: currentColor; }
+    .ci-title { padding-right: 1.4rem; }
+
+    .bm-filter {
+      display: inline-flex; align-items: center; gap: .3rem; flex-shrink: 0;
+      background: none; border: 1px solid var(--border); border-radius: 20px;
+      color: var(--text2); font-family: inherit; font-size: .74rem; font-weight: 500;
+      padding: .28rem .7rem; cursor: pointer; transition: all .12s; white-space: nowrap;
+    }
+    .bm-filter svg { width: 11px; height: 13px; fill: none; stroke: currentColor; stroke-width: 2; }
+    .bm-filter:hover { border-color: var(--acc); color: var(--acc); }
+    .bm-filter.on { background: var(--acc-d); border-color: var(--acc); color: var(--acc); }
+    .bm-filter.on svg { fill: currentColor; }
+    .bm-filter #bm-count:not(:empty) { opacity: .7; }
+    .empty-note {
+      max-width: 1280px; margin: 0 auto; padding: 2.5rem 1.25rem;
+      text-align: center; color: var(--muted); font-size: .85rem;
+    }
 
     /* compact mode hides detail-only fields (flags stay visible) */
     .view-compact .ci-dir, .view-compact .ci-meta,
@@ -678,7 +715,9 @@
       .chip { font-size: .78rem; padding: .42rem .8rem; min-height: 34px; line-height: 1; }
       .filter-lbl { display: none; }
       .seg button { padding: .4rem .65rem; min-height: 32px; }
-      .rt-stars-hit .stars { font-size: 1.35rem; }
+      .rt-widget { gap: .4rem; }
+      .exc-pick { padding: 6px 0; }
+      .exc-seg { width: 16px; height: 12px; }
     }
   </style>
 </head>
@@ -737,6 +776,10 @@
         <input class="nav-search" id="q" type="text" placeholder="Search title or director…" oninput="applyFilters()">
       </div>
       <div class="fbar-genre">
+        <button class="bm-filter" id="bm-filter" onclick="toggleBookmarkFilter()" aria-pressed="false" title="Show only saved films">
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h12a1 1 0 0 1 1 1v18l-7-4-7 4V3a1 1 0 0 1 1-1z"/></svg>
+          Saved <span id="bm-count"></span>
+        </button>
         <span class="filter-lbl">Genre</span>
         <div id="genre-chips"></div>
         <button class="genre-more" id="genre-more" onclick="toggleGenres()" style="display:none">Show more <span class="gt-arrow">▾</span></button>
@@ -746,6 +789,7 @@
 
   <!-- APP -->
   <div id="app"></div>
+  <div id="list-empty" class="empty-note" style="display:none"></div>
 
   <!-- FOOTER -->
   <footer>
@@ -928,63 +972,61 @@ async function loadRatings() {
   } catch (e) { console.warn('ratings unavailable', e); }
 }
 
-/* 5 stars with a fractional amber fill (half-star capable via width %) */
-function starsHTML(v) {
-  const pct = Math.max(0, Math.min(5, v)) / 5 * 100;
-  return `<span class="stars"><span class="stars-bg">★★★★★</span><span class="stars-fg" style="width:${pct}%">★★★★★</span></span>`;
-}
+/* Votes are stored 1–5 (integer excitement level); displayed as a % (level/5). */
+const lvlToPct = lvl => Math.round(lvl / 5 * 100);
 
-/* Read-only average row shown on every card (incl. compact overview) */
+/* Read-only community meter shown on every card (incl. compact overview) */
 function rateRowInnerHTML(id) {
   const rt = RATINGS[id];
   if (!rt || !rt.count) return '';
-  return `<svg class="rt-logo" viewBox="0 0 132 44" role="img" aria-label="VCG community rating"><use href="#vcg-mark"/></svg>` +
-    starsHTML(rt.avg) +
-    `<span class="rt-num">${(Math.round(rt.avg * 10) / 10).toFixed(1)}</span>` +
+  const pct = lvlToPct(rt.avg);
+  return `<svg class="rt-logo" viewBox="0 0 132 44" role="img"><use href="#vcg-mark"/></svg>` +
+    `<span class="exc-bar"><span class="exc-fill" style="width:${pct}%"></span></span>` +
+    `<span class="rt-num">${pct}%</span>` +
     `<span class="rt-count">(${rt.count})</span>`;
 }
 
-/* Interactive vote widget (expanded / detailed cards) */
+/* Interactive excitement voter (expanded / detailed cards): tap a level 1–5 */
 function rateWidgetHTML(id) {
   const mine = MY_VOTES[id] || 0;
+  let segs = '';
+  for (let i = 1; i <= 5; i++) segs += `<span class="exc-seg${i <= mine ? ' on' : ''}"></span>`;
   return `<div class="rt-widget">
-    <span class="rt-lbl">Rate</span>
-    <span class="rt-stars-hit" data-rid="${id}"
-      onmousemove="rtHover(event,this)" onmouseleave="rtLeave(this)" onclick="rtClick(event,this)">
-      <span class="stars"><span class="stars-bg">★★★★★</span><span class="stars-fg" style="width:${mine / 5 * 100}%">★★★★★</span></span>
-    </span>
-    <span class="rt-your">${mine ? mine.toFixed(1) : ''}</span>
+    <span class="rt-lbl">Excited?</span>
+    <span class="exc-pick" data-rid="${id}"
+      onmousemove="excHover(event,this)" onmouseleave="excLeave(this)" onclick="excClick(event,this)">${segs}</span>
+    <span class="rt-your">${mine ? lvlToPct(mine) + '%' : ''}</span>
   </div>`;
 }
 
-function rtStarsFromEvent(e, hit) {
-  const r = hit.querySelector('.stars').getBoundingClientRect();
+function excLevelFromEvent(e, pick) {
+  const r = pick.getBoundingClientRect();
   const frac = (e.clientX - r.left) / r.width;
-  return Math.min(5, Math.max(0.5, Math.ceil(frac * 10) / 2));   // 0.5 … 5.0 in halves
+  return Math.min(5, Math.max(1, Math.ceil(frac * 5)));   // 1 … 5
 }
-function rtPaint(hit, v) {
-  hit.querySelector('.stars-fg').style.width = (v / 5 * 100) + '%';
+function excPaint(pick, lvl) {
+  pick.querySelectorAll('.exc-seg').forEach((s, i) => s.classList.toggle('on', i < lvl));
 }
-function rtHover(e, hit) { rtPaint(hit, rtStarsFromEvent(e, hit)); }
-function rtLeave(hit)    { rtPaint(hit, MY_VOTES[hit.dataset.rid] || 0); }
-function rtClick(e, hit) {
+function excHover(e, pick) { excPaint(pick, excLevelFromEvent(e, pick)); }
+function excLeave(pick)    { excPaint(pick, MY_VOTES[pick.dataset.rid] || 0); }
+function excClick(e, pick) {
   e.stopPropagation();
-  vote(hit.dataset.rid, rtStarsFromEvent(e, hit));
+  vote(pick.dataset.rid, excLevelFromEvent(e, pick));
 }
 
-async function vote(id, stars) {
+async function vote(id, lvl) {
   if (!ratingsEnabled()) return;
-  MY_VOTES[id] = stars;                                   // optimistic UI
+  MY_VOTES[id] = lvl;                                     // optimistic UI
   try { localStorage.setItem('vcg_votes', JSON.stringify(MY_VOTES)); } catch {}
   syncRatingUI(id);
   try {
     const r = await fetch(RATING_API + '/vote', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id, stars }),
+      body: JSON.stringify({ id, stars: lvl }),           // worker stores 1–5 as-is
     });
     if (r.ok) {
-      const d = await r.json();                           // worker returns the new aggregate
+      const d = await r.json();
       RATINGS[id] = { avg: d.avg, count: d.count };
       syncRatingUI(id);
     }
@@ -994,11 +1036,39 @@ async function vote(id, stars) {
 function syncRatingUI(id) {
   document.querySelectorAll(`[data-rrow="${CSS.escape(id)}"]`)
     .forEach(el => { el.innerHTML = rateRowInnerHTML(id); });
-  document.querySelectorAll(`.rt-stars-hit[data-rid="${CSS.escape(id)}"]`).forEach(hit => {
-    rtPaint(hit, MY_VOTES[id] || 0);
-    const y = hit.parentElement.querySelector('.rt-your');
-    if (y) y.textContent = MY_VOTES[id] ? MY_VOTES[id].toFixed(1) : '';
+  document.querySelectorAll(`.exc-pick[data-rid="${CSS.escape(id)}"]`).forEach(pick => {
+    excPaint(pick, MY_VOTES[id] || 0);
+    const y = pick.parentElement.querySelector('.rt-your');
+    if (y) y.textContent = MY_VOTES[id] ? lvlToPct(MY_VOTES[id]) + '%' : '';
   });
+}
+
+/* ═══════════════════════════════════════════════
+   BOOKMARKS (local watchlist, client-side only)
+═══════════════════════════════════════════════ */
+let BOOKMARKS = new Set();
+try { BOOKMARKS = new Set(JSON.parse(localStorage.getItem('vcg_bookmarks') || '[]')); } catch {}
+let bookmarkFilter = false;
+
+const isBookmarked = id => BOOKMARKS.has(id);
+
+function toggleBookmark(e, id) {
+  e.stopPropagation();
+  if (BOOKMARKS.has(id)) BOOKMARKS.delete(id); else BOOKMARKS.add(id);
+  try { localStorage.setItem('vcg_bookmarks', JSON.stringify([...BOOKMARKS])); } catch {}
+  document.querySelectorAll(`.card-bm[data-bm="${CSS.escape(id)}"]`)
+    .forEach(b => b.classList.toggle('on', BOOKMARKS.has(id)));
+  updateBookmarkUI();
+  if (bookmarkFilter) applyFilters();
+}
+function toggleBookmarkFilter() {
+  bookmarkFilter = !bookmarkFilter;
+  document.getElementById('bm-filter')?.classList.toggle('on', bookmarkFilter);
+  applyFilters();
+}
+function updateBookmarkUI() {
+  const c = document.getElementById('bm-count');
+  if (c) c.textContent = BOOKMARKS.size ? BOOKMARKS.size : '';
 }
 
 /* ═══════════════════════════════════════════════
@@ -1084,6 +1154,7 @@ function route() {
   buildGenreChips();
   applyRegion();
   applyView();
+  updateBookmarkUI();
   applyFilters();
   applyTheme();
   startHero();
@@ -1176,7 +1247,8 @@ function applyFilters() {
   const visible = currentReleases().filter(r => {
     const matchQ = !q || r.title.toLowerCase().includes(q) || (r.director||'').toLowerCase().includes(q);
     const matchG = genreF === 'all' || r.genre.includes(genreF);
-    return matchQ && matchG && r.date >= lo && r.date <= cap;
+    const matchB = !bookmarkFilter || BOOKMARKS.has(r.id);
+    return matchQ && matchG && matchB && r.date >= lo && r.date <= cap;
   });
 
   const rc = document.getElementById('res-count');
@@ -1195,17 +1267,30 @@ function applyFilters() {
   });
 
   // Month sections: counts + collapse state.
-  // When searching, force-expand months with matches (without mutating `collapsed`).
-  const searching = !!q;
+  // When searching or filtering to saved, force-expand months with matches.
+  const forceOpen = !!q || bookmarkFilter;
   document.querySelectorAll('.m-sec').forEach(sec => {
     const ym = sec.dataset.ym;
     const count = visible.filter(r => groupKeyFor(r.date, today) === ym).length;
     const countEl = sec.querySelector('.m-count');
     if (countEl) countEl.textContent = count ? `${count} film${count!==1?'s':''}` : '';
     sec.style.display = count === 0 ? 'none' : '';
-    const effOpen = !collapsed.has(ym) || (searching && count > 0);
+    const effOpen = !collapsed.has(ym) || (forceOpen && count > 0);
     sec.classList.toggle('closed', !effOpen);
   });
+
+  // Empty-state note when filters match nothing
+  const empty = document.getElementById('list-empty');
+  if (empty) {
+    if (!visible.length) {
+      empty.textContent = bookmarkFilter && !BOOKMARKS.size
+        ? 'No saved films yet — tap the bookmark on any film to save it.'
+        : 'No films match your filters.';
+      empty.style.display = 'block';
+    } else {
+      empty.style.display = 'none';
+    }
+  }
 }
 
 function toggleMonth(ym) {
@@ -1270,6 +1355,9 @@ function cardHTML(f, today, ym) {
   const dw      = dayLabel(f.date);
   const mo      = new Date(f.date+'T12:00:00').toLocaleString('en-US',{month:'short'}).toUpperCase();
   return `<article class="card${isToday?' f-today':''}" data-id="${f.id}" data-ym="${ym}" onclick="toggleCard(event,this)">
+    <button class="card-bm${isBookmarked(f.id)?' on':''}" data-bm="${f.id}" onclick="toggleBookmark(event,'${f.id}')" aria-label="Bookmark this film" title="Bookmark">
+      <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h12a1 1 0 0 1 1 1v18l-7-4-7 4V3a1 1 0 0 1 1-1z"/></svg>
+    </button>
     <div class="cd">
       <span class="cd-n">${dd}</span>
       <span class="cd-s"><span>${dw}</span><span>${mo}</span></span>
@@ -1380,8 +1468,8 @@ function pageHome() {
    CARD TOGGLE
 ═══════════════════════════════════════════════ */
 function toggleCard(e, card) {
-  // Don't toggle when clicking links or the rating stars inside the card
-  if (e.target.closest('a, .rt-stars-hit')) return;
+  // Don't toggle when clicking links, the excitement voter, or the bookmark
+  if (e.target.closest('a, .exc-pick, .card-bm')) return;
   card.classList.toggle('expanded');
 }
 
