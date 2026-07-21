@@ -886,7 +886,20 @@ let collapsed = new Set();   // group keys e.g. '2026-06' or '__just_started__'
 let genreF    = 'all';
 let isDark    = true;
 let viewMode  = localStorage.getItem('vcg_view') === 'detail' ? 'detail' : 'compact';
-let regionF   = ['dach','gb','us'].includes(localStorage.getItem('vcg_region')) ? localStorage.getItem('vcg_region') : 'dach';
+/* Default region from the visitor's timezone (privacy-friendly, no IP lookup):
+   DACH → dach · rest of Europe → UK · everywhere else → USA.
+   A saved manual choice always wins. */
+function detectRegion() {
+  try {
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+    const DACH_TZ = new Set(['Europe/Vienna', 'Europe/Berlin', 'Europe/Zurich', 'Europe/Busingen']);
+    if (DACH_TZ.has(tz)) return 'dach';
+    if (tz.startsWith('Europe/')) return 'gb';   // Great Britain + rest of Europe
+    return 'us';                                 // international default
+  } catch { return 'dach'; }
+}
+const savedRegion = localStorage.getItem('vcg_region');
+let regionF   = ['dach','gb','us'].includes(savedRegion) ? savedRegion : detectRegion();
 
 const JS_KEY = '__just_started__';   // pseudo-month key for past 14 days
 function todayISO() { return new Date().toISOString().slice(0,10); }
