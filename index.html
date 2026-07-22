@@ -136,7 +136,8 @@
       padding: .55rem 1.25rem;
       display: flex; flex-direction: column; gap: .5rem;
     }
-    .fbar-genre { display: flex; align-items: flex-start; gap: .5rem; flex-wrap: wrap; }
+    .fbar-genre { display: flex; align-items: center; gap: .4rem; flex-wrap: wrap; overflow: hidden; transition: max-height .25s ease; }
+    #genre-chips { display: contents; }   /* chips flow directly into .fbar-genre so Saved + chips pack together */
     .nav-stat   { font-size: .68rem; color: var(--muted); white-space: nowrap; }
     .filter-lbl {
       font-size: .62rem; font-weight: 600; color: var(--muted);
@@ -184,12 +185,8 @@
     .settings-panel .seg { width: 100%; }
     .settings-panel .seg button { flex: 1; justify-content: center; }
 
-    #genre-chips {
-      display: flex; flex-wrap: wrap; gap: .3rem; flex: 1;
-      overflow: hidden; transition: max-height .25s ease;
-    }
     .genre-more {
-      margin-left: auto; align-self: flex-end;
+      align-self: flex-end;
       display: inline-flex; align-items: center; gap: .25rem;
       background: none; border: none; cursor: pointer;
       font-family: inherit; font-size: .66rem; font-weight: 600;
@@ -199,7 +196,7 @@
     }
     .genre-more:hover { color: var(--acc); }
     .gt-arrow { display: inline-block; margin-left: .1rem; transition: transform .2s; }
-    #genre-chips.expanded ~ .genre-more .gt-arrow { transform: rotate(180deg); }
+    .fbar-genre.expanded ~ .genre-more .gt-arrow { transform: rotate(180deg); }
 
     /* view-mode segmented control */
     .seg {
@@ -783,15 +780,15 @@
         <span class="nav-search-icon">⌕</span>
         <input class="nav-search" id="q" type="text" placeholder="Search title or director…" oninput="applyFilters()">
       </div>
-      <div class="fbar-genre">
+      <div class="fbar-genre" id="fbar-genre">
         <button class="bm-filter" id="bm-filter" onclick="toggleBookmarkFilter()" aria-pressed="false" title="Show only saved films">
           <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h12a1 1 0 0 1 1 1v18l-7-4-7 4V3a1 1 0 0 1 1-1z"/></svg>
           Saved <span id="bm-count"></span>
         </button>
         <span class="filter-lbl">Genre</span>
         <div id="genre-chips"></div>
-        <button class="genre-more" id="genre-more" onclick="toggleGenres()" style="display:none">Show more <span class="gt-arrow">▾</span></button>
       </div>
+      <button class="genre-more" id="genre-more" onclick="toggleGenres()" style="display:none">Show more <span class="gt-arrow">▾</span></button>
     </div>
   </div>
 
@@ -1241,9 +1238,10 @@ function setGenre(el, g) {
   if (el) el.classList.add('on');
   applyFilters();
 }
-/* Genre chips are clamped to two lines; "Show more" reveals the rest. */
+/* Saved + genre chips are clamped to two rows; "Show more" reveals the rest.
+   The clamp is on .fbar-genre (chips flow into it via display:contents). */
 function toggleGenres() {
-  const wrap = document.getElementById('genre-chips');
+  const wrap = document.getElementById('fbar-genre');
   const more = document.getElementById('genre-more');
   if (!wrap) return;
   const expanded = wrap.classList.toggle('expanded');
@@ -1251,7 +1249,7 @@ function toggleGenres() {
   if (more) more.innerHTML = `${expanded ? 'Show less' : 'Show more'} <span class="gt-arrow">▾</span>`;
 }
 function syncGenreClamp() {
-  const wrap = document.getElementById('genre-chips');
+  const wrap = document.getElementById('fbar-genre');
   const more = document.getElementById('genre-more');
   if (!wrap || !more) return;
   wrap.classList.remove('expanded');
@@ -1260,10 +1258,10 @@ function syncGenreClamp() {
   if (!chip) { more.style.display = 'none'; return; }
   const cs  = getComputedStyle(wrap);
   const gap = parseFloat(cs.rowGap) || parseFloat(cs.gap) || 5;
-  const twoLines = Math.round(chip.offsetHeight * 2 + gap);
-  wrap.dataset.clampPx = twoLines;
-  if (wrap.scrollHeight > twoLines + 2) {
-    wrap.style.maxHeight = twoLines + 'px';
+  const twoRows = Math.round(chip.offsetHeight * 2 + gap);
+  wrap.dataset.clampPx = twoRows;
+  if (wrap.scrollHeight > twoRows + 2) {
+    wrap.style.maxHeight = twoRows + 'px';
     more.style.display = 'inline-flex';
     more.innerHTML = 'Show more <span class="gt-arrow">▾</span>';
   } else {
