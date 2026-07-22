@@ -145,9 +145,10 @@
       white-space: nowrap; flex-shrink: 0;
     }
     .chip {
+      display: inline-flex; align-items: center; box-sizing: border-box;
       background: none; border: 1px solid var(--border);
       color: var(--text2); font-family: inherit;
-      font-size: .74rem; font-weight: 500;
+      font-size: .74rem; font-weight: 500; line-height: 1;
       padding: .28rem .7rem; border-radius: 20px;
       cursor: pointer; transition: all .12s; white-space: nowrap;
     }
@@ -579,9 +580,9 @@
     .ci-title { padding-right: 1.4rem; }
 
     .bm-filter {
-      display: inline-flex; align-items: center; gap: .3rem; flex-shrink: 0;
+      display: inline-flex; align-items: center; box-sizing: border-box; gap: .3rem; flex-shrink: 0;
       background: none; border: 1px solid var(--border); border-radius: 20px;
-      color: var(--text2); font-family: inherit; font-size: .74rem; font-weight: 500;
+      color: var(--text2); font-family: inherit; font-size: .74rem; font-weight: 500; line-height: 1;
       padding: .28rem .7rem; cursor: pointer; transition: all .12s; white-space: nowrap;
     }
     .bm-filter svg { width: 11px; height: 13px; fill: none; stroke: currentColor; stroke-width: 2; }
@@ -594,9 +595,17 @@
       text-align: center; color: var(--muted); font-size: .85rem;
     }
 
-    /* compact mode hides detail-only fields (flags stay visible) */
-    .view-compact .ci-dir, .view-compact .ci-meta,
-    .view-compact .ci-lbd, .view-compact .rt-widget { display: none; }
+    /* detail-only fields live in .ci-extra, which slides open smoothly
+       (max-height + opacity animate in both directions — no display pop) */
+    .ci-extra {
+      max-height: 0; opacity: 0; overflow: hidden;
+      transition: max-height .28s ease, opacity .2s ease;
+    }
+    .ci-extra-in {
+      display: flex; flex-direction: column; gap: .28rem; padding-top: .28rem;
+    }
+    .view-detail .ci-extra,
+    .card.expanded .ci-extra { max-height: 200px; opacity: 1; }
 
     /* per-card expand/collapse (overrides view mode) */
     .card { cursor: pointer; }
@@ -605,22 +614,10 @@
       background: var(--surface2);
       box-shadow: var(--shadow-h);
     }
-    .card.expanded .ci-dir  { display: block; }
-    .card.expanded .ci-meta { display: flex; }
-    .card.expanded .ci-lbd  { display: inline-flex; }
-    .card.expanded .rt-widget { display: flex; }
     .card.expanded .cp img,
     .card.expanded .cp-empty { width: 78px; height: 117px; }
     .cp img, .cp-empty {
-      transition: width .22s ease, height .22s ease, transform .3s ease;
-    }
-    .card.expanded .ci-dir,
-    .card.expanded .ci-meta,
-    .card.expanded .ci-lbd,
-    .card.expanded .rt-widget { animation: expandIn .22s ease both; }
-    @keyframes expandIn {
-      from { opacity: 0; transform: translateY(-3px); }
-      to   { opacity: 1; transform: translateY(0); }
+      transition: width .26s ease, height .26s ease, transform .3s ease;
     }
 
     /* genre tags */
@@ -716,7 +713,7 @@
       /* filter bar */
       .filter-bar-inner { padding: .55rem .65rem; gap: .5rem; }
       .nav-search { padding: .5rem .8rem .5rem 2rem; font-size: .85rem; }
-      .chip { font-size: .78rem; padding: .42rem .8rem; min-height: 34px; line-height: 1; }
+      .chip, .bm-filter { font-size: .78rem; padding: .42rem .8rem; min-height: 34px; line-height: 1; }
       .filter-lbl { display: none; }
       .seg button { padding: .4rem .65rem; min-height: 32px; }
       .rt-widget { gap: .45rem; }
@@ -1402,16 +1399,18 @@ function cardHTML(f, today, ym) {
       : `<div class="cp-empty">▦</div>`}</div>
     <div class="ci">
       <h3 class="ci-title">${esc(f.title)}</h3>
-      ${f.director ? `<div class="ci-dir">${esc(f.director)}</div>` : ''}
       <div class="ci-tags">${f.genre.map(g=>`<span class="${gtClass(g)}">${esc(g)}</span>`).join('')}</div>
       <div class="ci-flags">${flagsRowHTML(f)}</div>
       ${ratingsEnabled() ? `<div class="ci-rate" data-rrow="${f.id}">${rateRowInnerHTML(f.id)}</div>` : ''}
-      <div class="ci-meta">
-        ${f.runtime ? `<span>${f.runtime} min</span>` : ''}
-        ${certHTML(f)}
-      </div>
-      ${ratingsEnabled() ? rateWidgetHTML(f.id) : ''}
-      <a class="ci-lbd" href="https://letterboxd.com/search/${encodeURIComponent(f.title)}/" target="_blank" rel="noopener">↗ Letterboxd</a>
+      <div class="ci-extra"><div class="ci-extra-in">
+        ${f.director ? `<div class="ci-dir">${esc(f.director)}</div>` : ''}
+        <div class="ci-meta">
+          ${f.runtime ? `<span>${f.runtime} min</span>` : ''}
+          ${certHTML(f)}
+        </div>
+        ${ratingsEnabled() ? rateWidgetHTML(f.id) : ''}
+        <a class="ci-lbd" href="https://letterboxd.com/search/${encodeURIComponent(f.title)}/" target="_blank" rel="noopener">↗ Letterboxd</a>
+      </div></div>
     </div>
   </article>`;
 }
