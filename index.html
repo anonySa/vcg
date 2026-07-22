@@ -258,6 +258,26 @@
       text-decoration: none; transition: color .15s;
     }
     .footer-nav a:hover { color: var(--acc); }
+    .footer-exc {
+      grid-column: 1 / -1;
+      border-top: 1px solid var(--border);
+      padding-top: 1.5rem; margin-top: .5rem;
+    }
+    .footer-exc h3 {
+      font-family: 'Fraunces', serif; font-size: 1rem; font-weight: 600;
+      color: var(--text); margin-bottom: .5rem;
+    }
+    .footer-exc > p {
+      font-size: .78rem; line-height: 1.65; color: var(--text2);
+      max-width: 62ch; margin-bottom: 1rem;
+    }
+    .footer-tierlist {
+      list-style: none; display: flex; flex-wrap: wrap; gap: .6rem 1.4rem;
+    }
+    .footer-tierlist li { display: flex; align-items: center; gap: .5rem; }
+    .footer-tierlist img { flex-shrink: 0; }
+    .footer-tierlist span { font-size: .76rem; color: var(--text2); }
+    .footer-tierlist strong { color: var(--text); font-weight: 700; }
     .footer-copy {
       grid-column: 1 / -1;
       border-top: 1px solid var(--border);
@@ -565,6 +585,48 @@
     }
     .rt-your .grade-ic { height: 20px; width: 22px; }
 
+    /* ── excitement rating modal (mobile bottom sheet) ── */
+    .exc-modal { position: fixed; inset: 0; z-index: 400; display: none; }
+    .exc-modal.open { display: block; }
+    .exc-modal-bg {
+      position: absolute; inset: 0; background: rgba(0,0,0,.55);
+      backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px);
+      animation: excFade .2s ease both;
+    }
+    .exc-sheet {
+      position: absolute; left: 0; right: 0; bottom: 0;
+      background: var(--surface2); border-top: 1px solid var(--border2);
+      border-radius: 18px 18px 0 0; padding: 1.1rem 1.25rem calc(1.4rem + env(safe-area-inset-bottom));
+      box-shadow: 0 -12px 40px rgba(0,0,0,.5);
+      animation: excSlide .26s cubic-bezier(.2,.8,.2,1) both;
+    }
+    @keyframes excFade  { from { opacity: 0 } to { opacity: 1 } }
+    @keyframes excSlide { from { transform: translateY(100%) } to { transform: translateY(0) } }
+    .exc-sheet-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
+    .exc-sheet-kicker {
+      display: block; font-size: .6rem; font-weight: 700; letter-spacing: .14em;
+      text-transform: uppercase; color: var(--acc); margin-bottom: .15rem;
+    }
+    .exc-sheet-title { font-family: 'Fraunces', serif; font-size: 1.15rem; font-weight: 600; color: var(--text); line-height: 1.2; }
+    .exc-sheet-x {
+      flex-shrink: 0; width: 30px; height: 30px; border-radius: 50%;
+      background: var(--bg3); border: 1px solid var(--border); color: var(--text2);
+      font-size: .9rem; cursor: pointer; line-height: 1;
+    }
+    .exc-sheet-lbl { font-size: .82rem; color: var(--text2); margin: 1.1rem 0 .7rem; }
+    .exc-modal-readout { display: flex; align-items: center; gap: .55rem; margin-bottom: .7rem; }
+    .exc-modal-readout .grade-ic { height: 38px; width: 42px; }
+    .exc-modal-pct { font-size: 1.6rem; font-weight: 700; color: var(--text); font-variant-numeric: tabular-nums; }
+    .exc-track-lg { width: 100%; height: 26px; border-radius: 13px; touch-action: none; }
+    .exc-scale { display: flex; justify-content: space-between; font-size: .66rem; color: var(--muted); margin-top: .5rem; }
+    .exc-sheet-confirm {
+      width: 100%; margin-top: 1.25rem; padding: .85rem;
+      background: var(--acc); color: #1a1206; border: none; border-radius: 10px;
+      font-family: inherit; font-size: .9rem; font-weight: 700; cursor: pointer;
+      transition: background .15s;
+    }
+    .exc-sheet-confirm:hover { background: var(--acc-h); }
+
     /* ── bookmark ── */
     .card-bm {
       position: absolute; top: .4rem; right: .5rem; z-index: 3;
@@ -782,6 +844,9 @@
           <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h12a1 1 0 0 1 1 1v18l-7-4-7 4V3a1 1 0 0 1 1-1z"/></svg>
           Saved <span id="bm-count"></span>
         </button>
+        <button class="bm-filter" id="hyped-filter" onclick="toggleHypedFilter()" aria-pressed="false" title="Show only films the community rates tier S or A">
+          🔥 Hyped
+        </button>
         <span class="filter-lbl">Genre</span>
         <div id="genre-chips"></div>
       </div>
@@ -819,6 +884,18 @@
         </ul>
       </nav>
 
+      <section class="footer-exc" aria-label="About the VCG Excitement rating">
+        <h3>VCG Excitement</h3>
+        <p>A community hype meter for upcoming films — how excited people are to see them, not a review of quality. Open any film, set how excited you are on the slider (or tap on mobile), and every visitor's vote averages into the film's tier.</p>
+        <ul class="footer-tierlist">
+          <li><img src="assets/S.svg" alt="" width="30" height="27"><span><strong>S</strong> · 85–100% · Must-see hype</span></li>
+          <li><img src="assets/A.svg" alt="" width="30" height="27"><span><strong>A</strong> · 70–84% · Highly anticipated</span></li>
+          <li><img src="assets/B.svg" alt="" width="30" height="27"><span><strong>B</strong> · 50–69% · Keen to watch</span></li>
+          <li><img src="assets/C.svg" alt="" width="30" height="27"><span><strong>C</strong> · 20–49% · Mild interest</span></li>
+          <li><img src="assets/F.svg" alt="" width="30" height="27"><span><strong>F</strong> · under 20% · Not fussed</span></li>
+        </ul>
+      </section>
+
       <div class="footer-copy">
         <p>© <span id="footer-year"></span> <a href="mailto:samuel.bauer@e-2.at">Samuel Bauer</a> · <a href="mailto:samuel.bauer@e-2.at">samuel.bauer@e-2.at</a></p>
         <p class="footer-tmdb">
@@ -835,6 +912,30 @@
 </div>
 
 <button id="to-top" class="to-top" aria-label="Back to top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<!-- Excitement rating modal (mobile) -->
+<div class="exc-modal" id="exc-modal" aria-hidden="true">
+  <div class="exc-modal-bg" onclick="closeExcModal()"></div>
+  <div class="exc-sheet" role="dialog" aria-modal="true" aria-label="Rate your excitement">
+    <div class="exc-sheet-top">
+      <div class="exc-sheet-head">
+        <span class="exc-sheet-kicker">VCG Excitement</span>
+        <span class="exc-sheet-title" id="exc-modal-title"></span>
+      </div>
+      <button class="exc-sheet-x" onclick="closeExcModal()" aria-label="Close">✕</button>
+    </div>
+    <div class="exc-sheet-lbl">How excited are you for this film?</div>
+    <div class="exc-modal-readout">
+      <img class="grade-ic" id="exc-modal-icon" src="assets/B.svg" alt="" width="42" height="38">
+      <span class="exc-modal-pct" id="exc-modal-pct">50%</span>
+    </div>
+    <div class="exc-track exc-track-lg" id="exc-modal-track" onpointerdown="excModalDown(event)">
+      <span class="exc-grad" id="exc-modal-grad"></span>
+    </div>
+    <div class="exc-scale"><span>Not fussed</span><span>Can't wait</span></div>
+    <button class="exc-sheet-confirm" onclick="confirmExcModal()">Save my rating</button>
+  </div>
+</div>
 
 <script>
 /* ═══════════════════════════════════════════════
@@ -1020,12 +1121,14 @@ function rateWidgetHTML(id) {
   return `<div class="rt-widget">
     <span class="rt-lbl">Excited?</span>
     <span class="exc-track" data-rid="${id}"
-      onmousemove="excHover(event,this)" onmouseleave="excLeave(this)" onclick="excClick(event,this)">
+      onmousemove="excHover(event,this)" onmouseleave="excLeave(this)" onpointerdown="excTrackDown(event,this)">
       <span class="exc-grad" style="clip-path:inset(0 ${100 - pct}% 0 0)"></span>
     </span>
     <span class="rt-your">${pct ? gradeIconHTML(pct) + pct + '%' : ''}</span>
   </div>`;
 }
+
+const isMobile = () => window.matchMedia('(max-width: 768px)').matches;
 
 function excPctFromEvent(e, track) {
   const r = track.getBoundingClientRect();
@@ -1036,11 +1139,67 @@ function excPaint(track, pct) {
   const g = track.querySelector('.exc-grad');
   if (g) g.style.clipPath = `inset(0 ${100 - pct}% 0 0)`;
 }
-function excHover(e, track) { excPaint(track, excPctFromEvent(e, track)); }
-function excLeave(track)    { excPaint(track, MY_VOTES[track.dataset.rid] ? pctFromStars(MY_VOTES[track.dataset.rid]) : 0); }
-function excClick(e, track) {
-  e.stopPropagation();
-  vote(track.dataset.rid, starsFromPct(excPctFromEvent(e, track)));
+/* desktop hover preview (suppressed while dragging) */
+function excHover(e, track) { if (!excDrag) excPaint(track, excPctFromEvent(e, track)); }
+function excLeave(track)    { if (!excDrag) excPaint(track, MY_VOTES[track.dataset.rid] ? pctFromStars(MY_VOTES[track.dataset.rid]) : 0); }
+
+/* shared press/drag/click along a track: onLive(pct) each move, onEnd(pct) on release */
+let excDrag = null;
+function excBeginDrag(e, track, onLive, onEnd) {
+  e.preventDefault();
+  let pct = excPctFromEvent(e, track);
+  onLive(pct);
+  const move = ev => { pct = excPctFromEvent(ev, track); onLive(pct); };
+  const up = () => {
+    document.removeEventListener('pointermove', move);
+    document.removeEventListener('pointerup', up);
+    excDrag = null;
+    onEnd(pct);
+  };
+  excDrag = track;
+  document.addEventListener('pointermove', move);
+  document.addEventListener('pointerup', up);
+}
+/* inline meter in cards: mobile → open the modal; desktop → drag/click to vote */
+function excTrackDown(e, track) {
+  const id = track.dataset.rid;
+  if (isMobile()) { e.preventDefault(); openExcModal(id); return; }
+  excBeginDrag(e, track, p => excPaint(track, p), p => vote(id, starsFromPct(p)));
+}
+
+/* ── Excitement rating modal (mobile) ── */
+let excModalId = null, excModalPct = 50;
+function movieTitle(id) { const f = DB.releases.find(r => r.id === id); return f ? f.title : ''; }
+function openExcModal(id) {
+  excModalId  = id;
+  excModalPct = MY_VOTES[id] ? pctFromStars(MY_VOTES[id]) : 50;
+  document.getElementById('exc-modal-title').textContent = movieTitle(id);
+  paintExcModal();
+  const m = document.getElementById('exc-modal');
+  m.classList.add('open'); m.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+}
+function closeExcModal() {
+  const m = document.getElementById('exc-modal');
+  m.classList.remove('open'); m.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow = '';
+  excModalId = null;
+}
+function paintExcModal() {
+  const grad = document.getElementById('exc-modal-grad');
+  if (grad) grad.style.clipPath = `inset(0 ${100 - excModalPct}% 0 0)`;
+  const icon = document.getElementById('exc-modal-icon');
+  if (icon) { icon.src = `assets/${gradeTier(excModalPct)}.svg`; icon.alt = gradeTier(excModalPct) + ' tier'; }
+  const pctEl = document.getElementById('exc-modal-pct');
+  if (pctEl) pctEl.textContent = excModalPct + '%';
+}
+function excModalDown(e) {
+  const track = document.getElementById('exc-modal-track');
+  excBeginDrag(e, track, p => { excModalPct = p; paintExcModal(); }, p => { excModalPct = p; paintExcModal(); });
+}
+function confirmExcModal() {
+  if (excModalId) vote(excModalId, starsFromPct(excModalPct));
+  closeExcModal();
 }
 
 async function vote(id, stars) {
@@ -1099,6 +1258,15 @@ function toggleBookmarkFilter() {
 function updateBookmarkUI() {
   const c = document.getElementById('bm-count');
   if (c) c.textContent = BOOKMARKS.size ? BOOKMARKS.size : '';
+}
+
+/* "Hyped" filter — only films the community rates tier S or A (≥70%) */
+let hypedFilter = false;
+const isHyped = id => { const rt = RATINGS[id]; return !!(rt && rt.count && pctFromStars(rt.avg) >= 70); };
+function toggleHypedFilter() {
+  hypedFilter = !hypedFilter;
+  document.getElementById('hyped-filter')?.classList.toggle('on', hypedFilter);
+  applyFilters();
 }
 
 /* ═══════════════════════════════════════════════
@@ -1279,7 +1447,8 @@ function applyFilters() {
     const matchQ = !q || r.title.toLowerCase().includes(q) || (r.director||'').toLowerCase().includes(q);
     const matchG = genreF === 'all' || r.genre.includes(genreF);
     const matchB = !bookmarkFilter || BOOKMARKS.has(r.id);
-    return matchQ && matchG && matchB && r.date >= lo && r.date <= cap;
+    const matchH = !hypedFilter || isHyped(r.id);
+    return matchQ && matchG && matchB && matchH && r.date >= lo && r.date <= cap;
   });
 
   const rc = document.getElementById('res-count');
@@ -1299,7 +1468,7 @@ function applyFilters() {
 
   // Month sections: counts + collapse state.
   // When searching or filtering to saved, force-expand months with matches.
-  const forceOpen = !!q || bookmarkFilter;
+  const forceOpen = !!q || bookmarkFilter || hypedFilter;
   document.querySelectorAll('.m-sec').forEach(sec => {
     const ym = sec.dataset.ym;
     const count = visible.filter(r => groupKeyFor(r.date, today) === ym).length;
@@ -1316,7 +1485,9 @@ function applyFilters() {
     if (!visible.length) {
       empty.textContent = bookmarkFilter && !BOOKMARKS.size
         ? 'No saved films yet — tap the bookmark on any film to save it.'
-        : 'No films match your filters.';
+        : hypedFilter
+          ? 'No films are rated Hyped (tier S or A) yet.'
+          : 'No films match your filters.';
       empty.style.display = 'block';
     } else {
       empty.style.display = 'none';
