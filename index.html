@@ -770,7 +770,12 @@
       .nav-info   { order: 3; flex-basis: 100%; justify-content: flex-end; }
       .tb-label   { display: none; }      /* icon-only buttons on mobile */
       .st-label   { display: none; }
-      #theme-btn, .settings-toggle { padding: .42rem .55rem; }
+      #theme-btn, .settings-toggle {
+        padding: 0; min-width: 40px; min-height: 40px;
+        display: inline-flex; align-items: center; justify-content: center;
+      }
+      #theme-btn .tb-ic { font-size: 1.05rem; }
+      .settings-toggle .set-ic { width: 18px; height: 18px; }
 
       /* filter bar */
       .filter-bar-inner { padding: .55rem .65rem; gap: .5rem; }
