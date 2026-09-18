@@ -783,7 +783,7 @@
       .chip, .bm-filter { font-size: .78rem; padding: .42rem .8rem; min-height: 34px; line-height: 1; }
       .filter-lbl { display: none; }
       .seg button { padding: .4rem .65rem; min-height: 32px; }
-      .rt-widget { gap: .45rem; }
+      .rt-widget { gap: .45rem; cursor: pointer; padding: .2rem 0; }
       .exc-track { height: 14px; max-width: none; }
       .rt-your .grade-ic { display: none; }   /* community row already shows the badge */
     }
@@ -1123,7 +1123,7 @@ function rateRowInnerHTML(id) {
    one continuous blue meter, snapped to 10% steps. */
 function rateWidgetHTML(id) {
   const pct = MY_VOTES[id] ? pctFromStars(MY_VOTES[id]) : 0;
-  return `<div class="rt-widget">
+  return `<div class="rt-widget" data-rid="${id}" onclick="excWidgetClick(event,this)">
     <span class="rt-lbl">Excited?</span>
     <span class="exc-track" data-rid="${id}"
       onmousemove="excHover(event,this)" onmouseleave="excLeave(this)" onpointerdown="excTrackDown(event,this)">
@@ -1165,11 +1165,18 @@ function excBeginDrag(e, track, onLive, onEnd) {
   document.addEventListener('pointermove', move);
   document.addEventListener('pointerup', up);
 }
-/* inline meter in cards: mobile → open the modal; desktop → drag/click to vote */
+/* Desktop: press/drag/release along the inline meter votes directly.
+   Mobile ignores pointerdown — it rates via the modal, opened on click
+   (opening on pointerdown lets the tap's follow-up click hit the backdrop). */
 function excTrackDown(e, track) {
-  const id = track.dataset.rid;
-  if (isMobile()) { e.preventDefault(); openExcModal(id); return; }
-  excBeginDrag(e, track, p => excPaint(track, p), p => vote(id, starsFromPct(p)));
+  if (isMobile()) return;
+  excBeginDrag(e, track, p => excPaint(track, p), p => vote(track.dataset.rid, starsFromPct(p)));
+}
+/* Mobile: tapping anywhere on the "Excited?" row opens the rating sheet */
+function excWidgetClick(e, widget) {
+  if (!isMobile()) return;
+  e.stopPropagation();
+  openExcModal(widget.dataset.rid);
 }
 
 /* ── Excitement rating modal (mobile) ── */
@@ -1678,7 +1685,7 @@ function pageHome() {
 ═══════════════════════════════════════════════ */
 function toggleCard(e, card) {
   // Don't toggle when clicking links, the excitement voter, or the bookmark
-  if (e.target.closest('a, .exc-track, .card-bm')) return;
+  if (e.target.closest('a, .rt-widget, .card-bm')) return;
   card.classList.toggle('expanded');
 }
 
