@@ -548,7 +548,7 @@
     }
     .ci-rate:empty { display: none; }
     .rt-logo   { height: 10px; width: 30px; color: var(--muted); flex-shrink: 0; }
-    .grade-ic  { display: block; height: 18px; width: 20px; flex-shrink: 0; }
+    .grade-ic  { display: block; height: 19px; width: 19px; flex-shrink: 0; }
     .rt-num    { font-weight: 700; color: var(--text); }
     .rt-count  { color: var(--muted); }
 
@@ -583,7 +583,7 @@
       font-size: .66rem; font-weight: 700; color: var(--text);
       font-variant-numeric: tabular-nums;
     }
-    .rt-your .grade-ic { height: 20px; width: 22px; }
+    .rt-your .grade-ic { height: 21px; width: 21px; }
 
     /* ── excitement rating modal (mobile bottom sheet) ── */
     .exc-modal { position: fixed; inset: 0; z-index: 400; display: none; }
@@ -615,7 +615,7 @@
     }
     .exc-sheet-lbl { font-size: .82rem; color: var(--text2); margin: 1.1rem 0 .7rem; }
     .exc-modal-readout { display: flex; align-items: center; gap: .55rem; margin-bottom: .7rem; }
-    .exc-modal-readout .grade-ic { height: 38px; width: 42px; }
+    .exc-modal-readout .grade-ic { height: 40px; width: 40px; }
     .exc-modal-pct { font-size: 1.6rem; font-weight: 700; color: var(--text); font-variant-numeric: tabular-nums; }
     .exc-track-lg { width: 100%; height: 26px; border-radius: 13px; touch-action: none; }
     .exc-scale { display: flex; justify-content: space-between; font-size: .66rem; color: var(--muted); margin-top: .5rem; }
@@ -893,11 +893,11 @@
         <h3>VCG Excitement</h3>
         <p>A community hype meter for upcoming films — how excited people are to see them, not a review of quality. Open any film, set how excited you are on the slider (or tap on mobile), and every visitor's vote averages into the film's tier.</p>
         <ul class="footer-tierlist">
-          <li><img src="assets/S.svg" alt="" width="30" height="27"><span><strong>S</strong> · 85–100% · Must-see hype</span></li>
-          <li><img src="assets/A.svg" alt="" width="30" height="27"><span><strong>A</strong> · 70–84% · Highly anticipated</span></li>
-          <li><img src="assets/B.svg" alt="" width="30" height="27"><span><strong>B</strong> · 50–69% · Keen to watch</span></li>
-          <li><img src="assets/C.svg" alt="" width="30" height="27"><span><strong>C</strong> · 20–49% · Mild interest</span></li>
-          <li><img src="assets/F.svg" alt="" width="30" height="27"><span><strong>F</strong> · under 20% · Not fussed</span></li>
+          <li><img src="assets/S.svg" alt="" width="30" height="30"><span><strong>S</strong> · 85–100% · Must-see hype</span></li>
+          <li><img src="assets/A.svg" alt="" width="30" height="30"><span><strong>A</strong> · 70–84% · Highly anticipated</span></li>
+          <li><img src="assets/B.svg" alt="" width="30" height="30"><span><strong>B</strong> · 50–69% · Keen to watch</span></li>
+          <li><img src="assets/C.svg" alt="" width="30" height="30"><span><strong>C</strong> · 20–49% · Mild interest</span></li>
+          <li><img src="assets/F.svg" alt="" width="30" height="30"><span><strong>F</strong> · under 20% · Not fussed</span></li>
         </ul>
       </section>
 
@@ -931,7 +931,7 @@
     </div>
     <div class="exc-sheet-lbl">How excited are you for this film?</div>
     <div class="exc-modal-readout">
-      <img class="grade-ic" id="exc-modal-icon" src="assets/B.svg" alt="" width="42" height="38">
+      <img class="grade-ic" id="exc-modal-icon" src="assets/B.svg" alt="" width="40" height="40">
       <span class="exc-modal-pct" id="exc-modal-pct">50%</span>
     </div>
     <div class="exc-track exc-track-lg" id="exc-modal-track" onpointerdown="excModalDown(event)">
@@ -1106,7 +1106,7 @@ function gradeTier(pct) {
   return 'F';
 }
 const gradeIconHTML = pct =>
-  `<img class="grade-ic" src="assets/${gradeTier(pct)}.svg" alt="${gradeTier(pct)} tier" width="20" height="18">`;
+  `<img class="grade-ic" src="assets/${gradeTier(pct)}.svg" alt="${gradeTier(pct)} tier" width="19" height="19">`;
 
 /* Read-only community row shown on every card (incl. compact overview) */
 function rateRowInnerHTML(id) {
