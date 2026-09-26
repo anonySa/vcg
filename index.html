@@ -333,7 +333,8 @@
       content: ''; display: block; width: 64px; height: 6px;
       background: var(--acc); margin-top: 14px;
     }
-    .hslide-tags { font-size: 15px; color: var(--text2); }
+    .hslide-tags { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 14px; color: var(--text2); }
+    .hslide-tags .gt i { width: 9px; height: 9px; }
     .hslide-date { font-size: 13px; color: var(--text2); display: flex; align-items: center; gap: 12px; }
     .hslide-date b { color: var(--text); font-weight: 600; }
     .hslide-btn {
@@ -451,7 +452,10 @@
     .ci-date { font-size: 12px; color: var(--muted); }
     .ci-date b { color: var(--acc); font-weight: 600; letter-spacing: .06em; text-transform: uppercase; margin-left: 8px; }
     .ci-dir  { font-size: 12px; color: var(--muted); }
-    .ci-tags { font-size: 12px; color: var(--muted); }
+    /* genres: an 8px colour swatch per genre as a visual reference, name stays neutral */
+    .ci-tags { display: flex; flex-wrap: wrap; gap: 3px 10px; font-size: 12px; color: var(--text2); }
+    .gt { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
+    .gt i { width: 8px; height: 8px; flex-shrink: 0; background: var(--muted); }
     .ci-meta {
       display: flex; align-items: center; gap: 8px;
       font-size: 12px; color: var(--text2);
@@ -496,8 +500,7 @@
       font-size: .6rem; font-weight: 700; color: var(--muted);
       letter-spacing: .1em; text-transform: uppercase; flex-shrink: 0;
     }
-    /* one continuous blue gradient revealed left→right (not per-segment);
-       flexes to fit the card column so it's never clipped */
+    /* flat red fill revealed left→right; flexes to fit the card column so it's never clipped */
     .exc-track {
       position: relative; flex: 1 1 90px; min-width: 80px; max-width: 170px;
       height: 12px; background: var(--border2); border-radius: 0; overflow: hidden;
@@ -505,7 +508,7 @@
     }
     .exc-grad {
       position: absolute; inset: 0;
-      background: linear-gradient(90deg, #6F8EC7 30.65%, #6801B6 100%);
+      background: var(--acc);
       clip-path: inset(0 100% 0 0);      /* set via JS: inset(0 <100-pct>% 0 0) */
       transition: clip-path .18s ease;
     }
@@ -1457,6 +1460,21 @@ function certHTML(f) {
   return '';
 }
 
+/* One flat colour per TMDB genre, shown as a small swatch before the name. */
+const GENRE_COLOR = {
+  'Action': '#e8873a', 'Adventure': '#3fb47a', 'Animation': '#f2c14e', 'Comedy': '#9bd35a',
+  'Crime': '#b48ead', 'Documentary': '#7fa7b8', 'Drama': '#5b8def', 'Family': '#f49ac1',
+  'Fantasy': '#a78bfa', 'History': '#c9a27a', 'Horror': '#c04bd6', 'Music': '#2dd4bf',
+  'Mystery': '#6366f1', 'Romance': '#ff7b9c', 'Science Fiction': '#22d3ee', 'Thriller': '#d97706',
+  'War': '#9ca3af', 'Western': '#b45309', 'TV Movie': '#a3a3a3',
+};
+function genreHTML(list) {
+  return list.map(g => {
+    const c = GENRE_COLOR[g];
+    return `<span class="gt"><i${c ? ` style="background:${c}"` : ''}></i>${esc(g)}</span>`;
+  }).join('');
+}
+
 /* Poster tile. Tier S/A films get the `lg` class and a 2x2 slot in the grid. */
 function cardHTML(f, today, ym) {
   const isToday = f.date === today;
@@ -1471,9 +1489,9 @@ function cardHTML(f, today, ym) {
       </button>
       <h3 class="ci-title">${esc(f.title)}</h3>
       <div class="ci-date">${dl}${isToday ? '<b>Today</b>' : ''}</div>
+      <div class="ci-tags">${genreHTML(f.genre)}</div>
       ${ratingsEnabled() ? `<div class="ci-rate" data-rrow="${f.id}">${rateRowInnerHTML(f.id)}</div>` : ''}
       <div class="ci-extra"><div class="ci-extra-in">
-        <div class="ci-tags">${f.genre.map(esc).join(', ')}</div>
         <div class="ci-flags">${flagsRowHTML(f)}</div>
         ${f.director ? `<div class="ci-dir">${esc(f.director)}</div>` : ''}
         <div class="ci-meta">
@@ -1503,7 +1521,7 @@ function heroHTML(today, lo, cap) {
       <div class="hslide-body">
         <span class="hslide-badge">Most anticipated</span>
         <h2 class="hslide-title">${esc(f.title)}</h2>
-        <div class="hslide-tags">${f.genre.slice(0,3).map(esc).join(', ')}</div>
+        <div class="hslide-tags">${genreHTML(f.genre.slice(0,3))}</div>
         <div class="hslide-date"><b>In cinemas ${dl}</b><span>${REGION_SETS[regionF].flags}</span></div>
         <a class="hslide-btn" href="https://letterboxd.com/search/${encodeURIComponent(f.title)}/" target="_blank" rel="noopener">Letterboxd</a>
       </div>
