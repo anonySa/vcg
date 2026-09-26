@@ -423,7 +423,10 @@
     /* ── CARD (poster tile, caption below) ── */
     .card { position: relative; min-width: 0; cursor: pointer; }
     .card.hide { display: none; }
-    .card.lg { grid-column: span 2; grid-row: span 2; }
+    /* hyped 2x2 tiles sit on the outer rails (alternating left / right) instead of
+       floating mid-grid; dense flow packs the small posters around them in date order */
+    .card.lg { grid-column: 1 / span 2; grid-row: span 2; }
+    .card.lg:nth-child(even of .card.lg) { grid-column: 7 / span 2; }
 
     /* poster */
     .cp { position: relative; width: 100%; aspect-ratio: 2 / 3; overflow: hidden; background: var(--bg3); }
@@ -639,6 +642,7 @@
     /* ── RESPONSIVE ── */
     @media (max-width: 1024px) {
       .m-grid { grid-template-columns: repeat(6, 1fr); }
+      .card.lg:nth-child(even of .card.lg) { grid-column: 5 / span 2; }
     }
     @media (max-width: 768px) {
       .to-top { display: flex; }
@@ -646,7 +650,7 @@
       .m-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 10px 0 22px; }
       .card.lg .ci-title { font-size: 22px; }
       /* hyped tiles go landscape on phones: poster left, caption right, one row tall */
-      .card.lg { grid-row: auto; display: grid; grid-template-columns: 2fr 3fr; gap: 12px; align-items: start; }
+      .card.lg, .card.lg:nth-child(even of .card.lg) { grid-column: 1 / -1; grid-row: auto; display: grid; grid-template-columns: 2fr 3fr; gap: 12px; align-items: start; }
       .card.lg .ci { padding-top: 0; }
       .m-head { padding: .65rem .2rem; }
       .m-label { font-size: 18px; }
