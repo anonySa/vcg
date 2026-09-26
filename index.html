@@ -412,11 +412,11 @@
     }
 
     /* ── CARD GRID ── */
-    /* poster wall: 6 columns, tier S/A films take a 2x2 tile, dense packing fills the gaps */
+    /* poster wall: 8 columns, tier S/A films take a 2x2 tile, dense packing fills the gaps */
     .m-grid {
       display: grid; gap: 14px; grid-auto-flow: dense;
       padding: 14px 0 28px;
-      grid-template-columns: repeat(6, 1fr);
+      grid-template-columns: repeat(8, 1fr);
     }
     .m-sec.closed .m-grid { display: none; }
 
@@ -638,7 +638,7 @@
 
     /* ── RESPONSIVE ── */
     @media (max-width: 1024px) {
-      .m-grid { grid-template-columns: repeat(4, 1fr); }
+      .m-grid { grid-template-columns: repeat(6, 1fr); }
     }
     @media (max-width: 768px) {
       .to-top { display: flex; }
@@ -1253,7 +1253,9 @@ function closeSettings() {
    whatever its height (genre chips wrap, mobile stacks, etc.). */
 function syncStickyOffset() {
   const fb = document.getElementById('filter-bar');
-  if (fb) document.documentElement.style.setProperty('--mhead-top', fb.offsetHeight + 'px');
+  // floor + 1px overlap: offsetHeight rounds up on fractional heights, which left a
+  // sub-pixel see-through gap between the filter bar and the stuck month header
+  if (fb) document.documentElement.style.setProperty('--mhead-top', (Math.floor(fb.getBoundingClientRect().height) - 1) + 'px');
 }
 
 /* ═══════════════════════════════════════════════
