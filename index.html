@@ -206,7 +206,8 @@
     }
     .genre-more:hover { color: var(--acc); }
     .gt-arrow { display: inline-block; margin-left: .1rem; transition: transform .2s; }
-    .fbar-genre.expanded ~ .genre-more .gt-arrow { transform: rotate(180deg); }
+    .fbar-scroll:has(.expanded) ~ .genre-more .gt-arrow { transform: rotate(180deg); }
+    .fbar-scroll { position: relative; }
 
     /* view-mode segmented control */
     .seg {
@@ -716,15 +717,16 @@
       .hero-arrow { display: none; }
       .hero-dots { right: 16px; bottom: 14px; }
 
-      /* nav: capsule becomes a rounded card, region/film info wraps to line 2 */
+      /* nav: one-row capsule, logo left, film count + icon buttons right */
       #wrap > nav { top: 10px; left: 10px; right: 10px; }
-      .nav-inner { height: auto; flex-wrap: wrap; padding: 6px 8px 8px 14px; border-radius: 26px; }
-      #hero-mount:empty + .filter-bar { margin-top: 96px; }
+      .nav-inner { height: 48px; padding: 0 5px 0 18px; gap: .6rem; }
+      .logo-img { height: 20px; }
+      #hero-mount:empty + .filter-bar { margin-top: 72px; }
       .cp { border-radius: 12px; }
-      .nav-right { flex-wrap: wrap; justify-content: flex-end; row-gap: .35rem; }
-      #theme-btn  { order: 1; }
-      .fbar-right { order: 2; }
-      .nav-info   { order: 3; flex-basis: 100%; justify-content: flex-end; }
+      .nav-right { gap: .3rem; }
+      .nav-stat { display: none; }        /* region + updated live in Settings on mobile */
+      .nav-info .result-count::before { content: none; }
+      .nav-info { margin-right: .3rem; }
       .tb-label   { display: none; }      /* icon-only buttons on mobile */
       .st-label   { display: none; }
       #theme-btn, .settings-toggle {
@@ -738,6 +740,20 @@
       .filter-bar-inner { padding: .55rem .65rem; gap: .5rem; }
       .nav-search { padding: .5rem .8rem .5rem 2rem; font-size: .85rem; }
       .chip, .bm-filter { font-size: 11px; padding: 9px 12px; }
+      /* filters: one swipeable row, fade on the right edge hints there is more */
+      .fbar-scroll { margin-right: -.65rem; }
+      .fbar-genre {
+        flex-wrap: nowrap; overflow-x: auto; max-height: none !important;
+        padding: 2px 40px 2px 0; scrollbar-width: none; -webkit-overflow-scrolling: touch;
+      }
+      .fbar-genre::-webkit-scrollbar { display: none; }
+      .fbar-scroll::after {
+        content: ''; position: absolute; top: 0; bottom: 0; right: 0; width: 56px; pointer-events: none;
+        background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--bg) 82%, transparent) 70%);
+        transition: opacity .2s;
+      }
+      .fbar-scroll.at-end::after { opacity: 0; }
+      .genre-more { display: none !important; }
       .seg button { padding: .4rem .65rem; min-height: 32px; }
       .rt-widget { gap: .45rem; cursor: pointer; padding: .2rem 0; }
       .exc-track { height: 14px; max-width: none; }
@@ -800,6 +816,7 @@
         <span class="nav-search-icon">⌕</span>
         <input class="nav-search" id="q" type="text" placeholder="Search title or director…" oninput="applyFilters()">
       </div>
+      <div class="fbar-scroll" id="fbar-scroll">
       <div class="fbar-genre" id="fbar-genre">
         <button class="bm-filter" id="bm-filter" onclick="toggleBookmarkFilter()" aria-pressed="false" title="Show only saved films">
           <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h12a1 1 0 0 1 1 1v18l-7-4-7 4V3a1 1 0 0 1 1-1z"/></svg>
@@ -810,6 +827,7 @@
           Trending
         </button>
         <div id="genre-chips"></div>
+      </div>
       </div>
       <button class="genre-more" id="genre-more" onclick="toggleGenres()" style="display:none">Show more <span class="gt-arrow">▾</span></button>
     </div>
@@ -1381,6 +1399,15 @@ function syncGenreClamp() {
   if (!wrap || !more) return;
   wrap.classList.remove('expanded');
   wrap.style.maxHeight = 'none';
+  // phones: no clamp, the row scrolls sideways; the right-edge fade hides at the end
+  if (window.matchMedia('(max-width: 768px)').matches) {
+    more.style.display = 'none';
+    const sc = document.getElementById('fbar-scroll');
+    const atEnd = () => sc.classList.toggle('at-end', wrap.scrollLeft + wrap.clientWidth >= wrap.scrollWidth - 2);
+    if (sc && !wrap.dataset.scrollBound) { wrap.addEventListener('scroll', atEnd, { passive: true }); wrap.dataset.scrollBound = '1'; }
+    if (sc) atEnd();
+    return;
+  }
   const chip = wrap.querySelector('.chip');
   if (!chip) { more.style.display = 'none'; return; }
   const cs  = getComputedStyle(wrap);
