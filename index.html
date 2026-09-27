@@ -78,17 +78,30 @@
     #wrap { position: relative; z-index: 1; }
 
     /* ── NAV ── */
-    #wrap > nav { position: absolute; top: 14px; left: 22px; right: 22px; z-index: 200; }
+    /* the capsule floats over the hero; once the filter bar reaches it, it docks:
+       full width, square, pinned to the top, with the filter bar stuck right under it */
+    :root { --nav-h: 52px; }
+    #wrap > nav {
+      position: fixed; top: 14px; left: 22px; right: 22px; z-index: 200;
+      transition: top .3s ease, left .3s ease, right .3s ease;
+    }
     .nav-inner {
       max-width: 1236px; margin: 0 auto;
-      height: 52px; padding: 0 10px 0 20px;
+      height: var(--nav-h); padding: 0 10px 0 20px;
       display: flex; align-items: center; gap: 1rem;
       border-radius: 999px;
       background: var(--nav);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       box-shadow: inset 0 0 0 1px var(--ring);
-      transition: background .3s;
+      transition: background .3s, border-radius .3s ease, max-width .3s ease, padding .3s ease, box-shadow .3s;
+    }
+    #wrap > nav.docked { top: 0; left: 0; right: 0; }
+    nav.docked .nav-inner {
+      max-width: 100%; border-radius: 0;
+      padding: 0 calc(max(22px, (100% - 1280px) / 2 + 20px) - 10px) 0 max(22px, calc((100% - 1280px) / 2 + 20px));
+      background: color-mix(in srgb, var(--bg) 82%, transparent);
+      box-shadow: none;
     }
     /* no hero (loading, or fewer than 2 slides): push the filter bar under the capsule */
     #hero-mount:empty + .filter-bar { margin-top: 80px; }
@@ -135,7 +148,7 @@
 
     /* ── FILTER BAR ── */
     .filter-bar {
-      position: sticky; top: 0; z-index: 190;
+      position: sticky; top: var(--nav-h); z-index: 190;
       border-bottom: 1px solid var(--border);
       background: color-mix(in srgb, var(--bg) 82%, transparent);
       backdrop-filter: blur(14px);
@@ -723,8 +736,10 @@
       .hero-dots { right: auto; left: 50%; transform: translateX(-50%); bottom: 14px; }
 
       /* nav: one-row capsule, logo left, film count + icon buttons right */
+      :root { --nav-h: 48px; }
       #wrap > nav { top: 10px; left: 10px; right: 10px; }
-      .nav-inner { height: 48px; padding: 0 5px 0 18px; gap: .6rem; }
+      .nav-inner { padding: 0 5px 0 18px; gap: .6rem; }
+      nav.docked .nav-inner { padding: 0 8px 0 16px; }
       .logo-img { height: 20px; }
       #hero-mount:empty + .filter-bar { margin-top: 72px; }
       .cp { border-radius: 12px; }
@@ -1328,7 +1343,18 @@ function syncStickyOffset() {
   const fb = document.getElementById('filter-bar');
   // floor + 1px overlap: offsetHeight rounds up on fractional heights, which left a
   // sub-pixel see-through gap between the filter bar and the stuck month header
-  if (fb) document.documentElement.style.setProperty('--mhead-top', (Math.floor(fb.getBoundingClientRect().height) - 1) + 'px');
+  const nav = document.querySelector('#wrap > nav .nav-inner');
+  const navH = nav ? nav.offsetHeight : 0;
+  if (fb) document.documentElement.style.setProperty('--mhead-top', (Math.floor(fb.getBoundingClientRect().height) + navH - 1) + 'px');
+}
+/* Dock the floating capsule once the sticky filter bar has scrolled up to meet it. */
+function syncNavDock() {
+  const nav = document.querySelector('#wrap > nav');
+  const fb  = document.getElementById('filter-bar');
+  if (!nav || !fb) return;
+  const inner = nav.querySelector('.nav-inner');
+  const floatBottom = 14 + (inner ? inner.offsetHeight : 52);   // capsule bottom edge while floating
+  nav.classList.toggle('docked', fb.getBoundingClientRect().top <= floatBottom);
 }
 
 /* ═══════════════════════════════════════════════
@@ -1351,6 +1377,7 @@ function route() {
   syncGenreClamp();
   syncStickyOffset();
   window.scrollTo(0, 0);
+  syncNavDock();
 }
 
 /* ═══════════════════════════════════════════════
@@ -1721,6 +1748,7 @@ function startHero() {
     window.addEventListener('resize', () => {
       syncGenreClamp();
       syncStickyOffset();
+      syncNavDock();
       clearTimeout(rt);
       rt = setTimeout(() => { const el = heroEl(); if (el) el.scrollTo({ left: heroIdx * el.clientWidth }); }, 120);
     });
@@ -1746,8 +1774,10 @@ async function init() {
   const fy = document.getElementById('footer-year');
   if (fy) fy.textContent = new Date().getFullYear();
   const toTop = document.getElementById('to-top');
-  if (toTop) window.addEventListener('scroll',
-    () => toTop.classList.toggle('show', window.scrollY > 500), { passive: true });
+  window.addEventListener('scroll', () => {
+    if (toTop) toTop.classList.toggle('show', window.scrollY > 500);
+    syncNavDock();
+  }, { passive: true });
   // close the settings dropdown on any outside click
   document.addEventListener('click', e => {
     const fr = document.getElementById('fbar-right');
