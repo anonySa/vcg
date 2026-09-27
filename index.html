@@ -473,6 +473,7 @@
       padding-right: 24px;   /* room for the bookmark; titles wrap, never clip */
     }
     .ci-date { font-size: 12px; color: var(--muted); }
+    .ci-date .dow::after { content: ', '; }   /* tiles: "Thu, Sep 17" on one line */
     .ci-date b { color: var(--acc); font-weight: 600; letter-spacing: .06em; text-transform: uppercase; margin-left: 8px; }
     .ci-dir  { font-size: 12px; color: var(--muted); }
     /* genres: an 8px colour swatch per genre as a visual reference, name stays neutral */
@@ -628,7 +629,7 @@
     .view-list .m-grid { display: block; padding: 0 0 20px; }
     .view-list .card {
       display: grid; column-gap: 14px; align-items: center;
-      grid-template-columns: 84px 44px minmax(0, 1fr) auto 24px;
+      grid-template-columns: 52px 44px minmax(0, 1fr) auto 24px;
       grid-template-areas:
         "date poster title rate bm"
         "date poster tags  rate bm"
@@ -639,8 +640,12 @@
     .view-list .cp { grid-area: poster; border-radius: 6px; }
     .view-list .card-bm { grid-area: bm; position: static; }
     .view-list .ci-title { grid-area: title; padding-right: 0; align-self: end; }
-    .view-list .ci-date { grid-area: date; font-variant-numeric: tabular-nums; color: var(--text2); }
-    .view-list .ci-date b { display: block; margin: 2px 0 0; }
+    /* list: weekday large on top, "Sep 17" under it, so the column stays narrow */
+    .view-list .ci-date { grid-area: date; display: flex; flex-direction: column; line-height: 1; font-variant-numeric: tabular-nums; }
+    .view-list .ci-date .dow { font-family: 'Anton', sans-serif; text-transform: uppercase; font-size: 18px; color: var(--text); }
+    .view-list .ci-date .dow::after { content: none; }
+    .view-list .ci-date .dm { font-size: 11px; color: var(--muted); margin-top: 3px; white-space: nowrap; }
+    .view-list .ci-date b { display: block; margin: 4px 0 0; font-size: 10px; }
     .view-list .ci-tags { grid-area: tags; align-self: start; }
     .view-list .ci-rate { grid-area: rate; margin: 0; }
     .view-list .ci-extra { grid-area: extra; }
@@ -697,7 +702,7 @@
       /* list rows on phones: rating drops under the genres, date column narrower */
       .view-list .card {
         column-gap: 10px;
-        grid-template-columns: 74px 40px minmax(0, 1fr) 24px;
+        grid-template-columns: 48px 40px minmax(0, 1fr) 24px;
         grid-template-areas:
           "date poster title bm"
           "date poster tags  bm"
@@ -715,7 +720,7 @@
       .hslide-title { font-size: 30px; }
       .hslide-tags { font-size: 12px; }
       .hero-arrow { display: none; }
-      .hero-dots { right: 16px; bottom: 14px; }
+      .hero-dots { right: auto; left: 50%; transform: translateX(-50%); bottom: 14px; }
 
       /* nav: one-row capsule, logo left, film count + icon buttons right */
       #wrap > nav { top: 10px; left: 10px; right: 10px; }
@@ -1558,7 +1563,9 @@ function genreHTML(list) {
 /* Poster tile. Tier S/A films get the `lg` class and a 2x2 slot in the grid. */
 function cardHTML(f, today, ym) {
   const isToday = f.date === today;
-  const dl = new Date(f.date+'T12:00:00').toLocaleDateString('en-US', { weekday:'short', day:'numeric', month:'short' });
+  const d0  = new Date(f.date+'T12:00:00');
+  const dow = d0.toLocaleDateString('en-US', { weekday:'short' });
+  const dm  = d0.toLocaleDateString('en-US', { day:'numeric', month:'short' });
   return `<article class="card${isToday?' f-today':''}" data-id="${f.id}" data-ym="${ym}" onclick="toggleCard(event,this)">
     <div class="cp">${f.poster
       ? `<img loading="lazy" src="${TMDB_IMG}${esc(f.poster)}" alt="">`
@@ -1568,7 +1575,7 @@ function cardHTML(f, today, ym) {
         <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h12a1 1 0 0 1 1 1v18l-7-4-7 4V3a1 1 0 0 1 1-1z"/></svg>
       </button>
       <h3 class="ci-title">${esc(f.title)}</h3>
-      <div class="ci-date">${dl}${isToday ? '<b>Today</b>' : ''}</div>
+      <div class="ci-date"><span class="dow">${dow}</span><span class="dm">${dm}</span>${isToday ? '<b>Today</b>' : ''}</div>
       <div class="ci-tags">${genreHTML(f.genre)}</div>
       ${ratingsEnabled() ? `<div class="ci-rate" data-rrow="${f.id}">${rateRowInnerHTML(f.id)}</div>` : ''}
       <div class="ci-extra"><div class="ci-extra-in">
