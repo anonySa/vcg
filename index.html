@@ -923,11 +923,11 @@
         <h3>31mm Excitement</h3>
         <p data-i18n="excText">A community hype meter for upcoming films: how excited people are to see them, not a review of quality. Open any film, set how excited you are on the slider (or tap on mobile), and every visitor's vote averages into the film's score, from 0 to 31mm.</p>
         <ul class="footer-tierlist">
-          <li><strong>26–31<img class="mm-ic logo-dark" src="assets/logo-dark-min_xs.svg" alt="mm"><img class="mm-ic logo-light" src="assets/logo-light-min_xs.svg" alt="mm"></strong><span data-i18n="tierS">Must-see hype</span></li>
-          <li><strong>22–25<img class="mm-ic logo-dark" src="assets/logo-dark-min_xs.svg" alt="mm"><img class="mm-ic logo-light" src="assets/logo-light-min_xs.svg" alt="mm"></strong><span data-i18n="tierA">Highly anticipated</span></li>
-          <li><strong>16–21<img class="mm-ic logo-dark" src="assets/logo-dark-min_xs.svg" alt="mm"><img class="mm-ic logo-light" src="assets/logo-light-min_xs.svg" alt="mm"></strong><span data-i18n="tierB">Keen to watch</span></li>
-          <li><strong>6–15<img class="mm-ic logo-dark" src="assets/logo-dark-min_xs.svg" alt="mm"><img class="mm-ic logo-light" src="assets/logo-light-min_xs.svg" alt="mm"></strong><span data-i18n="tierC">Mild interest</span></li>
-          <li><strong>0–5<img class="mm-ic logo-dark" src="assets/logo-dark-min_xs.svg" alt="mm"><img class="mm-ic logo-light" src="assets/logo-light-min_xs.svg" alt="mm"></strong><span data-i18n="tierF">Not fussed</span></li>
+          <li><strong>26–31<img class="mm-ic" src="assets/logo-light-min_xs04.svg" alt="mm"></strong><span data-i18n="tierS">Must-see hype</span></li>
+          <li><strong>22–25<img class="mm-ic" src="assets/logo-light-min_xs04.svg" alt="mm"></strong><span data-i18n="tierA">Highly anticipated</span></li>
+          <li><strong>16–21<img class="mm-ic" src="assets/logo-dark-min_xs03.svg" alt="mm"></strong><span data-i18n="tierB">Keen to watch</span></li>
+          <li><strong>6–15<img class="mm-ic" src="assets/logo-dark-min_xs02.svg" alt="mm"></strong><span data-i18n="tierC">Mild interest</span></li>
+          <li><strong>0–5<img class="mm-ic" src="assets/logo-dark-min_xs01.svg" alt="mm"></strong><span data-i18n="tierF">Not fussed</span></li>
         </ul>
       </section>
 
@@ -1209,10 +1209,13 @@ async function loadRatings() {
    10% = 0.5, 20% = 1.0, … 100% = 5.0 → ten steps. */
 const pctFromStars = s => Math.round(s * 20);
 const starsFromPct = p => p / 20;
-/* Excitement shown as 0–31mm (31mm = 100%), the number followed by the "mm" mark */
+/* Excitement shown as 0–31mm (31mm = 100%), the number followed by the "mm" mark.
+   The mark fills up in four steps (30 / 50 / 70 / 100% red), same files in both themes. */
 const mmFromPct = p => Math.round(p * 31 / 100);
+const MM_ICONS  = ['logo-dark-min_xs01', 'logo-dark-min_xs02', 'logo-dark-min_xs03', 'logo-light-min_xs04'];
+const mmIconSrc = pct => `assets/${MM_ICONS[pct < 25 ? 0 : pct < 50 ? 1 : pct < 75 ? 2 : 3]}.svg`;
 const mmHTML = pct =>
-  `<span class="mm-val">${mmFromPct(pct)}<img class="mm-ic logo-dark" src="assets/logo-dark-min_xs.svg" alt="mm"><img class="mm-ic logo-light" src="assets/logo-light-min_xs.svg" alt="mm"></span>`;
+  `<span class="mm-val">${mmFromPct(pct)}<img class="mm-ic" src="${mmIconSrc(pct)}" alt="mm"></span>`;
 
 /* Community score on the poster corner; empty (hidden) until someone has voted */
 function posterMMHTML(id) {
