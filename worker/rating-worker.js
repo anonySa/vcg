@@ -1,5 +1,5 @@
 /**
- * VCG ratings worker — community 5-star votes (half-star steps) stored in
+ * 31mm ratings worker — community 5-star votes (half-star steps) stored in
  * Cloudflare KV. One vote per IP per film; voting again updates the old vote.
  * IPs are never stored — only a salted SHA-256 hash.
  *

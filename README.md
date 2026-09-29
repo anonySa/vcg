@@ -1,4 +1,4 @@
-# VCG — Kinostart Kalender
+# 31mm — Kinostart Kalender
 
 A single-file cinema release calendar for the **DACH region, the UK, and the US**.
 It shows what's hitting theaters over the next ~6 months — release dates, age

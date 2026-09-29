@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VCG · Kinostart Kalender</title>
+  <title>31mm · Kinostart Kalender</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -106,7 +106,7 @@
     /* no hero (loading, or fewer than 2 slides): push the filter bar under the capsule */
     #hero-mount:empty + .filter-bar { margin-top: 80px; }
     .logo { cursor: pointer; flex-shrink: 0; display: flex; align-items: center; }
-    .logo-img { height: 22px; width: auto; display: block; }
+    .logo-img { height: 20px; width: auto; display: block; }
     .logo-light { display: none; }
     html.light .logo-dark  { display: none; }
     html.light .logo-light { display: block; }
@@ -189,7 +189,7 @@
 
     /* settings dropdown (region + view) */
     .fbar-right { position: relative; flex-shrink: 0; }
-    .settings-toggle { display: inline-flex; align-items: center; gap: .4rem; }
+    #theme-btn, .settings-toggle { display: inline-flex; align-items: center; gap: .4rem; }
     .settings-panel {
       display: none;
       position: absolute; top: calc(100% + .55rem); right: 0; z-index: 300;
@@ -365,11 +365,12 @@
       padding: 22px 24px; max-width: min(520px, calc(100% - 280px));
       display: flex; flex-direction: column; align-items: flex-start; gap: 6px;
       border-radius: 20px;
-      background: var(--glass);
+      background: rgba(0,0,0,.4);   /* darker than --glass so white text stays readable on light backdrops */
       backdrop-filter: blur(24px);
       -webkit-backdrop-filter: blur(24px);
       box-shadow: inset 0 0 0 1px var(--ring);
     }
+    html.light .hslide-body { background: var(--glass); }
     .hslide-badge {
       font-size: 12px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase;
       color: var(--text2);
@@ -536,7 +537,7 @@
     }
     .ci-lbd:hover { color: #fff; background: var(--acc); box-shadow: none; }
 
-    /* ── VCG community excitement meter ── */
+    /* ── 31mm community excitement meter ── */
     .ci-rate {
       display: flex; align-items: center; gap: .4rem;
       font-size: .66rem; color: var(--text2);
@@ -544,7 +545,7 @@
     }
     .ci-rate { margin-top: 2px; }   /* a touch more air under the genres */
     .ci-rate:empty { display: none; }
-    .rt-logo   { height: 10px; width: 30px; color: var(--muted); flex-shrink: 0; }
+    .rt-logo   { height: 8px; width: auto; flex-shrink: 0; }
     .grade-ic  { display: block; height: 19px; width: 19px; flex-shrink: 0; }
     .rt-num    { font-weight: 700; color: var(--text); }
     .rt-count  { color: var(--muted); }
@@ -757,7 +758,7 @@
       #wrap > nav { top: 10px; left: 10px; right: 10px; }
       .nav-inner { padding: 0 5px 0 18px; gap: .6rem; }
       nav.docked .nav-inner { padding: 0 8px 0 16px; }
-      .logo-img { height: 20px; }
+      .logo-img { height: 18px; }
       #hero-mount:empty + .filter-bar { margin-top: 72px; }
       .cp { border-radius: 12px; }
       .nav-right { gap: .3rem; }
@@ -770,8 +771,7 @@
         padding: 0; min-width: 40px; min-height: 40px;
         display: inline-flex; align-items: center; justify-content: center;
       }
-      #theme-btn .tb-ic { font-size: 1.05rem; }
-      .settings-toggle .set-ic { width: 18px; height: 18px; }
+      #theme-btn .tb-ic, .settings-toggle .set-ic { width: 18px; height: 18px; }
 
       /* filter bar */
       .filter-bar-inner { padding: .55rem .65rem; gap: .5rem; }
@@ -799,23 +799,21 @@
   </style>
 </head>
 <body>
-<svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden"><symbol id="vcg-mark" viewBox="0 0 132 44"><path d="M22.9444 20.7505L30.5118 1.58154H45.085L22.9444 43.6196L0.804688 1.58154H15.378L22.9444 20.7505ZM64.2784 0.380371C72.3133 0.380371 79.3001 4.86801 82.8702 11.4731C83.3003 12.269 82.444 13.1316 81.5704 12.897C75.1922 11.1817 66.8047 13.234 66.8047 20.9604C66.8048 29.7087 74.3939 32.4467 82.0284 29.1772C82.8757 28.8144 83.8082 29.6019 83.418 30.437C82.4006 32.6146 81.0237 34.5899 79.3623 36.2847C78.4613 37.2037 77.4821 38.0358 76.4248 38.7808H87.3184V42.6206H64.2784C52.6145 42.6205 43.1582 33.1644 43.1582 21.5005C43.1583 9.83664 52.6145 0.380521 64.2784 0.380371ZM110.785 0.460449C113.774 0.460449 116.409 0.909342 118.688 1.80615C121.005 2.70296 123.023 3.89839 124.742 5.39307C126.498 6.85035 128.03 8.49475 129.338 10.3257L117.847 15.4819C117.175 14.2489 116.297 13.1651 115.214 12.231C114.13 11.2968 112.653 10.8296 110.785 10.8296C108.954 10.8296 107.273 11.2227 105.741 12.0073C104.209 12.7547 102.976 13.8942 102.042 15.4263C101.145 16.9582 100.696 18.8822 100.696 21.1987C100.696 23.4781 101.107 25.4403 101.93 27.0845C102.789 28.7286 103.966 29.9809 105.461 30.8403C106.993 31.6996 108.767 32.1294 110.785 32.1294C111.906 32.1294 112.916 32.0167 113.812 31.7925C114.709 31.5683 115.475 31.2513 116.11 30.8403C116.783 30.4293 117.362 29.9245 117.847 29.3267C118.333 28.7288 118.745 28.0747 119.081 27.3647H110.224V18.397H131.076C131.375 21.7598 131.113 24.8985 130.291 27.813C129.506 30.7275 128.217 33.2871 126.424 35.4917C124.63 37.6963 122.369 39.4158 119.641 40.6489C116.914 41.882 113.774 42.4985 110.224 42.4985C106.936 42.4985 103.929 41.9937 101.201 40.9849C98.4734 39.976 96.0999 38.5378 94.0821 36.6694C92.1016 34.8011 90.5507 32.5585 89.4297 29.9429C88.3462 27.3273 87.8047 24.4122 87.8047 21.1987C87.8048 17.9856 88.3839 15.1086 89.542 12.5679C90.7004 9.98957 92.3072 7.80289 94.3623 6.00928C96.4549 4.21566 98.8843 2.85166 101.649 1.91748C104.452 0.946031 107.497 0.460479 110.785 0.460449ZM64.2784 27.2603C63.2601 27.2603 62.2836 27.6653 61.5635 28.3853C60.8434 29.1054 60.4385 30.0826 60.4385 31.1011C60.4386 32.1193 60.8435 33.0959 61.5635 33.8159C62.2836 34.5359 63.2601 34.9408 64.2784 34.9409C65.2968 34.9409 66.274 34.5361 66.9942 33.8159C67.7141 33.0959 68.1181 32.1193 68.1182 31.1011C68.1182 30.0827 67.7143 29.1054 66.9942 28.3853C66.274 27.6651 65.2968 27.2603 64.2784 27.2603ZM54.6788 17.6606C53.6603 17.6606 52.6831 18.0655 51.9629 18.7856C51.2431 19.5057 50.8389 20.4823 50.8389 21.5005C50.8389 22.5189 51.2428 23.4962 51.9629 24.2163C52.6831 24.9364 53.6603 25.3403 54.6788 25.3403C55.697 25.3403 56.6735 24.9362 57.3936 24.2163C58.1137 23.4962 58.5186 22.5189 58.5186 21.5005C58.5186 20.4821 58.1137 19.5058 57.3936 18.7856C56.6735 18.0655 55.6971 17.6607 54.6788 17.6606ZM64.2784 8.06104C63.2601 8.06111 62.2836 8.46512 61.5635 9.18506C60.8434 9.9052 60.4385 10.8824 60.4385 11.9009C60.4386 12.9192 60.8434 13.8956 61.5635 14.6157C62.2836 15.3358 63.26 15.7406 64.2784 15.7407C65.2968 15.7407 66.274 15.3359 66.9942 14.6157C67.7141 13.8957 68.1181 12.9191 68.1182 11.9009C68.1182 10.8824 67.7143 9.9052 66.9942 9.18506C66.274 8.46492 65.2968 8.06104 64.2784 8.06104Z" fill="currentColor"/></symbol>
-</svg>
 <div id="wrap">
 
   <!-- NAV -->
   <nav>
     <div class="nav-inner">
-      <span class="logo" onclick="go('#/')" aria-label="VCG">
-        <svg class="logo-img logo-dark" viewBox="0 0 132 44" fill="none" xmlns="http://www.w3.org/2000/svg" role="img"><g clip-path="url(#clip0_5302_279)"><mask id="mask0_5302_279" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="132" height="44"><path d="M132 0H0V44H132V0Z" fill="white"/></mask><g mask="url(#mask0_5302_279)"><path d="M22.9444 20.7505L30.5118 1.58154H45.085L22.9444 43.6196L0.804688 1.58154H15.378L22.9444 20.7505ZM64.2784 0.380371C72.3133 0.380371 79.3001 4.86801 82.8702 11.4731C83.3003 12.269 82.444 13.1316 81.5704 12.897C75.1922 11.1817 66.8047 13.234 66.8047 20.9604C66.8048 29.7087 74.3939 32.4467 82.0284 29.1772C82.8757 28.8144 83.8082 29.6019 83.418 30.437C82.4006 32.6146 81.0237 34.5899 79.3623 36.2847C78.4613 37.2037 77.4821 38.0358 76.4248 38.7808H87.3184V42.6206H64.2784C52.6145 42.6205 43.1582 33.1644 43.1582 21.5005C43.1583 9.83664 52.6145 0.380521 64.2784 0.380371ZM110.785 0.460449C113.774 0.460449 116.409 0.909342 118.688 1.80615C121.005 2.70296 123.023 3.89839 124.742 5.39307C126.498 6.85035 128.03 8.49475 129.338 10.3257L117.847 15.4819C117.175 14.2489 116.297 13.1651 115.214 12.231C114.13 11.2968 112.653 10.8296 110.785 10.8296C108.954 10.8296 107.273 11.2227 105.741 12.0073C104.209 12.7547 102.976 13.8942 102.042 15.4263C101.145 16.9582 100.696 18.8822 100.696 21.1987C100.696 23.4781 101.107 25.4403 101.93 27.0845C102.789 28.7286 103.966 29.9809 105.461 30.8403C106.993 31.6996 108.767 32.1294 110.785 32.1294C111.906 32.1294 112.916 32.0167 113.812 31.7925C114.709 31.5683 115.475 31.2513 116.11 30.8403C116.783 30.4293 117.362 29.9245 117.847 29.3267C118.333 28.7288 118.745 28.0747 119.081 27.3647H110.224V18.397H131.076C131.375 21.7598 131.113 24.8985 130.291 27.813C129.506 30.7275 128.217 33.2871 126.424 35.4917C124.63 37.6963 122.369 39.4158 119.641 40.6489C116.914 41.882 113.774 42.4985 110.224 42.4985C106.936 42.4985 103.929 41.9937 101.201 40.9849C98.4734 39.976 96.0999 38.5378 94.0821 36.6694C92.1016 34.8011 90.5507 32.5585 89.4297 29.9429C88.3462 27.3273 87.8047 24.4122 87.8047 21.1987C87.8048 17.9856 88.3839 15.1086 89.542 12.5679C90.7004 9.98957 92.3072 7.80289 94.3623 6.00928C96.4549 4.21566 98.8843 2.85166 101.649 1.91748C104.452 0.946031 107.497 0.460479 110.785 0.460449ZM64.2784 27.2603C63.2601 27.2603 62.2836 27.6653 61.5635 28.3853C60.8434 29.1054 60.4385 30.0826 60.4385 31.1011C60.4386 32.1193 60.8435 33.0959 61.5635 33.8159C62.2836 34.5359 63.2601 34.9408 64.2784 34.9409C65.2968 34.9409 66.274 34.5361 66.9942 33.8159C67.7141 33.0959 68.1181 32.1193 68.1182 31.1011C68.1182 30.0827 67.7143 29.1054 66.9942 28.3853C66.274 27.6651 65.2968 27.2603 64.2784 27.2603ZM54.6788 17.6606C53.6603 17.6606 52.6831 18.0655 51.9629 18.7856C51.2431 19.5057 50.8389 20.4823 50.8389 21.5005C50.8389 22.5189 51.2428 23.4962 51.9629 24.2163C52.6831 24.9364 53.6603 25.3403 54.6788 25.3403C55.697 25.3403 56.6735 24.9362 57.3936 24.2163C58.1137 23.4962 58.5186 22.5189 58.5186 21.5005C58.5186 20.4821 58.1137 19.5058 57.3936 18.7856C56.6735 18.0655 55.6971 17.6607 54.6788 17.6606ZM64.2784 8.06104C63.2601 8.06111 62.2836 8.46512 61.5635 9.18506C60.8434 9.9052 60.4385 10.8824 60.4385 11.9009C60.4386 12.9192 60.8434 13.8956 61.5635 14.6157C62.2836 15.3358 63.26 15.7406 64.2784 15.7407C65.2968 15.7407 66.274 15.3359 66.9942 14.6157C67.7141 13.8957 68.1181 12.9191 68.1182 11.9009C68.1182 10.8824 67.7143 9.9052 66.9942 9.18506C66.274 8.46492 65.2968 8.06104 64.2784 8.06104Z" fill="white"/></g></g><defs><clipPath id="clip0_5302_279"><rect width="132" height="44" fill="white"/></clipPath></defs></svg>
-        <svg class="logo-img logo-light" viewBox="0 0 132 44" fill="none" xmlns="http://www.w3.org/2000/svg" role="img"><g clip-path="url(#clip0_5302_285)"><mask id="mask0_5302_285" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="132" height="44"><path d="M132 0H0V44H132V0Z" fill="white"/></mask><g mask="url(#mask0_5302_285)"><path d="M22.9444 20.7505L30.5118 1.58154H45.085L22.9444 43.6196L0.804688 1.58154H15.378L22.9444 20.7505ZM64.2784 0.380371C72.3133 0.380371 79.3001 4.86801 82.8702 11.4731C83.3003 12.269 82.444 13.1316 81.5704 12.897C75.1922 11.1817 66.8047 13.234 66.8047 20.9604C66.8048 29.7087 74.3939 32.4467 82.0284 29.1772C82.8757 28.8144 83.8082 29.6019 83.418 30.437C82.4006 32.6146 81.0237 34.5899 79.3623 36.2847C78.4613 37.2037 77.4821 38.0358 76.4248 38.7808H87.3184V42.6206H64.2784C52.6145 42.6205 43.1582 33.1644 43.1582 21.5005C43.1583 9.83664 52.6145 0.380521 64.2784 0.380371ZM110.785 0.460449C113.774 0.460449 116.409 0.909342 118.688 1.80615C121.005 2.70296 123.023 3.89839 124.742 5.39307C126.498 6.85035 128.03 8.49475 129.338 10.3257L117.847 15.4819C117.175 14.2489 116.297 13.1651 115.214 12.231C114.13 11.2968 112.653 10.8296 110.785 10.8296C108.954 10.8296 107.273 11.2227 105.741 12.0073C104.209 12.7547 102.976 13.8942 102.042 15.4263C101.145 16.9582 100.696 18.8822 100.696 21.1987C100.696 23.4781 101.107 25.4403 101.93 27.0845C102.789 28.7286 103.966 29.9809 105.461 30.8403C106.993 31.6996 108.767 32.1294 110.785 32.1294C111.906 32.1294 112.916 32.0167 113.812 31.7925C114.709 31.5683 115.475 31.2513 116.11 30.8403C116.783 30.4293 117.362 29.9245 117.847 29.3267C118.333 28.7288 118.745 28.0747 119.081 27.3647H110.224V18.397H131.076C131.375 21.7598 131.113 24.8985 130.291 27.813C129.506 30.7275 128.217 33.2871 126.424 35.4917C124.63 37.6963 122.369 39.4158 119.641 40.6489C116.914 41.882 113.774 42.4985 110.224 42.4985C106.936 42.4985 103.929 41.9937 101.201 40.9849C98.4734 39.976 96.0999 38.5378 94.0821 36.6694C92.1016 34.8011 90.5507 32.5585 89.4297 29.9429C88.3462 27.3273 87.8047 24.4122 87.8047 21.1987C87.8048 17.9856 88.3839 15.1086 89.542 12.5679C90.7004 9.98957 92.3072 7.80289 94.3623 6.00928C96.4549 4.21566 98.8843 2.85166 101.649 1.91748C104.452 0.946031 107.497 0.460479 110.785 0.460449ZM64.2784 27.2603C63.2601 27.2603 62.2836 27.6653 61.5635 28.3853C60.8434 29.1054 60.4385 30.0826 60.4385 31.1011C60.4386 32.1193 60.8435 33.0959 61.5635 33.8159C62.2836 34.5359 63.2601 34.9408 64.2784 34.9409C65.2968 34.9409 66.274 34.5361 66.9942 33.8159C67.7141 33.0959 68.1181 32.1193 68.1182 31.1011C68.1182 30.0827 67.7143 29.1054 66.9942 28.3853C66.274 27.6651 65.2968 27.2603 64.2784 27.2603ZM54.6788 17.6606C53.6603 17.6606 52.6831 18.0655 51.9629 18.7856C51.2431 19.5057 50.8389 20.4823 50.8389 21.5005C50.8389 22.5189 51.2428 23.4962 51.9629 24.2163C52.6831 24.9364 53.6603 25.3403 54.6788 25.3403C55.697 25.3403 56.6735 24.9362 57.3936 24.2163C58.1137 23.4962 58.5186 22.5189 58.5186 21.5005C58.5186 20.4821 58.1137 19.5058 57.3936 18.7856C56.6735 18.0655 55.6971 17.6607 54.6788 17.6606ZM64.2784 8.06104C63.2601 8.06111 62.2836 8.46512 61.5635 9.18506C60.8434 9.9052 60.4385 10.8824 60.4385 11.9009C60.4386 12.9192 60.8434 13.8956 61.5635 14.6157C62.2836 15.3358 63.26 15.7406 64.2784 15.7407C65.2968 15.7407 66.274 15.3359 66.9942 14.6157C67.7141 13.8957 68.1181 12.9191 68.1182 11.9009C68.1182 10.8824 67.7143 9.9052 66.9942 9.18506C66.274 8.46492 65.2968 8.06104 64.2784 8.06104Z" fill="black"/></g></g><defs><clipPath id="clip0_5302_285"><rect width="132" height="44" fill="white"/></clipPath></defs></svg>
+      <span class="logo" onclick="go('#/')" aria-label="31mm">
+        <img class="logo-img logo-dark" src="assets/logo-dark.svg" alt="31mm">
+        <img class="logo-img logo-light" src="assets/logo-light.svg" alt="31mm">
       </span>
       <div class="nav-right">
         <div class="nav-info">
           <span class="nav-stat" id="fbar-stat"></span>
           <span class="result-count" id="res-count"></span>
         </div>
-        <button class="btn" id="theme-btn" onclick="toggleTheme()"><span class="tb-ic">◑</span> <span class="tb-label">Light</span></button>
+        <button class="btn" id="theme-btn" onclick="toggleTheme()"><svg class="tb-ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor" stroke="none"/></svg><span class="tb-label">Light</span></button>
         <div class="fbar-right" id="fbar-right">
           <button class="btn settings-toggle" id="settings-toggle" onclick="toggleSettings(event)" aria-haspopup="true" aria-label="Settings">
             <svg class="set-ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -880,8 +878,8 @@
     <div class="footer-inner">
 
       <div class="footer-about">
-        <h2>VCG Kinostart Kalender</h2>
-        <p>Your cinema release calendar for Germany, Austria, Switzerland, the UK, and the USA. VCG tracks upcoming theatrical releases with local release dates, age ratings (FSK, BBFC, MPAA), genres, and directors. Updated daily from The Movie Database.</p>
+        <h2>31mm Kinostart Kalender</h2>
+        <p>Your cinema release calendar for Germany, Austria, Switzerland, the UK, and the USA. 31mm tracks upcoming theatrical releases with local release dates, age ratings (FSK, BBFC, MPAA), genres, and directors. Updated daily from The Movie Database.</p>
       </div>
 
       <nav class="footer-nav" aria-label="Quick navigation">
@@ -901,8 +899,8 @@
         </ul>
       </nav>
 
-      <section class="footer-exc" aria-label="About the VCG Excitement rating">
-        <h3>VCG Excitement</h3>
+      <section class="footer-exc" aria-label="About the 31mm Excitement rating">
+        <h3>31mm Excitement</h3>
         <p>A community hype meter for upcoming films: how excited people are to see them, not a review of quality. Open any film, set how excited you are on the slider (or tap on mobile), and every visitor's vote averages into the film's tier.</p>
         <ul class="footer-tierlist">
           <li><img src="assets/S.svg" alt="" width="30" height="30"><span><strong>S</strong> · 85-100% · Must-see hype</span></li>
@@ -914,7 +912,7 @@
       </section>
 
       <div class="footer-copy">
-        <p>© <span id="footer-year"></span> <a href="mailto:samuel.bauer@e-2.at">Samuel Bauer</a> · <a href="mailto:samuel.bauer@e-2.at">samuel.bauer@e-2.at</a></p>
+        <p>© <span id="footer-year"></span> <a href="mailto:thirtyonemillimeter@gmail.com">Samuel Bauer</a> · <a href="mailto:thirtyonemillimeter@gmail.com">thirtyonemillimeter@gmail.com</a></p>
         <p class="footer-tmdb">
           <span style="font-size:.72rem;color:var(--muted)">Movie data &amp; images courtesy of</span>
           <a href="https://www.themoviedb.org/" target="_blank" rel="noopener" title="The Movie Database">
@@ -936,7 +934,7 @@
   <div class="exc-sheet" role="dialog" aria-modal="true" aria-label="Rate your excitement">
     <div class="exc-sheet-top">
       <div class="exc-sheet-head">
-        <span class="exc-sheet-kicker">VCG Excitement</span>
+        <span class="exc-sheet-kicker">31mm Excitement</span>
         <span class="exc-sheet-title" id="exc-modal-title"></span>
       </div>
       <button class="exc-sheet-x" onclick="closeExcModal()" aria-label="Close">✕</button>
@@ -1125,7 +1123,8 @@ function rateRowInnerHTML(id) {
   const rt = RATINGS[id];
   if (!rt || !rt.count) return '';
   const pct = pctFromStars(rt.avg);
-  return `<svg class="rt-logo" viewBox="0 0 132 44" role="img"><use href="#vcg-mark"/></svg>` +
+  return `<img class="rt-logo logo-dark" src="assets/logo-dark-min.svg" alt="31mm">` +
+    `<img class="rt-logo logo-light" src="assets/logo-light-min.svg" alt="31mm">` +
     gradeIconHTML(pct) +
     `<span class="rt-num">${pct}%</span>` +
     `<span class="rt-count">(${rt.count})</span>`;
@@ -1308,7 +1307,7 @@ function toggleTheme() {
 function applyTheme() {
   document.getElementById('hr').classList.toggle('light', !isDark);
   const b = document.getElementById('theme-btn');
-  if (b) b.innerHTML = `<span class="tb-ic">◑</span> <span class="tb-label">${isDark ? 'Light' : 'Dark'}</span>`;
+  if (b) b.innerHTML = `<svg class="tb-ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor" stroke="none"/></svg><span class="tb-label">${isDark ? 'Light' : 'Dark'}</span>`;
 }
 
 /* ═══════════════════════════════════════════════

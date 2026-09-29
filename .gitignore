@@ -5,3 +5,6 @@
 
 # macOS
 .DS_Store
+
+# local design explorations, never commit
+design/

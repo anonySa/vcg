@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * VCG snapshot builder.
+ * 31mm snapshot builder.
  *
  * Fetches DACH + UK + US theatrical release dates from TMDB and writes
  * a static data.json that the site loads. The TMDB token is read from

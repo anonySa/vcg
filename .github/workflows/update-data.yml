@@ -31,7 +31,7 @@ jobs:
 
       - name: Commit if changed
         run: |
-          git config user.name  "vcg-bot"
+          git config user.name  "31mm-bot"
           git config user.email "actions@users.noreply.github.com"
           if git status --porcelain data.json | grep -q .; then
             git add data.json
