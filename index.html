@@ -297,7 +297,7 @@
       list-style: none; display: flex; flex-wrap: wrap; gap: .6rem 1.4rem;
     }
     .footer-tierlist li { display: flex; align-items: center; gap: .5rem; }
-    .footer-tierlist img { flex-shrink: 0; }
+    .footer-tierlist strong { display: inline-flex; align-items: center; gap: 1px; font-size: .76rem; font-variant-numeric: tabular-nums; }
     .footer-tierlist span { font-size: .76rem; color: var(--text2); }
     .footer-tierlist strong { color: var(--text); font-weight: 700; }
     .footer-copy {
@@ -391,6 +391,9 @@
       text-decoration: none; padding: 9px 16px; transition: all .15s;
     }
     .hslide-btn:hover { color: #fff; background: var(--acc); }
+    .hslide-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .hslide-links .hslide-btn { margin-top: 0; width: 124px; justify-content: center; gap: 6px; border: 0; font-family: inherit; cursor: pointer; }
+    .hslide-btn .cal-ic { width: 13px; height: 13px; flex-shrink: 0; }
 
     .hero-arrow {
       position: absolute; top: 50%; transform: translateY(-50%);
@@ -478,6 +481,15 @@
     .card:hover .cp img { transform: scale(1.03); }
     /* hairline ring drawn over the image so it survives rounded corners */
     .cp::after { content: ''; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 0 1px var(--ring); pointer-events: none; }
+    .cp-mm {
+      position: absolute; top: 8px; left: 8px; z-index: 1;
+      padding: 4px 7px; border-radius: 999px;
+      background: rgba(0,0,0,.6); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+      font-size: 12px; font-weight: 700; color: #fff; line-height: 1; font-variant-numeric: tabular-nums;
+    }
+    .cp-mm:empty { display: none; }
+    #app:not(.view-list) .ci-rate { display: none; }   /* tiles show the score on the poster */
+    .view-list .cp-mm { display: none; }
     .card.expanded .cp::after, .card.f-today .cp::after { box-shadow: inset 0 0 0 2px var(--acc); }
     /* typographic fallback when TMDB has no poster */
     .cp-empty {
@@ -529,13 +541,19 @@
     .flag-grp.flag-miss em { color: var(--muted); font-style: italic; margin-left: 3px; }
     .ci-lbd {
       display: inline-flex; align-items: center;
-      align-self: flex-start; margin-top: 2px;
+      border: 0; font-family: inherit; cursor: pointer;
       font-size: 11px; font-weight: 600; color: var(--text2);
       text-decoration: none; letter-spacing: .06em; text-transform: uppercase;
       background: var(--glass); box-shadow: inset 0 0 0 1px var(--ring); border-radius: 999px;
       padding: 6px 11px; transition: all .15s;
     }
     .ci-lbd:hover { color: #fff; background: var(--acc); box-shadow: none; }
+    .ci-links { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
+    .ci-links .ci-lbd { width: 104px; justify-content: center; gap: 5px; }   /* Letterboxd + calendars share one width */
+    .ci-lbd .cal-ic { width: 12px; height: 12px; flex-shrink: 0; }
+    /* German UI: the original title sits small under the German one */
+    .ci-otitle { display: block; margin-top: 3px; font: 400 11px/1.2 'Archivo', system-ui, sans-serif; text-transform: none; letter-spacing: 0; color: var(--muted); }
+    .hslide-otitle { font-size: 13px; color: var(--text2); margin: -2px 0 2px; }
 
     /* ── 31mm community excitement meter ── */
     .ci-rate {
@@ -545,8 +563,8 @@
     }
     .ci-rate { margin-top: 2px; }   /* a touch more air under the genres */
     .ci-rate:empty { display: none; }
-    .rt-logo   { height: 8px; width: auto; flex-shrink: 0; }
-    .grade-ic  { display: block; height: 19px; width: 19px; flex-shrink: 0; }
+    .mm-val    { display: inline-flex; align-items: center; gap: 1px; white-space: nowrap; }
+    .mm-ic     { height: .72em; width: auto; flex-shrink: 0; }
     .rt-num    { font-weight: 700; color: var(--text); }
     .rt-count  { color: var(--muted); }
 
@@ -556,31 +574,35 @@
       font-size: .6rem; font-weight: 700; color: var(--muted);
       letter-spacing: .1em; text-transform: uppercase; flex-shrink: 0;
     }
-    /* flat red fill revealed left→right; flexes to fit the card column so it's never clipped */
+    /* "Excited?" + the film strip share one glass box so they read as one control */
+    .exc-box {
+      display: flex; flex-direction: column; align-items: stretch; gap: 6px;
+      max-width: 100%; min-width: 0;
+      padding: 8px 10px; border-radius: 10px;
+      background: var(--glass);
+    }
+    /* top row: label left, your vote right */
+    .exc-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 12px; }
+    .exc-head .rt-your { padding-right: 2px; }
+    html[lang="de"] .exc-head { gap: 4px; }   /* "Vorfreude?" is longer than "Excited?" */
+    /* ten film frames = 10 … 100%; frames up to the vote turn red. Shrinks to fit the card column. */
     .exc-track {
-      position: relative; flex: 1 1 90px; min-width: 80px; max-width: 170px;
-      height: 12px; background: var(--border2); border-radius: 999px; overflow: hidden;
+      display: flex; gap: 1px; width: 189px; max-width: 100%;
+      border-radius: 3px; overflow: hidden;
       cursor: pointer; touch-action: manipulation;
     }
-    .exc-grad {
-      position: absolute; inset: 0;
-      background: var(--acc);
-      clip-path: inset(0 100% 0 0);      /* set via JS: inset(0 <100-pct>% 0 0) */
-      transition: clip-path .18s ease;
+    .exc-film {
+      flex: 1 1 0; min-width: 0; max-width: 18px; aspect-ratio: 1;
+      background: url(assets/film-dark.svg) center / contain no-repeat;
+      opacity: .3;
     }
-    /* 10% tick guides */
-    .exc-track::after {
-      content: ''; position: absolute; inset: 0; pointer-events: none;
-      background: repeating-linear-gradient(90deg,
-        transparent 0, transparent calc(10% - 1px),
-        color-mix(in srgb, var(--bg) 55%, transparent) calc(10% - 1px), color-mix(in srgb, var(--bg) 55%, transparent) 10%);
-    }
+    html.light .exc-film { background-image: url(assets/film-light.svg); }
+    .exc-film.on, html.light .exc-film.on { background-image: url(assets/film-selected.svg); opacity: 1; }
     .rt-your {
       display: inline-flex; align-items: center; gap: .3rem;
       font-size: .66rem; font-weight: 700; color: var(--text);
       font-variant-numeric: tabular-nums;
     }
-    .rt-your .grade-ic { height: 21px; width: 21px; }
 
     /* ── excitement rating modal (mobile bottom sheet) ── */
     .exc-modal { position: fixed; inset: 0; z-index: 400; display: none; }
@@ -612,9 +634,9 @@
     }
     .exc-sheet-lbl { font-size: .82rem; color: var(--text2); margin: 1.1rem 0 .7rem; }
     .exc-modal-readout { display: flex; align-items: center; gap: .55rem; margin-bottom: .7rem; }
-    .exc-modal-readout .grade-ic { height: 40px; width: 40px; }
     .exc-modal-pct { font-size: 1.6rem; font-weight: 700; color: var(--text); font-variant-numeric: tabular-nums; }
-    .exc-track-lg { width: 100%; height: 26px; border-radius: 999px; touch-action: none; }
+    .exc-track-lg { width: 100%; max-width: none; gap: 2px; border-radius: 4px; touch-action: none; }
+    .exc-track-lg .exc-film { max-width: 30px; }
     .exc-scale { display: flex; justify-content: space-between; font-size: .66rem; color: var(--muted); margin-top: .5rem; }
     .exc-sheet-confirm {
       width: 100%; margin-top: 1.25rem; padding: .85rem;
@@ -654,7 +676,7 @@
     .ci-extra-in {
       display: flex; flex-direction: column; gap: .28rem; padding-top: .28rem;
     }
-    .card.expanded .ci-extra { max-height: 200px; opacity: 1; }
+    .card.expanded .ci-extra { max-height: 320px; opacity: 1; }
 
     /* ── LIST VIEW ── one film per row, date column first so the schedule reads top-down */
     .view-list .m-grid { display: block; padding: 0 0 20px; }
@@ -730,15 +752,14 @@
       .to-top { display: flex; }
       .page-wrap { padding: .5rem .65rem 5rem; }
       .m-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 10px 0 22px; }
-      /* list rows on phones: rating drops under the genres, date column narrower */
+      /* list rows on phones: narrower date column, rating stays on the right */
       .view-list .card {
         column-gap: 10px;
-        grid-template-columns: 48px 40px minmax(0, 1fr) 24px;
+        grid-template-columns: 48px 40px minmax(0, 1fr) auto 24px;
         grid-template-areas:
-          "date poster title bm"
-          "date poster tags  bm"
-          "date poster rate  bm"
-          ".    .      extra extra";
+          "date poster title rate  bm"
+          "date poster tags  rate  bm"
+          ".    .      extra extra extra";
       }
       .view-list .ci-title { font-size: 15px; }
       .m-head { padding: .65rem .2rem; }
@@ -793,8 +814,7 @@
       .genre-more { display: none !important; }
       .seg button { padding: .4rem .65rem; min-height: 32px; }
       .rt-widget { gap: .45rem; cursor: pointer; padding: .2rem 0; }
-      .exc-track { height: 14px; max-width: none; }
-      .rt-your .grade-ic { display: none; }   /* community row already shows the badge */
+      .exc-track { max-width: none; }
     }
   </style>
 </head>
@@ -813,15 +833,15 @@
           <span class="nav-stat" id="fbar-stat"></span>
           <span class="result-count" id="res-count"></span>
         </div>
-        <button class="btn" id="theme-btn" onclick="toggleTheme()"><svg class="tb-ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor" stroke="none"/></svg><span class="tb-label">Light</span></button>
+        <button class="btn" id="theme-btn" onclick="toggleTheme()"><svg class="tb-ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor" stroke="none"/></svg><span class="tb-label"></span></button>
         <div class="fbar-right" id="fbar-right">
-          <button class="btn settings-toggle" id="settings-toggle" onclick="toggleSettings(event)" aria-haspopup="true" aria-label="Settings">
+          <button class="btn settings-toggle" id="settings-toggle" onclick="toggleSettings(event)" aria-haspopup="true" aria-label="Settings" data-i18n-attr="aria-label:settings">
             <svg class="set-ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-            <span class="st-label">Settings</span>
+            <span class="st-label" data-i18n="settings">Settings</span>
           </button>
           <div class="settings-panel" id="settings-panel">
             <div class="sp-group">
-              <span class="sp-label">Release region</span>
+              <span class="sp-label" data-i18n="region">Release region</span>
               <div class="seg" id="region-seg">
                 <button id="reg-dach" onclick="setRegion('dach')">DACH</button>
                 <button id="reg-gb"   onclick="setRegion('gb')">UK</button>
@@ -829,10 +849,10 @@
               </div>
             </div>
             <div class="sp-group">
-              <span class="sp-label">View</span>
+              <span class="sp-label" data-i18n="view">View</span>
               <div class="seg" id="view-seg">
-                <button id="seg-tiles" onclick="setView('tiles')"><span class="seg-ic"><svg viewBox="0 0 30 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 14C13.1046 14 14 14.8954 14 16V22C14 23.1046 13.1046 24 12 24H2C0.895431 24 1.61066e-08 23.1046 0 22V16C0 14.8954 0.895431 14 2 14H12ZM28 14C29.1046 14 30 14.8954 30 16V22C30 23.1046 29.1046 24 28 24H18C16.8954 24 16 23.1046 16 22V16C16 14.8954 16.8954 14 18 14H28ZM12 0C13.1046 0 14 0.895431 14 2V8C14 9.10457 13.1046 10 12 10H2C0.895431 10 1.61066e-08 9.10457 0 8V2C0 0.895431 0.895431 4.83192e-08 2 0H12ZM28 0C29.1046 0 30 0.895431 30 2V8C30 9.10457 29.1046 10 28 10H18C16.8954 10 16 9.10457 16 8V2C16 0.895431 16.8954 4.83192e-08 18 0H28Z" fill="currentColor"/></svg></span> Tiles</button>
-                <button id="seg-list" onclick="setView('list')"><span class="seg-ic"><svg viewBox="0 0 30 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M28 14C29.1046 14 30 14.8954 30 16V22C30 23.1046 29.1046 24 28 24H2C0.895431 24 1.61066e-08 23.1046 0 22V16C0 14.8954 0.895431 14 2 14H28ZM28 0C29.1046 0 30 0.895431 30 2V8C30 9.10457 29.1046 10 28 10H2C0.895431 10 1.61066e-08 9.10457 0 8V2C0 0.895431 0.895431 5.63724e-08 2 0H28Z" fill="currentColor"/></svg></span> List</button>
+                <button id="seg-tiles" onclick="setView('tiles')"><span class="seg-ic"><svg viewBox="0 0 30 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 14C13.1046 14 14 14.8954 14 16V22C14 23.1046 13.1046 24 12 24H2C0.895431 24 1.61066e-08 23.1046 0 22V16C0 14.8954 0.895431 14 2 14H12ZM28 14C29.1046 14 30 14.8954 30 16V22C30 23.1046 29.1046 24 28 24H18C16.8954 24 16 23.1046 16 22V16C16 14.8954 16.8954 14 18 14H28ZM12 0C13.1046 0 14 0.895431 14 2V8C14 9.10457 13.1046 10 12 10H2C0.895431 10 1.61066e-08 9.10457 0 8V2C0 0.895431 0.895431 4.83192e-08 2 0H12ZM28 0C29.1046 0 30 0.895431 30 2V8C30 9.10457 29.1046 10 28 10H18C16.8954 10 16 9.10457 16 8V2C16 0.895431 16.8954 4.83192e-08 18 0H28Z" fill="currentColor"/></svg></span> <span data-i18n="tiles">Tiles</span></button>
+                <button id="seg-list" onclick="setView('list')"><span class="seg-ic"><svg viewBox="0 0 30 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M28 14C29.1046 14 30 14.8954 30 16V22C30 23.1046 29.1046 24 28 24H2C0.895431 24 1.61066e-08 23.1046 0 22V16C0 14.8954 0.895431 14 2 14H28ZM28 0C29.1046 0 30 0.895431 30 2V8C30 9.10457 29.1046 10 28 10H2C0.895431 10 1.61066e-08 9.10457 0 8V2C0 0.895431 0.895431 5.63724e-08 2 0H28Z" fill="currentColor"/></svg></span> <span data-i18n="list">List</span></button>
               </div>
             </div>
           </div>
@@ -849,17 +869,17 @@
     <div class="filter-bar-inner" id="filter-bar-inner">
       <div class="nav-search-wrap">
         <span class="nav-search-icon">⌕</span>
-        <input class="nav-search" id="q" type="text" placeholder="Search title or director…" oninput="applyFilters()">
+        <input class="nav-search" id="q" type="text" placeholder="Search title or director…" data-i18n-attr="placeholder:searchPh" oninput="applyFilters()">
       </div>
       <div class="fbar-scroll" id="fbar-scroll">
       <div class="fbar-genre" id="fbar-genre">
-        <button class="bm-filter" id="bm-filter" onclick="toggleBookmarkFilter()" aria-pressed="false" title="Show only saved films">
+        <button class="bm-filter" id="bm-filter" onclick="toggleBookmarkFilter()" aria-pressed="false" title="Show only saved films" data-i18n-attr="title:savedTitle">
           <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h12a1 1 0 0 1 1 1v18l-7-4-7 4V3a1 1 0 0 1 1-1z"/></svg>
-          Saved <span id="bm-count"></span>
+          <span data-i18n="saved">Saved</span> <span id="bm-count"></span>
         </button>
-        <button class="bm-filter" id="hyped-filter" onclick="toggleHypedFilter()" aria-pressed="false" title="Show only trending films (community tier S or A)">
+        <button class="bm-filter" id="hyped-filter" onclick="toggleHypedFilter()" aria-pressed="false" title="Show only trending films (community rating 22mm or more)" data-i18n-attr="title:trendTitle">
           <svg viewBox="0 0 24 24"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="15 7 21 7 21 13"/></svg>
-          Trending
+          <span data-i18n="trending">Trending</span>
         </button>
         <span class="fbar-div" aria-hidden="true"></span>
         <div id="genre-chips"></div>
@@ -879,42 +899,42 @@
 
       <div class="footer-about">
         <h2>31mm Kinostart Kalender</h2>
-        <p>Your cinema release calendar for Germany, Austria, Switzerland, the UK, and the USA. 31mm tracks upcoming theatrical releases with local release dates, age ratings (FSK, BBFC, MPAA), genres, and directors. Updated daily from The Movie Database.</p>
+        <p data-i18n="footerAbout">Your cinema release calendar for Germany, Austria, Switzerland, the UK, and the USA. 31mm tracks upcoming theatrical releases with local release dates, age ratings (FSK, BBFC, MPAA), genres, and directors. Updated daily from The Movie Database.</p>
       </div>
 
-      <nav class="footer-nav" aria-label="Quick navigation">
-        <h3>Browse</h3>
+      <nav class="footer-nav" aria-label="Quick navigation" data-i18n-attr="aria-label:quickNav">
+        <h3 data-i18n="browse">Browse</h3>
         <ul>
-          <li><a href="#/" onclick="setRegion('dach')">DACH releases</a></li>
-          <li><a href="#/" onclick="setRegion('gb')">UK releases</a></li>
-          <li><a href="#/" onclick="setRegion('us')">US releases</a></li>
+          <li><a href="#/" onclick="setRegion('dach')" data-i18n="relDach">DACH releases</a></li>
+          <li><a href="#/" onclick="setRegion('gb')" data-i18n="relGb">UK releases</a></li>
+          <li><a href="#/" onclick="setRegion('us')" data-i18n="relUs">US releases</a></li>
         </ul>
       </nav>
 
-      <nav class="footer-nav" aria-label="View options">
-        <h3>View</h3>
+      <nav class="footer-nav" aria-label="View options" data-i18n-attr="aria-label:viewOpts">
+        <h3 data-i18n="view">View</h3>
         <ul>
-          <li><a href="#/" onclick="setView('tiles')">Poster tiles</a></li>
-          <li><a href="#/" onclick="setView('list')">List</a></li>
+          <li><a href="#/" onclick="setView('tiles')" data-i18n="posterTiles">Poster tiles</a></li>
+          <li><a href="#/" onclick="setView('list')" data-i18n="list">List</a></li>
         </ul>
       </nav>
 
-      <section class="footer-exc" aria-label="About the 31mm Excitement rating">
+      <section class="footer-exc" aria-label="About the 31mm Excitement rating" data-i18n-attr="aria-label:excAbout">
         <h3>31mm Excitement</h3>
-        <p>A community hype meter for upcoming films: how excited people are to see them, not a review of quality. Open any film, set how excited you are on the slider (or tap on mobile), and every visitor's vote averages into the film's tier.</p>
+        <p data-i18n="excText">A community hype meter for upcoming films: how excited people are to see them, not a review of quality. Open any film, set how excited you are on the slider (or tap on mobile), and every visitor's vote averages into the film's score, from 0 to 31mm.</p>
         <ul class="footer-tierlist">
-          <li><img src="assets/S.svg" alt="" width="30" height="30"><span><strong>S</strong> · 85-100% · Must-see hype</span></li>
-          <li><img src="assets/A.svg" alt="" width="30" height="30"><span><strong>A</strong> · 70-84% · Highly anticipated</span></li>
-          <li><img src="assets/B.svg" alt="" width="30" height="30"><span><strong>B</strong> · 50-69% · Keen to watch</span></li>
-          <li><img src="assets/C.svg" alt="" width="30" height="30"><span><strong>C</strong> · 20-49% · Mild interest</span></li>
-          <li><img src="assets/F.svg" alt="" width="30" height="30"><span><strong>F</strong> · under 20% · Not fussed</span></li>
+          <li><strong>26–31<img class="mm-ic logo-dark" src="assets/logo-dark-min_xs.svg" alt="mm"><img class="mm-ic logo-light" src="assets/logo-light-min_xs.svg" alt="mm"></strong><span data-i18n="tierS">Must-see hype</span></li>
+          <li><strong>22–25<img class="mm-ic logo-dark" src="assets/logo-dark-min_xs.svg" alt="mm"><img class="mm-ic logo-light" src="assets/logo-light-min_xs.svg" alt="mm"></strong><span data-i18n="tierA">Highly anticipated</span></li>
+          <li><strong>16–21<img class="mm-ic logo-dark" src="assets/logo-dark-min_xs.svg" alt="mm"><img class="mm-ic logo-light" src="assets/logo-light-min_xs.svg" alt="mm"></strong><span data-i18n="tierB">Keen to watch</span></li>
+          <li><strong>6–15<img class="mm-ic logo-dark" src="assets/logo-dark-min_xs.svg" alt="mm"><img class="mm-ic logo-light" src="assets/logo-light-min_xs.svg" alt="mm"></strong><span data-i18n="tierC">Mild interest</span></li>
+          <li><strong>0–5<img class="mm-ic logo-dark" src="assets/logo-dark-min_xs.svg" alt="mm"><img class="mm-ic logo-light" src="assets/logo-light-min_xs.svg" alt="mm"></strong><span data-i18n="tierF">Not fussed</span></li>
         </ul>
       </section>
 
       <div class="footer-copy">
         <p>© <span id="footer-year"></span> <a href="mailto:thirtyonemillimeter@gmail.com">Samuel Bauer</a> · <a href="mailto:thirtyonemillimeter@gmail.com">thirtyonemillimeter@gmail.com</a></p>
         <p class="footer-tmdb">
-          <span style="font-size:.72rem;color:var(--muted)">Movie data &amp; images courtesy of</span>
+          <span style="font-size:.72rem;color:var(--muted)" data-i18n="tmdbCredit">Movie data &amp; images courtesy of</span>
           <a href="https://www.themoviedb.org/" target="_blank" rel="noopener" title="The Movie Database">
             <img class="footer-tmdb-logo" src="https://www.themoviedb.org/assets/2/v4/logos/v2/blue_short-8e7b30f73a4020692ccca9c88bafe5dcb20f684bfd2fb941ad8bc99f2d9fcc9c.svg" alt="TMDB" width="80" height="18">
           </a>
@@ -926,29 +946,26 @@
 
 </div>
 
-<button id="to-top" class="to-top" aria-label="Back to top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+<button id="to-top" class="to-top" aria-label="Back to top" data-i18n-attr="aria-label:toTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
 
 <!-- Excitement rating modal (mobile) -->
 <div class="exc-modal" id="exc-modal" aria-hidden="true">
   <div class="exc-modal-bg" onclick="closeExcModal()"></div>
-  <div class="exc-sheet" role="dialog" aria-modal="true" aria-label="Rate your excitement">
+  <div class="exc-sheet" role="dialog" aria-modal="true" aria-label="Rate your excitement" data-i18n-attr="aria-label:rateDialog">
     <div class="exc-sheet-top">
       <div class="exc-sheet-head">
         <span class="exc-sheet-kicker">31mm Excitement</span>
         <span class="exc-sheet-title" id="exc-modal-title"></span>
       </div>
-      <button class="exc-sheet-x" onclick="closeExcModal()" aria-label="Close">✕</button>
+      <button class="exc-sheet-x" onclick="closeExcModal()" aria-label="Close" data-i18n-attr="aria-label:close">✕</button>
     </div>
-    <div class="exc-sheet-lbl">How excited are you for this film?</div>
+    <div class="exc-sheet-lbl" data-i18n="howExcited">How excited are you for this film?</div>
     <div class="exc-modal-readout">
-      <img class="grade-ic" id="exc-modal-icon" src="assets/B.svg" alt="" width="40" height="40">
-      <span class="exc-modal-pct" id="exc-modal-pct">50%</span>
+      <span class="exc-modal-pct" id="exc-modal-pct"></span>
     </div>
-    <div class="exc-track exc-track-lg" id="exc-modal-track" onpointerdown="excModalDown(event)">
-      <span class="exc-grad" id="exc-modal-grad"></span>
-    </div>
-    <div class="exc-scale"><span>Not fussed</span><span>Can't wait</span></div>
-    <button class="exc-sheet-confirm" onclick="confirmExcModal()">Save my rating</button>
+    <div class="exc-track exc-track-lg" id="exc-modal-track" onpointerdown="excModalDown(event)"></div>
+    <div class="exc-scale"><span data-i18n="notFussed">Not fussed</span><span data-i18n="cantWait">Can't wait</span></div>
+    <button class="exc-sheet-confirm" onclick="confirmExcModal()" data-i18n="saveRating">Save my rating</button>
   </div>
 </div>
 
@@ -1010,6 +1027,91 @@ function detectRegion() {
 }
 const savedRegion = localStorage.getItem('vcg_region');
 let regionF   = ['dach','gb','us'].includes(savedRegion) ? savedRegion : detectRegion();
+
+/* ═══════════════════════════════════════════════
+   LANGUAGE — German for the DACH region, English otherwise
+═══════════════════════════════════════════════ */
+const I18N = {
+  en: {
+    light: 'Light', dark: 'Dark', settings: 'Settings', region: 'Release region', view: 'View',
+    tiles: 'Tiles', list: 'List', posterTiles: 'Poster tiles',
+    searchPh: 'Search title or director…',
+    saved: 'Saved', savedTitle: 'Show only saved films',
+    trending: 'Trending', trendTitle: 'Show only trending films (community rating 22mm or more)',
+    all: 'All', showMore: 'Show more', showLess: 'Show less',
+    filmWord: n => n === 1 ? 'film' : 'films',
+    updated: ago => `Updated ${ago}`, offline: 'Offline · seed data',
+    never: 'never', justNow: 'just now', minAgo: n => `${n} min ago`, hAgo: n => `${n} h ago`,
+    noSaved: 'No saved films yet. Tap the bookmark on any film to save it.',
+    noTrending: 'No films are trending (22mm or more) yet.',
+    noMatch: 'No films match your filters.', noReleases: 'No releases found.', loading: 'Loading…',
+    justStarted: 'Just Started', inCinemasNow: 'In Cinemas Now', thisMonth: 'This Month', today: 'Today',
+    dateTbc: 'date tbc', noDate: 'no release date yet', rated: 'Rated', min: 'min',
+    mostAnticipated: 'Most anticipated', inCinemas: d => `In cinemas ${d}`,
+    slide: n => `Slide ${n}`, prev: 'Previous', next: 'Next',
+    bookmark: 'Bookmark', bookmarkAria: 'Bookmark this film',
+    excited: 'Excited?',
+    addCal: 'Add to calendar',
+    calSummary: t => `${t} – in cinemas`, calDir: d => `Director: ${d}`, calLen: m => `Runtime: ${m} min`,
+    footerAbout: 'Your cinema release calendar for Germany, Austria, Switzerland, the UK, and the USA. 31mm tracks upcoming theatrical releases with local release dates, age ratings (FSK, BBFC, MPAA), genres, and directors. Updated daily from The Movie Database.',
+    browse: 'Browse', relDach: 'DACH releases', relGb: 'UK releases', relUs: 'US releases',
+    quickNav: 'Quick navigation', viewOpts: 'View options',
+    excAbout: 'About the 31mm Excitement rating',
+    excText: "A community hype meter for upcoming films: how excited people are to see them, not a review of quality. Open any film, set how excited you are on the slider (or tap on mobile), and every visitor's vote averages into the film's score, from 0 to 31mm.",
+    tierS: 'Must-see hype', tierA: 'Highly anticipated', tierB: 'Keen to watch', tierC: 'Mild interest', tierF: 'Not fussed',
+    tmdbCredit: 'Movie data & images courtesy of', toTop: 'Back to top',
+    rateDialog: 'Rate your excitement', close: 'Close', howExcited: 'How excited are you for this film?',
+    notFussed: 'Not fussed', cantWait: "Can't wait", saveRating: 'Save my rating',
+  },
+  de: {
+    light: 'Hell', dark: 'Dunkel', settings: 'Einstellungen', region: 'Kinostart-Region', view: 'Ansicht',
+    tiles: 'Kacheln', list: 'Liste', posterTiles: 'Poster-Kacheln',
+    searchPh: 'Titel oder Regie suchen…',
+    saved: 'Gemerkt', savedTitle: 'Nur gemerkte Filme zeigen',
+    trending: 'Trending', trendTitle: 'Nur Trending-Filme zeigen (Community-Wertung ab 22mm)',
+    all: 'Alle', showMore: 'Mehr zeigen', showLess: 'Weniger zeigen',
+    filmWord: n => n === 1 ? 'Film' : 'Filme',
+    updated: ago => `Aktualisiert ${ago}`, offline: 'Offline · Beispieldaten',
+    never: 'nie', justNow: 'gerade eben', minAgo: n => `vor ${n} Min.`, hAgo: n => `vor ${n} Std.`,
+    noSaved: 'Noch keine Filme gemerkt. Tippe bei einem Film auf das Lesezeichen, um ihn zu merken.',
+    noTrending: 'Noch keine Trending-Filme (ab 22mm).',
+    noMatch: 'Keine Filme passen zu deinen Filtern.', noReleases: 'Keine Filme gefunden.', loading: 'Lädt…',
+    justStarted: 'Gerade gestartet', inCinemasNow: 'Jetzt im Kino', thisMonth: 'Diesen Monat', today: 'Heute',
+    dateTbc: 'Datum offen', noDate: 'noch kein Starttermin', rated: 'Rated', min: 'Min.',
+    mostAnticipated: 'Am meisten erwartet', inCinemas: d => `Im Kino ab ${d}`,
+    slide: n => `Folie ${n}`, prev: 'Zurück', next: 'Weiter',
+    bookmark: 'Merken', bookmarkAria: 'Film merken',
+    excited: 'Vorfreude?',
+    addCal: 'In den Kalender',
+    calSummary: t => `${t} – Kinostart`, calDir: d => `Regie: ${d}`, calLen: m => `Länge: ${m} Min.`,
+    footerAbout: 'Dein Kinostart-Kalender für Deutschland, Österreich, die Schweiz, Großbritannien und die USA. 31mm zeigt kommende Kinostarts mit lokalen Startterminen, Altersfreigaben (FSK, BBFC, MPAA), Genres und Regie. Täglich aktualisiert mit Daten von The Movie Database.',
+    browse: 'Entdecken', relDach: 'Kinostarts DACH', relGb: 'Kinostarts UK', relUs: 'Kinostarts USA',
+    quickNav: 'Schnellnavigation', viewOpts: 'Ansichtsoptionen',
+    excAbout: 'Über die 31mm-Excitement-Bewertung',
+    excText: 'Ein Community-Hype-Barometer für kommende Filme: Es zeigt, wie sehr sich die Leute auf einen Film freuen, nicht wie gut er ist. Öffne einen Film, stell deine Vorfreude am Regler ein (oder tippe am Handy), und alle Stimmen ergeben zusammen die Wertung des Films, von 0 bis 31mm.',
+    tierS: 'Pflichttermin', tierA: 'Heiß erwartet', tierB: 'Will ich sehen', tierC: 'Mäßiges Interesse', tierF: 'Eher egal',
+    tmdbCredit: 'Filmdaten & Bilder von', toTop: 'Nach oben',
+    rateDialog: 'Vorfreude bewerten', close: 'Schließen', howExcited: 'Wie sehr freust du dich auf diesen Film?',
+    notFussed: 'Eher egal', cantWait: 'Kann’s kaum erwarten', saveRating: 'Bewertung speichern',
+  },
+};
+const lang = () => regionF === 'dach' ? 'de' : 'en';
+const loc  = () => lang() === 'de' ? 'de-DE' : 'en-US';
+function t(key, ...args) {
+  const v = I18N[lang()][key] ?? I18N.en[key];
+  return typeof v === 'function' ? v(...args) : v;
+}
+/* static markup: data-i18n="key" sets the text, data-i18n-attr="attr:key,attr:key" sets attributes */
+function applyLang() {
+  document.documentElement.lang = lang();
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
+  document.querySelectorAll('[data-i18n-attr]').forEach(el => {
+    el.dataset.i18nAttr.split(',').forEach(pair => { const [a, k] = pair.split(':'); el.setAttribute(a, t(k)); });
+  });
+}
+/* German title first, original underneath; data.json carries title_de only when it differs */
+const dispTitle = f => lang() === 'de' && f.title_de ? f.title_de : f.title;
+const origTitle = f => lang() === 'de' && f.title_de ? f.title : '';
 
 const JS_KEY = '__just_started__';   // pseudo-month key for past 14 days
 function todayISO() { return new Date().toISOString().slice(0,10); }
@@ -1075,11 +1177,11 @@ async function loadData() {
 }
 
 function timeAgo(ts) {
-  if (!ts) return 'never';
+  if (!ts) return t('never');
   const sec = Math.floor((Date.now() - ts) / 1000);
-  if (sec < 60)    return 'just now';
-  if (sec < 3600)  return Math.floor(sec / 60)   + ' min ago';
-  if (sec < 86400) return Math.floor(sec / 3600) + ' h ago';
+  if (sec < 60)    return t('justNow');
+  if (sec < 3600)  return t('minAgo', Math.floor(sec / 60));
+  if (sec < 86400) return t('hAgo', Math.floor(sec / 3600));
   return new Date(ts).toISOString().slice(0,10);
 }
 
@@ -1107,40 +1209,40 @@ async function loadRatings() {
    10% = 0.5, 20% = 1.0, … 100% = 5.0 → ten steps. */
 const pctFromStars = s => Math.round(s * 20);
 const starsFromPct = p => p / 20;
-/* Excitement tier, best→worst: S > A > B > C > F */
-function gradeTier(pct) {
-  if (pct >= 85) return 'S';
-  if (pct >= 70) return 'A';
-  if (pct >= 50) return 'B';
-  if (pct >= 20) return 'C';
-  return 'F';
+/* Excitement shown as 0–31mm (31mm = 100%), the number followed by the "mm" mark */
+const mmFromPct = p => Math.round(p * 31 / 100);
+const mmHTML = pct =>
+  `<span class="mm-val">${mmFromPct(pct)}<img class="mm-ic logo-dark" src="assets/logo-dark-min_xs.svg" alt="mm"><img class="mm-ic logo-light" src="assets/logo-light-min_xs.svg" alt="mm"></span>`;
+
+/* Community score on the poster corner; empty (hidden) until someone has voted */
+function posterMMHTML(id) {
+  const rt = RATINGS[id];
+  return rt && rt.count ? mmHTML(pctFromStars(rt.avg)) : '';
 }
-const gradeIconHTML = pct =>
-  `<img class="grade-ic" src="assets/${gradeTier(pct)}.svg" alt="${gradeTier(pct)} tier" width="19" height="19">`;
 
 /* Read-only community row shown on every card (incl. compact overview) */
 function rateRowInnerHTML(id) {
   const rt = RATINGS[id];
   if (!rt || !rt.count) return '';
   const pct = pctFromStars(rt.avg);
-  return `<img class="rt-logo logo-dark" src="assets/logo-dark-min.svg" alt="31mm">` +
-    `<img class="rt-logo logo-light" src="assets/logo-light-min.svg" alt="31mm">` +
-    gradeIconHTML(pct) +
-    `<span class="rt-num">${pct}%</span>` +
+  return `<span class="rt-num">${mmHTML(pct)}</span>` +
     `<span class="rt-count">(${rt.count})</span>`;
 }
 
 /* Interactive excitement voter (expanded / detailed cards):
-   one continuous blue meter, snapped to 10% steps. */
+   ten film frames, clicking frame n votes n × 10%. */
+const filmsHTML = pct => Array.from({ length: 10 }, (_, i) => `<span class="exc-film${i < pct / 10 ? ' on' : ''}"></span>`).join('');
 function rateWidgetHTML(id) {
   const pct = MY_VOTES[id] ? pctFromStars(MY_VOTES[id]) : 0;
   return `<div class="rt-widget" data-rid="${id}" onclick="excWidgetClick(event,this)">
-    <span class="rt-lbl">Excited?</span>
-    <span class="exc-track" data-rid="${id}"
-      onmousemove="excHover(event,this)" onmouseleave="excLeave(this)" onpointerdown="excTrackDown(event,this)">
-      <span class="exc-grad" style="clip-path:inset(0 ${100 - pct}% 0 0)"></span>
+    <span class="exc-box">
+      <span class="exc-head">
+        <span class="rt-lbl">${t('excited')}</span>
+        <span class="rt-your">${pct ? mmHTML(pct) : ''}</span>
+      </span>
+      <span class="exc-track" data-rid="${id}"
+        onmousemove="excHover(event,this)" onmouseleave="excLeave(this)" onpointerdown="excTrackDown(event,this)">${filmsHTML(pct)}</span>
     </span>
-    <span class="rt-your">${pct ? gradeIconHTML(pct) + pct + '%' : ''}</span>
   </div>`;
 }
 
@@ -1149,11 +1251,10 @@ const isMobile = () => window.matchMedia('(max-width: 768px)').matches;
 function excPctFromEvent(e, track) {
   const r = track.getBoundingClientRect();
   const frac = (e.clientX - r.left) / r.width;
-  return Math.min(100, Math.max(10, Math.round(frac * 10) * 10));   // 10 … 100 in tens
+  return Math.min(100, Math.max(10, Math.ceil(frac * 10) * 10));    // the frame under the pointer: 10 … 100
 }
 function excPaint(track, pct) {
-  const g = track.querySelector('.exc-grad');
-  if (g) g.style.clipPath = `inset(0 ${100 - pct}% 0 0)`;
+  track.querySelectorAll('.exc-film').forEach((f, i) => f.classList.toggle('on', i < pct / 10));
 }
 /* desktop hover preview (suppressed while dragging) */
 function excHover(e, track) { if (!excDrag) excPaint(track, excPctFromEvent(e, track)); }
@@ -1192,7 +1293,7 @@ function excWidgetClick(e, widget) {
 
 /* ── Excitement rating modal (mobile) ── */
 let excModalId = null, excModalPct = 50;
-function movieTitle(id) { const f = DB.releases.find(r => r.id === id); return f ? f.title : ''; }
+function movieTitle(id) { const f = DB.releases.find(r => r.id === id); return f ? dispTitle(f) : ''; }
 function openExcModal(id) {
   excModalId  = id;
   excModalPct = MY_VOTES[id] ? pctFromStars(MY_VOTES[id]) : 50;
@@ -1209,12 +1310,10 @@ function closeExcModal() {
   excModalId = null;
 }
 function paintExcModal() {
-  const grad = document.getElementById('exc-modal-grad');
-  if (grad) grad.style.clipPath = `inset(0 ${100 - excModalPct}% 0 0)`;
-  const icon = document.getElementById('exc-modal-icon');
-  if (icon) { icon.src = `assets/${gradeTier(excModalPct)}.svg`; icon.alt = gradeTier(excModalPct) + ' tier'; }
+  const track = document.getElementById('exc-modal-track');
+  if (track) track.innerHTML = filmsHTML(excModalPct);
   const pctEl = document.getElementById('exc-modal-pct');
-  if (pctEl) pctEl.textContent = excModalPct + '%';
+  if (pctEl) pctEl.innerHTML = mmHTML(excModalPct);
 }
 function excModalDown(e) {
   const track = document.getElementById('exc-modal-track');
@@ -1247,11 +1346,13 @@ async function vote(id, stars) {
 function syncRatingUI(id) {
   document.querySelectorAll(`[data-rrow="${CSS.escape(id)}"]`)
     .forEach(el => { el.innerHTML = rateRowInnerHTML(id); });
+  document.querySelectorAll(`[data-mmrow="${CSS.escape(id)}"]`)
+    .forEach(el => { el.innerHTML = posterMMHTML(id); });
   document.querySelectorAll(`.exc-track[data-rid="${CSS.escape(id)}"]`).forEach(track => {
     const pct = MY_VOTES[id] ? pctFromStars(MY_VOTES[id]) : 0;
     excPaint(track, pct);
-    const y = track.parentElement.querySelector('.rt-your');
-    if (y) y.innerHTML = pct ? gradeIconHTML(pct) + pct + '%' : '';
+    const y = track.closest('.rt-widget')?.querySelector('.rt-your');
+    if (y) y.innerHTML = pct ? mmHTML(pct) : '';
   });
 }
 
@@ -1283,7 +1384,7 @@ function updateBookmarkUI() {
   if (c) c.textContent = BOOKMARKS.size ? BOOKMARKS.size : '';
 }
 
-/* "Trending" filter — only films the community rates tier S or A (≥70%) */
+/* "Trending" filter — only films the community rates 22mm or more (≥70%) */
 let hypedFilter = false;
 const isHyped = id => { const rt = RATINGS[id]; return !!(rt && rt.count && pctFromStars(rt.avg) >= 70); };
 function toggleHypedFilter() {
@@ -1307,7 +1408,7 @@ function toggleTheme() {
 function applyTheme() {
   document.getElementById('hr').classList.toggle('light', !isDark);
   const b = document.getElementById('theme-btn');
-  if (b) b.innerHTML = `<svg class="tb-ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor" stroke="none"/></svg><span class="tb-label">${isDark ? 'Light' : 'Dark'}</span>`;
+  if (b) b.innerHTML = `<svg class="tb-ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor" stroke="none"/></svg><span class="tb-label">${t(isDark ? 'light' : 'dark')}</span>`;
 }
 
 /* ═══════════════════════════════════════════════
@@ -1382,6 +1483,7 @@ function route() {
   const today = todayISO();
   const sixM  = new Date(); sixM.setMonth(sixM.getMonth() + 6);
   const cap   = sixM.toISOString().slice(0, 10);
+  applyLang();
   document.getElementById('hero-mount').innerHTML = heroHTML(today, today, cap);
   document.getElementById('app').innerHTML = pageHome();
   buildGenreChips();
@@ -1405,7 +1507,7 @@ const escA = s => String(s).replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 
 function monthLabel(ym) {
   const [y,m] = ym.split('-');
-  return new Date(+y,+m-1,1).toLocaleString('en-US',{month:'long'}) + ' ' + y;
+  return new Date(+y,+m-1,1).toLocaleString(loc(),{month:'long'}) + ' ' + y;
 }
 
 /* ═══════════════════════════════════════════════
@@ -1440,7 +1542,7 @@ function toggleGenres() {
   if (!wrap) return;
   const expanded = wrap.classList.toggle('expanded');
   wrap.style.maxHeight = expanded ? wrap.scrollHeight + 'px' : (wrap.dataset.clampPx || 0) + 'px';
-  if (more) more.innerHTML = `${expanded ? 'Show less' : 'Show more'} <span class="gt-arrow">▾</span>`;
+  if (more) more.innerHTML = `${t(expanded ? 'showLess' : 'showMore')} <span class="gt-arrow">▾</span>`;
 }
 function syncGenreClamp() {
   const wrap = document.getElementById('fbar-genre');
@@ -1466,7 +1568,7 @@ function syncGenreClamp() {
   if (wrap.scrollHeight > twoRows + 2) {
     wrap.style.maxHeight = twoRows + 'px';
     more.style.display = 'inline-flex';
-    more.innerHTML = 'Show more <span class="gt-arrow">▾</span>';
+    more.innerHTML = `${t('showMore')} <span class="gt-arrow">▾</span>`;
   } else {
     wrap.style.maxHeight = 'none';
     more.style.display = 'none';
@@ -1482,7 +1584,7 @@ function applyFilters() {
   const q = (document.getElementById('q')?.value || '').toLowerCase().trim();
 
   const visible = currentReleases().filter(r => {
-    const matchQ = !q || r.title.toLowerCase().includes(q) || (r.director||'').toLowerCase().includes(q);
+    const matchQ = !q || r.title.toLowerCase().includes(q) || (r.title_de||'').toLowerCase().includes(q) || (r.director||'').toLowerCase().includes(q);
     const matchG = genreF === 'all' || r.genre.includes(genreF);
     const matchB = !bookmarkFilter || BOOKMARKS.has(r.id);
     const matchH = !hypedFilter || isHyped(r.id);
@@ -1490,11 +1592,11 @@ function applyFilters() {
   });
 
   const rc = document.getElementById('res-count');
-  if (rc) rc.innerHTML = `<strong>${visible.length}</strong>&nbsp;film${visible.length!==1?'s':''}`;
+  if (rc) rc.innerHTML = `<strong>${visible.length}</strong>&nbsp;${t('filmWord', visible.length)}`;
 
   const fs = document.getElementById('fbar-stat');
   if (fs) {
-    const updated = DB.fetched_at ? `Updated ${timeAgo(DB.fetched_at)}` : 'Offline · seed data';
+    const updated = DB.fetched_at ? t('updated', timeAgo(DB.fetched_at)) : t('offline');
     fs.textContent = `${REGION_SETS[regionF].label} Kinostart · ${updated}`;
   }
 
@@ -1511,7 +1613,7 @@ function applyFilters() {
     const ym = sec.dataset.ym;
     const count = visible.filter(r => groupKeyFor(r.date, today) === ym).length;
     const countEl = sec.querySelector('.m-count');
-    if (countEl) countEl.textContent = count ? `${count} film${count!==1?'s':''}` : '';
+    if (countEl) countEl.textContent = count ? `${count} ${t('filmWord', count)}` : '';
     sec.style.display = count === 0 ? 'none' : '';
     const effOpen = !collapsed.has(ym) || (forceOpen && count > 0);
     sec.classList.toggle('closed', !effOpen);
@@ -1522,10 +1624,10 @@ function applyFilters() {
   if (empty) {
     if (!visible.length) {
       empty.textContent = bookmarkFilter && !BOOKMARKS.size
-        ? 'No saved films yet. Tap the bookmark on any film to save it.'
+        ? t('noSaved')
         : hypedFilter
-          ? 'No films are trending (tier S or A) yet.'
-          : 'No films match your filters.';
+          ? t('noTrending')
+          : t('noMatch');
       empty.style.display = 'block';
     } else {
       empty.style.display = 'none';
@@ -1545,10 +1647,10 @@ function toggleMonth(ym) {
 function buildGenreChips() {
   const el = document.getElementById('genre-chips');
   if (!el) return;
-  const genres = [...new Set(DB.releases.flatMap(r => r.genre))].sort();
-  let h = `<button class="chip${genreF==='all'?' on':''}" data-genre="all" onclick="setGenre(this,'all')">All</button>`;
+  const genres = [...new Set(DB.releases.flatMap(r => r.genre))].sort((a, b) => genreName(a).localeCompare(genreName(b), loc()));
+  let h = `<button class="chip${genreF==='all'?' on':''}" data-genre="all" onclick="setGenre(this,'all')">${t('all')}</button>`;
   genres.forEach(g => {
-    h += `<button class="chip${genreF===g?' on':''}" data-genre="${escA(g)}" onclick="setGenre(this,'${escA(g)}')">${esc(g)}</button>`;
+    h += `<button class="chip${genreF===g?' on':''}" data-genre="${escA(g)}" onclick="setGenre(this,'${escA(g)}')">${esc(genreName(g))}</button>`;
   });
   el.innerHTML = h;
 }
@@ -1566,14 +1668,14 @@ function flagsRowHTML(f) {
     if (d[c]) (byDate[d[c]] = byDate[d[c]] || []).push(c);
     else missing.push(c);
   });
-  const fmt = iso => new Date(iso+'T12:00:00').toLocaleString('en-US',{day:'numeric',month:'short'});
+  const fmt = iso => new Date(iso+'T12:00:00').toLocaleString(loc(),{day:'numeric',month:'short'});
   const cc = list => list.map(c => `<i class="cc">${FLAG[c]}</i>`).join('');
   let parts = Object.keys(byDate).sort().map(date =>
     `<span class="flag-grp">${cc(byDate[date])}<b>${fmt(date)}</b></span>`);
   if (missing.length && codes.length > 1) {
-    parts.push(`<span class="flag-grp flag-miss">${cc(missing)}<em>date tbc</em></span>`);
+    parts.push(`<span class="flag-grp flag-miss">${cc(missing)}<em>${t('dateTbc')}</em></span>`);
   }
-  if (!parts.length) parts = [`<span class="flag-grp flag-miss"><em>no release date yet</em></span>`];
+  if (!parts.length) parts = [`<span class="flag-grp flag-miss"><em>${t('noDate')}</em></span>`];
   return parts.join('');
 }
 
@@ -1581,7 +1683,7 @@ function flagsRowHTML(f) {
    DACH → FSK (DE/AT/CH), UK → BBFC, USA → MPAA. */
 function certHTML(f) {
   const certs  = f.certs || {};
-  const labels = { dach:'FSK', gb:'BBFC', us:'Rated' };
+  const labels = { dach:'FSK', gb:'BBFC', us:t('rated') };
   for (const c of REGION_SETS[regionF].codes) {
     if (certs[c]) return `<span class="fsk">${labels[regionF]} ${esc(certs[c])}</span>`;
   }
@@ -1598,10 +1700,19 @@ const GENRE_COLOR = {
   'Mystery': '#6366f1', 'Romance': '#ff7b9c', 'Science Fiction': '#22d3ee', 'Thriller': '#d97706',
   'War': '#9ca3af', 'Western': '#b45309', 'TV Movie': '#a3a3a3',
 };
+/* TMDB's German genre names; the English name stays the filter key */
+const GENRE_DE = {
+  'Action': 'Action', 'Adventure': 'Abenteuer', 'Animation': 'Animation', 'Comedy': 'Komödie',
+  'Crime': 'Krimi', 'Documentary': 'Dokumentarfilm', 'Drama': 'Drama', 'Family': 'Familie',
+  'Fantasy': 'Fantasy', 'History': 'Historie', 'Horror': 'Horror', 'Music': 'Musik',
+  'Mystery': 'Mystery', 'Romance': 'Liebesfilm', 'Science Fiction': 'Science Fiction', 'Thriller': 'Thriller',
+  'War': 'Kriegsfilm', 'Western': 'Western', 'TV Movie': 'TV-Film',
+};
+const genreName = g => lang() === 'de' ? (GENRE_DE[g] || g) : g;
 function genreHTML(list) {
   return list.map(g => {
     const c = GENRE_COLOR[g];
-    return `<span class="gt"><i${c ? ` style="background:${c}"` : ''}></i>${esc(g)}</span>`;
+    return `<span class="gt"><i${c ? ` style="background:${c}"` : ''}></i>${esc(genreName(g))}</span>`;
   }).join('');
 }
 
@@ -1609,29 +1720,33 @@ function genreHTML(list) {
 function cardHTML(f, today, ym) {
   const isToday = f.date === today;
   const d0  = new Date(f.date+'T12:00:00');
-  const dow = d0.toLocaleDateString('en-US', { weekday:'short' });
-  const dm  = d0.toLocaleDateString('en-US', { day:'numeric', month:'short' });
+  const dow = d0.toLocaleDateString(loc(), { weekday:'short' });
+  const dm  = d0.toLocaleDateString(loc(), { day:'numeric', month:'short' });
   return `<article class="card${isToday?' f-today':''}" data-id="${f.id}" data-ym="${ym}" onclick="toggleCard(event,this)">
     <div class="cp">${f.poster
       ? `<img loading="lazy" src="${TMDB_IMG}${esc(f.poster)}" alt="">`
-      : `<div class="cp-empty">${esc(f.title)}</div>`}</div>
+      : `<div class="cp-empty">${esc(dispTitle(f))}</div>`}${ratingsEnabled() ? `<span class="cp-mm" data-mmrow="${f.id}">${posterMMHTML(f.id)}</span>` : ''}</div>
     <div class="ci">
-      <button class="card-bm${isBookmarked(f.id)?' on':''}" data-bm="${f.id}" onclick="toggleBookmark(event,'${f.id}')" aria-label="Bookmark this film" title="Bookmark">
+      <button class="card-bm${isBookmarked(f.id)?' on':''}" data-bm="${f.id}" onclick="toggleBookmark(event,'${f.id}')" aria-label="${t('bookmarkAria')}" title="${t('bookmark')}">
         <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h12a1 1 0 0 1 1 1v18l-7-4-7 4V3a1 1 0 0 1 1-1z"/></svg>
       </button>
-      <h3 class="ci-title">${esc(f.title)}</h3>
-      <div class="ci-date"><span class="dow">${dow}</span><span class="dm">${dm}</span>${isToday ? '<b>Today</b>' : ''}</div>
+      <h3 class="ci-title">${esc(dispTitle(f))}${origTitle(f) ? `<span class="ci-otitle">${esc(origTitle(f))}</span>` : ''}</h3>
+      <div class="ci-date"><span class="dow">${dow}</span><span class="dm">${dm}</span>${isToday ? `<b>${t('today')}</b>` : ''}</div>
       <div class="ci-tags">${genreHTML(f.genre)}</div>
       ${ratingsEnabled() ? `<div class="ci-rate" data-rrow="${f.id}">${rateRowInnerHTML(f.id)}</div>` : ''}
       <div class="ci-extra"><div class="ci-extra-in">
         <div class="ci-flags">${flagsRowHTML(f)}</div>
         ${f.director ? `<div class="ci-dir">${esc(f.director)}</div>` : ''}
         <div class="ci-meta">
-          ${f.runtime ? `<span>${f.runtime} min</span>` : ''}
+          ${f.runtime ? `<span>${f.runtime} ${t('min')}</span>` : ''}
           ${certHTML(f)}
         </div>
         ${ratingsEnabled() ? rateWidgetHTML(f.id) : ''}
-        <a class="ci-lbd" href="https://letterboxd.com/search/${encodeURIComponent(f.title)}/" target="_blank" rel="noopener">Letterboxd</a>
+        <div class="ci-links">
+          <a class="ci-lbd" href="https://letterboxd.com/search/${encodeURIComponent(f.title)}/" target="_blank" rel="noopener">Letterboxd</a>
+          <button class="ci-lbd" onclick="downloadICS('${f.id}')" aria-label="${t('addCal')}: Apple">${CAL_IC}Apple</button>
+          <a class="ci-lbd" href="${googleCalURL(f)}" target="_blank" rel="noopener" aria-label="${t('addCal')}: Google">${CAL_IC}Google</a>
+        </div>
       </div></div>
     </div>
   </article>`;
@@ -1647,25 +1762,30 @@ function heroHTML(today, lo, cap) {
 
   const slides = top.map(f => {
     const dl = new Date(f.date+'T12:00:00')
-      .toLocaleDateString('en-US', { weekday:'short', day:'numeric', month:'long' });
+      .toLocaleDateString(loc(), { weekday:'short', day:'numeric', month:'long' });
     return `<article class="hslide" style="background-image:url('${TMDB_BACK}${esc(f.backdrop)}')">
       <div class="hslide-grad"></div>
       <div class="hslide-body">
-        <span class="hslide-badge">Most anticipated</span>
-        <h2 class="hslide-title">${esc(f.title)}</h2>
+        <span class="hslide-badge">${t('mostAnticipated')}</span>
+        <h2 class="hslide-title">${esc(dispTitle(f))}</h2>
+        ${origTitle(f) ? `<span class="hslide-otitle">${esc(origTitle(f))}</span>` : ''}
         <div class="hslide-tags">${genreHTML(f.genre.slice(0,3))}</div>
-        <div class="hslide-date"><b>In cinemas ${dl}</b><span>${REGION_SETS[regionF].flags}</span></div>
-        <a class="hslide-btn" href="https://letterboxd.com/search/${encodeURIComponent(f.title)}/" target="_blank" rel="noopener">Letterboxd</a>
+        <div class="hslide-date"><b>${t('inCinemas', dl)}</b><span>${REGION_SETS[regionF].flags}</span></div>
+        <div class="hslide-links">
+          <a class="hslide-btn" href="https://letterboxd.com/search/${encodeURIComponent(f.title)}/" target="_blank" rel="noopener">Letterboxd</a>
+          <button class="hslide-btn" onclick="downloadICS('${f.id}')" aria-label="${t('addCal')}: Apple">${CAL_IC}Apple</button>
+          <a class="hslide-btn" href="${googleCalURL(f)}" target="_blank" rel="noopener" aria-label="${t('addCal')}: Google">${CAL_IC}Google</a>
+        </div>
       </div>
     </article>`;
   }).join('');
 
-  const dots = top.map((_,i)=>`<button class="hdot${i===0?' on':''}" aria-label="Slide ${i+1}" onclick="goHero(${i})"></button>`).join('');
+  const dots = top.map((_,i)=>`<button class="hdot${i===0?' on':''}" aria-label="${t('slide', i+1)}" onclick="goHero(${i})"></button>`).join('');
 
   return `<section class="hero-wrap">
     <div class="hero" id="hero">${slides}</div>
-    <button class="hero-arrow ha-prev" aria-label="Previous" onclick="stepHero(-1)">‹</button>
-    <button class="hero-arrow ha-next" aria-label="Next" onclick="stepHero(1)">›</button>
+    <button class="hero-arrow ha-prev" aria-label="${t('prev')}" onclick="stepHero(-1)">‹</button>
+    <button class="hero-arrow ha-next" aria-label="${t('next')}" onclick="stepHero(1)">›</button>
     <div class="hero-dots">${dots}</div>
   </section>`;
 }
@@ -1694,7 +1814,7 @@ function pageHome() {
   });
 
   if (!monthKeys.length) {
-    return `<div class="page-wrap"><div class="empty-state">No releases found.</div></div>`;
+    return `<div class="page-wrap"><div class="empty-state">${t('noReleases')}</div></div>`;
   }
 
   let h = `<div class="page-wrap">`;
@@ -1703,13 +1823,13 @@ function pageHome() {
     const isJust = ym === JS_KEY;
     const isNow  = !isJust && ym === todayYM;
     const isOpen = !collapsed.has(ym);
-    const label  = isJust ? 'Just Started' : monthLabel(ym);
+    const label  = isJust ? t('justStarted') : monthLabel(ym);
     h += `<section class="m-sec${isJust?' m-just':''}${isNow?' m-now':''}${isOpen?'':' closed'}" data-ym="${ym}">
       <header class="m-head" onclick="toggleMonth('${ym}')">
         <span class="m-chev">▶</span>
         <span class="m-label">${label}</span>
-        ${isJust ? '<span class="m-pill just">In Cinemas Now</span>' : isNow ? '<span class="m-pill now">This Month</span>' : ''}
-        <span class="m-count">${films.length} film${films.length!==1?'s':''}</span>
+        ${isJust ? `<span class="m-pill just">${t('inCinemasNow')}</span>` : isNow ? `<span class="m-pill now">${t('thisMonth')}</span>` : ''}
+        <span class="m-count">${films.length} ${t('filmWord', films.length)}</span>
       </header>
       <div class="m-grid">${films.map(f => cardHTML(f, today, ym)).join('')}</div>
     </section>`;
@@ -1723,8 +1843,53 @@ function pageHome() {
 ═══════════════════════════════════════════════ */
 function toggleCard(e, card) {
   // Don't toggle when clicking links, the excitement voter, or the bookmark
-  if (e.target.closest('a, .rt-widget, .card-bm')) return;
+  if (e.target.closest('a, .rt-widget, .card-bm, .ci-links')) return;
   card.classList.toggle('expanded');
+}
+
+/* ═══════════════════════════════════════════════
+   ADD TO CALENDAR — all-day event on the active region's release date
+═══════════════════════════════════════════════ */
+/* assets/calendar-*.svg drawn inline so it takes the button's text colour (incl. hover) */
+const CAL_IC = '<svg class="cal-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 4H6C3.79086 4 2 5.79086 2 8V18C2 20.2091 3.79086 22 6 22H18C20.2091 22 22 20.2091 22 18V8C22 5.79086 20.2091 4 18 4Z"/><path d="M8 2V6M16 2V6M2 10H22"/></svg>';
+const SITE_NAME = '31mm.info';
+const calDay  = iso => iso.replace(/-/g, '');
+const calNext = iso => { const d = new Date(iso + 'T12:00:00Z'); d.setUTCDate(d.getUTCDate() + 1); return calDay(d.toISOString().slice(0, 10)); };
+function calDetails(f) {
+  return [f.director ? t('calDir', f.director) : '', f.runtime ? t('calLen', f.runtime) : '', SITE_NAME]
+    .filter(Boolean).join('\n');
+}
+function googleCalURL(f) {
+  const q = new URLSearchParams({
+    action: 'TEMPLATE',
+    text: t('calSummary', dispTitle(f)),
+    dates: `${calDay(f.date)}/${calNext(f.date)}`,
+    details: calDetails(f),
+  });
+  return 'https://calendar.google.com/calendar/render?' + q.toString();
+}
+function downloadICS(id) {
+  const f = currentReleases().find(r => r.id === id);
+  if (!f) return;
+  const icsEsc = s => String(s).replace(/\\/g, '\\\\').replace(/[;,]/g, m => '\\' + m).replace(/\n/g, '\\n');
+  const stamp = new Date().toISOString().replace(/[-:]/g, '').slice(0, 15) + 'Z';
+  const ics = [
+    'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//31mm//Kinostart Kalender//EN', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH',
+    'BEGIN:VEVENT',
+    `UID:${f.id}-${regionF}-${calDay(f.date)}@31mm`,
+    `DTSTAMP:${stamp}`,
+    `DTSTART;VALUE=DATE:${calDay(f.date)}`,
+    `DTEND;VALUE=DATE:${calNext(f.date)}`,
+    `SUMMARY:${icsEsc(t('calSummary', dispTitle(f)))}`,
+    `DESCRIPTION:${icsEsc(calDetails(f))}`,
+    'TRANSP:TRANSPARENT',
+    'END:VEVENT', 'END:VCALENDAR',
+  ].join('\r\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([ics], { type: 'text/calendar;charset=utf-8' }));
+  a.download = (f.title.replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '').toLowerCase() || 'film') + '.ics';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 }
 
 /* ═══════════════════════════════════════════════
@@ -1779,8 +1944,9 @@ function startHero() {
    BOOT
 ═══════════════════════════════════════════════ */
 async function init() {
+  applyLang();
   document.getElementById('app').innerHTML =
-    '<div class="loading-state">Loading…</div>';
+    `<div class="loading-state">${t('loading')}</div>`;
   loadTheme();
   try {
     await Promise.all([loadData(), loadRatings()]);   // loadRatings never throws

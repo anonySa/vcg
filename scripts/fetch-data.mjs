@@ -119,11 +119,11 @@ async function build() {
     console.log(`  discovered ${region}: ${discover.length} unique so far`);
   }
 
-  // 3. Per-movie detail (theatrical dates + certs + director + genres)
+  // 3. Per-movie detail (theatrical dates + certs + director + genres + German title)
   const enriched = await runBatched(discover, 8, async ({ id, genre_ids, poster_path, backdrop_path, popularity }) => {
     try {
       const d = await tmdbGet('/movie/' + id, {
-        append_to_response: 'release_dates,credits',
+        append_to_response: 'release_dates,credits,translations',
         language:           'en-US',
       });
       if (EXCL_LANG.has(d.original_language)) return null;
@@ -151,6 +151,11 @@ async function build() {
       let genres = genre_ids.map(gid => genreMap[gid]).filter(Boolean);
       if (!genres.length) genres = (d.genres || []).map(g => g.name);
 
+      // German title (DE first, then AT/CH); TMDB leaves it empty when it matches the original
+      const trDe = ((d.translations && d.translations.translations) || []).filter(x => x.iso_639_1 === 'de');
+      const trPick = trDe.find(x => x.iso_3166_1 === 'DE') || trDe.find(x => x.data && x.data.title);
+      const titleDe = (trPick && trPick.data && trPick.data.title || '').trim();
+
       const dates = {}, certs = {};
       REGION_CODES.forEach(rc => { dates[rc] = picks[rc].date; certs[rc] = picks[rc].cert; });
 
@@ -159,6 +164,7 @@ async function build() {
         dates,
         certs,
         title:      d.title || '',
+        ...(titleDe && titleDe !== d.title ? { title_de: titleDe } : {}),
         genre:      genres,
         director:   dir ? dir.name : '',
         runtime:    d.runtime ? String(d.runtime) : '',
