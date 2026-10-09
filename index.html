@@ -902,6 +902,9 @@
           <span class="nav-stat" id="fbar-stat"></span>
           <span class="result-count" id="res-count"></span>
         </div>
+        <button class="btn hdr-btn" id="sync-btn" onclick="openSync()" title="Saved films in your own calendar" data-i18n-attr="title:syncHint,aria-label:syncBtn" aria-label="Calendar sync">
+          <svg class="hdr-ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 4H6C3.79086 4 2 5.79086 2 8V18C2 20.2091 3.79086 22 6 22H18C20.2091 22 22 20.2091 22 18V8C22 5.79086 20.2091 4 18 4Z"/><path d="M8 2V6M16 2V6M2 10H22"/></svg><span class="hdr-label" data-i18n="syncBtn">Calendar sync</span>
+        </button>
         <div class="hdr-menu" id="lang-menu">
           <button class="btn hdr-btn" id="lang-btn" onclick="langClick(event)" aria-haspopup="true" aria-label="Language" data-i18n-attr="aria-label:language"><svg class="hdr-ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></svg><span class="hdr-label" id="lang-label"></span></button>
           <div class="settings-panel">
@@ -949,10 +952,6 @@
         <button class="bm-filter" id="bm-filter" onclick="toggleBookmarkFilter()" aria-pressed="false" title="Show only saved films" data-i18n-attr="title:savedTitle">
           <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h12a1 1 0 0 1 1 1v18l-7-4-7 4V3a1 1 0 0 1 1-1z"/></svg>
           <span data-i18n="saved">Saved</span> <span id="bm-count"></span>
-        </button>
-        <button class="bm-filter" id="sync-btn" onclick="openSync()" title="Saved films in your own calendar" data-i18n-attr="title:syncHint">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 4H6C3.79086 4 2 5.79086 2 8V18C2 20.2091 3.79086 22 6 22H18C20.2091 22 22 20.2091 22 18V8C22 5.79086 20.2091 4 18 4Z"/><path d="M8 2V6M16 2V6M2 10H22"/></svg>
-          <span data-i18n="syncBtn">Calendar sync</span>
         </button>
         <button class="bm-filter" id="hyped-filter" onclick="toggleHypedFilter()" aria-pressed="false" title="Show only trending films (community rating 22mm or more)" data-i18n-attr="title:trendTitle">
           <svg viewBox="0 0 24 24"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="15 7 21 7 21 13"/></svg>
