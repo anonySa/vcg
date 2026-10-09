@@ -2155,7 +2155,7 @@ function toggleCard(e, card) {
 ═══════════════════════════════════════════════ */
 /* assets/calendar-*.svg drawn inline so it takes the button's text colour (incl. hover) */
 const CAL_IC = '<svg class="cal-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 4H6C3.79086 4 2 5.79086 2 8V18C2 20.2091 3.79086 22 6 22H18C20.2091 22 22 20.2091 22 18V8C22 5.79086 20.2091 4 18 4Z"/><path d="M8 2V6M16 2V6M2 10H22"/></svg>';
-const SITE_NAME = '31mm.info';
+const SITE_NAME = 'https://anonysa.github.io/vcg/';   // until a real domain exists
 const calDay  = iso => iso.replace(/-/g, '');
 const calNext = iso => { const d = new Date(iso + 'T12:00:00Z'); d.setUTCDate(d.getUTCDate() + 1); return calDay(d.toISOString().slice(0, 10)); };
 function calDetails(f) {

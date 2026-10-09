@@ -48,7 +48,7 @@ async function sha256hex(s) {
 
 /* ── Calendar sync ─────────────────────────────────────────────────── */
 const DATA_URL     = 'https://anonysa.github.io/vcg/data.json';   // fresh dates + titles
-const SITE_NAME    = '31mm.info';
+const SITE_NAME    = 'https://anonysa.github.io/vcg/';   // until a real domain exists
 const REGION_CODES = { dach: ['DE', 'AT', 'CH'], gb: ['GB'], us: ['US'] };
 const CAL_TEXT = {
   en: { name: '31mm · Saved films', summary: t => `${t} – in cinemas`, dir: d => `Director: ${d}`, len: m => `Runtime: ${m} min` },
