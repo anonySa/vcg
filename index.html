@@ -188,8 +188,8 @@
     .nav-info .result-count::before { content: '· '; color: var(--muted); }
 
     /* settings dropdown (region + view) */
-    .fbar-right { position: relative; flex-shrink: 0; }
-    #theme-btn, .settings-toggle { display: inline-flex; align-items: center; gap: .4rem; }
+    .hdr-menu { position: relative; flex-shrink: 0; }
+    .hdr-btn { display: inline-flex; align-items: center; gap: .4rem; }
     .settings-panel {
       display: none;
       position: absolute; top: calc(100% + .55rem); right: 0; z-index: 300;
@@ -199,8 +199,8 @@
       flex-direction: column; gap: .85rem;
       animation: fadeUp .16s ease both;
     }
-    .fbar-right.open .settings-panel { display: flex; }
-    .fbar-right.open .settings-toggle { background: var(--acc); color: #fff; }
+    .hdr-menu.open .settings-panel { display: flex; }
+    .hdr-menu.open .hdr-btn { background: var(--acc); color: #fff; }
     .sp-group { display: flex; flex-direction: column; gap: .4rem; }
     .sp-label {
       font-size: .58rem; font-weight: 700; color: var(--muted);
@@ -506,6 +506,7 @@
       font-size: 16px; line-height: 1; letter-spacing: .01em; color: var(--text);
       padding-right: 24px;   /* room for the bookmark; titles wrap, never clip */
     }
+    .ci-t { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; }   /* max two lines */
     .ci-date { font-size: 12px; color: var(--muted); }
     .ci-date .dow::after { content: ', '; }   /* tiles: "Thu, Sep 17" on one line */
     .ci-date b { color: var(--acc); font-weight: 600; letter-spacing: .06em; text-transform: uppercase; margin-left: 8px; }
@@ -731,6 +732,58 @@
       to   { opacity: 1; transform: translateY(0); }
     }
 
+    /* ── CALENDAR VIEW ── month grids stacked, release days carry a strip of mini posters */
+    .cal-month { margin-bottom: .5rem; }
+    .cal-month:not(.closed) .m-chev { transform: rotate(90deg); }
+    .cal-month.closed .cal-week, .cal-month.closed .cal-grid { display: none; }
+    .cal-month.m-now .m-label { color: var(--acc); }
+    .cal-week, .cal-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; }
+    .cal-week {
+      padding: 12px 0 6px; font-size: 10px; font-weight: 700; letter-spacing: .1em;
+      text-transform: uppercase; color: var(--muted);
+    }
+    .cal-week span { padding-left: 8px; }
+    .cal-grid { padding-bottom: 24px; }
+    .cal-day {
+      position: relative; min-width: 0; min-height: 118px; padding: 8px;
+      display: flex; flex-direction: column; justify-content: space-between; gap: 6px;
+      border: 0; border-radius: 12px; font-family: inherit; text-align: left; color: var(--muted);
+      background: var(--glass); box-shadow: inset 0 0 0 1px var(--ring);
+    }
+    .cal-day.we { background: var(--glass2); }   /* Sat + Sun */
+    .cal-day.pad { background: none; box-shadow: none; }
+    .cal-day.past { opacity: .45; }
+    .cal-day.has { cursor: pointer; color: var(--text); }
+    .cal-day.has:hover { box-shadow: inset 0 0 0 1px var(--acc); }
+    .cal-day.today .cal-num { color: var(--acc); }
+    .cal-day.sel { box-shadow: inset 0 0 0 2px var(--acc); }
+    .cal-num { font-size: 12px; font-weight: 600; line-height: 1; font-variant-numeric: tabular-nums; }
+    .cal-strip { display: flex; gap: 3px; align-items: flex-end; min-width: 0; }
+    .cal-strip img { flex: 0 1 44px; min-width: 0; aspect-ratio: 2 / 3; object-fit: cover; border-radius: 4px; display: block; background: var(--bg3); }
+    .cal-more { position: absolute; top: 8px; right: 8px; font-size: 10px; font-weight: 700; line-height: 1; color: var(--text2); }
+    .cal-more-m { display: none; }
+    .cal-panel { grid-column: 1 / -1; padding: 10px 0 6px; }
+    .cal-panel-head { display: flex; align-items: center; gap: .7rem; padding: 0 .25rem; }
+    .cal-panel-head .m-label { font-size: 16px; }
+
+    /* ── VIEW SWITCH ── floating capsule at the bottom */
+    #wrap { padding-bottom: 76px; }
+    .view-nav {
+      position: fixed; left: 50%; bottom: calc(16px + env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 240;
+      display: flex; gap: 2px; padding: 4px; border-radius: 999px;
+      background: var(--nav); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      box-shadow: inset 0 0 0 1px var(--ring);
+    }
+    .view-nav button {
+      display: inline-flex; align-items: center; gap: 6px;
+      border: 0; background: none; cursor: pointer; font-family: inherit;
+      font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; line-height: 1;
+      color: var(--text2); padding: 10px 14px; border-radius: 999px; transition: color .12s, background .12s;
+    }
+    .view-nav button:hover { color: var(--text); }
+    .view-nav button.on { background: var(--acc); color: #fff; }
+    .view-nav svg { width: 15px; height: 15px; display: block; flex-shrink: 0; }
+
     /* ── BACK TO TOP (mobile) ── */
     .to-top {
       position: fixed; right: 16px; bottom: 16px; z-index: 250;
@@ -749,7 +802,17 @@
       .m-grid { grid-template-columns: repeat(6, 1fr); }
     }
     @media (max-width: 768px) {
-      .to-top { display: flex; }
+      .to-top { display: flex; bottom: calc(76px + env(safe-area-inset-bottom)); }   /* sits above the view switch */
+      .view-nav { bottom: calc(10px + env(safe-area-inset-bottom)); }
+      .view-nav button { font-size: 11px; padding: 10px 12px; }
+      .cal-week, .cal-grid { gap: 3px; }
+      .cal-week span { padding-left: 4px; }
+      .cal-day { min-height: 74px; padding: 4px; border-radius: 8px; gap: 4px; }
+      .cal-strip img { flex: 0 1 34px; }
+      .cal-strip img:nth-child(n+2) { display: none; }   /* one poster per day on phones */
+      .cal-more { top: 4px; right: 4px; font-size: 9px; }
+      .cal-more-d { display: none; }
+      .cal-more-m { display: block; }
       .page-wrap { padding: .5rem .65rem 5rem; }
       .m-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 10px 0 22px; }
       /* list rows on phones: narrower date column, rating stays on the right */
@@ -783,16 +846,10 @@
       #hero-mount:empty + .filter-bar { margin-top: 72px; }
       .cp { border-radius: 12px; }
       .nav-right { gap: .3rem; }
-      .nav-stat { display: none; }        /* region + updated live in Settings on mobile */
-      .nav-info .result-count::before { content: none; }
-      .nav-info { margin-right: .3rem; }
-      .tb-label   { display: none; }      /* icon-only buttons on mobile */
-      .st-label   { display: none; }
-      #theme-btn, .settings-toggle {
-        padding: 0; min-width: 40px; min-height: 40px;
-        display: inline-flex; align-items: center; justify-content: center;
-      }
-      #theme-btn .tb-ic, .settings-toggle .set-ic { width: 18px; height: 18px; }
+      .nav-info   { display: none; }      /* no room next to Language / Region / Theme */
+      .tb-label, .hdr-label { display: none; }   /* icon-only round buttons on phones */
+      .hdr-btn { padding: 0; width: 40px; height: 40px; flex-shrink: 0; justify-content: center; }
+      .hdr-btn .hdr-ic, #theme-btn .tb-ic { width: 18px; height: 18px; }
 
       /* filter bar */
       .filter-bar-inner { padding: .55rem .65rem; gap: .5rem; }
@@ -833,13 +890,23 @@
           <span class="nav-stat" id="fbar-stat"></span>
           <span class="result-count" id="res-count"></span>
         </div>
-        <button class="btn" id="theme-btn" onclick="toggleTheme()"><svg class="tb-ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor" stroke="none"/></svg><span class="tb-label"></span></button>
-        <div class="fbar-right" id="fbar-right">
-          <button class="btn settings-toggle" id="settings-toggle" onclick="toggleSettings(event)" aria-haspopup="true" aria-label="Settings" data-i18n-attr="aria-label:settings">
-            <svg class="set-ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-            <span class="st-label" data-i18n="settings">Settings</span>
+        <div class="hdr-menu" id="lang-menu">
+          <button class="btn hdr-btn" id="lang-btn" onclick="langClick(event)" aria-haspopup="true" aria-label="Language" data-i18n-attr="aria-label:language"><svg class="hdr-ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></svg><span class="hdr-label" id="lang-label"></span></button>
+          <div class="settings-panel">
+            <div class="sp-group">
+              <span class="sp-label" data-i18n="language">Language</span>
+              <div class="seg">
+                <button id="lang-de" onclick="setLang('de')">Deutsch</button>
+                <button id="lang-en" onclick="setLang('en')">English</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="hdr-menu" id="region-menu">
+          <button class="btn hdr-btn" id="region-toggle" onclick="toggleMenu(event, 'region-menu')" aria-haspopup="true" aria-label="Release region" data-i18n-attr="aria-label:region">
+            <svg class="hdr-ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg><span class="hdr-label" id="region-label"></span>
           </button>
-          <div class="settings-panel" id="settings-panel">
+          <div class="settings-panel">
             <div class="sp-group">
               <span class="sp-label" data-i18n="region">Release region</span>
               <div class="seg" id="region-seg">
@@ -848,15 +915,9 @@
                 <button id="reg-us"   onclick="setRegion('us')">USA</button>
               </div>
             </div>
-            <div class="sp-group">
-              <span class="sp-label" data-i18n="view">View</span>
-              <div class="seg" id="view-seg">
-                <button id="seg-tiles" onclick="setView('tiles')"><span class="seg-ic"><svg viewBox="0 0 30 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 14C13.1046 14 14 14.8954 14 16V22C14 23.1046 13.1046 24 12 24H2C0.895431 24 1.61066e-08 23.1046 0 22V16C0 14.8954 0.895431 14 2 14H12ZM28 14C29.1046 14 30 14.8954 30 16V22C30 23.1046 29.1046 24 28 24H18C16.8954 24 16 23.1046 16 22V16C16 14.8954 16.8954 14 18 14H28ZM12 0C13.1046 0 14 0.895431 14 2V8C14 9.10457 13.1046 10 12 10H2C0.895431 10 1.61066e-08 9.10457 0 8V2C0 0.895431 0.895431 4.83192e-08 2 0H12ZM28 0C29.1046 0 30 0.895431 30 2V8C30 9.10457 29.1046 10 28 10H18C16.8954 10 16 9.10457 16 8V2C16 0.895431 16.8954 4.83192e-08 18 0H28Z" fill="currentColor"/></svg></span> <span data-i18n="tiles">Tiles</span></button>
-                <button id="seg-list" onclick="setView('list')"><span class="seg-ic"><svg viewBox="0 0 30 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M28 14C29.1046 14 30 14.8954 30 16V22C30 23.1046 29.1046 24 28 24H2C0.895431 24 1.61066e-08 23.1046 0 22V16C0 14.8954 0.895431 14 2 14H28ZM28 0C29.1046 0 30 0.895431 30 2V8C30 9.10457 29.1046 10 28 10H2C0.895431 10 1.61066e-08 9.10457 0 8V2C0 0.895431 0.895431 5.63724e-08 2 0H28Z" fill="currentColor"/></svg></span> <span data-i18n="list">List</span></button>
-              </div>
-            </div>
           </div>
         </div>
+        <button class="btn hdr-btn" id="theme-btn" onclick="toggleTheme()"><svg class="tb-ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor" stroke="none"/></svg><span class="tb-label"></span></button>
       </div>
     </div>
   </nav>
@@ -915,6 +976,7 @@
         <h3 data-i18n="view">View</h3>
         <ul>
           <li><a href="#/" onclick="setView('tiles')" data-i18n="posterTiles">Poster tiles</a></li>
+          <li><a href="#/" onclick="setView('calendar')" data-i18n="calendar">Calendar</a></li>
           <li><a href="#/" onclick="setView('list')" data-i18n="list">List</a></li>
         </ul>
       </nav>
@@ -945,6 +1007,12 @@
   </footer>
 
 </div>
+
+<nav class="view-nav" aria-label="View" data-i18n-attr="aria-label:view">
+  <button id="view-tiles" onclick="setView('tiles')"><svg viewBox="0 0 30 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 14C13.1046 14 14 14.8954 14 16V22C14 23.1046 13.1046 24 12 24H2C0.895431 24 1.61066e-08 23.1046 0 22V16C0 14.8954 0.895431 14 2 14H12ZM28 14C29.1046 14 30 14.8954 30 16V22C30 23.1046 29.1046 24 28 24H18C16.8954 24 16 23.1046 16 22V16C16 14.8954 16.8954 14 18 14H28ZM12 0C13.1046 0 14 0.895431 14 2V8C14 9.10457 13.1046 10 12 10H2C0.895431 10 1.61066e-08 9.10457 0 8V2C0 0.895431 0.895431 4.83192e-08 2 0H12ZM28 0C29.1046 0 30 0.895431 30 2V8C30 9.10457 29.1046 10 28 10H18C16.8954 10 16 9.10457 16 8V2C16 0.895431 16.8954 4.83192e-08 18 0H28Z" fill="currentColor"/></svg><span data-i18n="tiles">Tiles</span></button>
+  <button id="view-calendar" onclick="setView('calendar')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 4H6C3.79086 4 2 5.79086 2 8V18C2 20.2091 3.79086 22 6 22H18C20.2091 22 22 20.2091 22 18V8C22 5.79086 20.2091 4 18 4Z"/><path d="M8 2V6M16 2V6M2 10H22"/></svg><span data-i18n="classic">Classic</span></button>
+  <button id="view-list" onclick="setView('list')"><svg viewBox="0 0 30 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M28 14C29.1046 14 30 14.8954 30 16V22C30 23.1046 29.1046 24 28 24H2C0.895431 24 1.61066e-08 23.1046 0 22V16C0 14.8954 0.895431 14 2 14H28ZM28 0C29.1046 0 30 0.895431 30 2V8C30 9.10457 29.1046 10 28 10H2C0.895431 10 1.61066e-08 9.10457 0 8V2C0 0.895431 0.895431 5.63724e-08 2 0H28Z" fill="currentColor"/></svg><span data-i18n="list">List</span></button>
+</nav>
 
 <button id="to-top" class="to-top" aria-label="Back to top" data-i18n-attr="aria-label:toTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
 
@@ -1012,7 +1080,8 @@ let DB        = { releases: [], fetched_at: null };
 let collapsed = new Set();   // group keys e.g. '2026-06' or '__just_started__'
 let genreF    = 'all';
 let isDark    = true;
-let viewMode  = localStorage.getItem('vcg_view') === 'list' ? 'list' : 'tiles';
+const savedView = localStorage.getItem('vcg_view');
+let viewMode  = ['tiles', 'calendar', 'list'].includes(savedView) ? savedView : 'tiles';
 /* Default region from the visitor's timezone (privacy-friendly, no IP lookup):
    DACH → dach · rest of Europe → UK · everywhere else → USA.
    A saved manual choice always wins. */
@@ -1033,7 +1102,7 @@ let regionF   = ['dach','gb','us'].includes(savedRegion) ? savedRegion : detectR
 ═══════════════════════════════════════════════ */
 const I18N = {
   en: {
-    light: 'Light', dark: 'Dark', settings: 'Settings', region: 'Release region', view: 'View',
+    light: 'Light', dark: 'Dark', language: 'Language', region: 'Release region', view: 'View', calendar: 'Calendar', classic: 'Classic',
     tiles: 'Tiles', list: 'List', posterTiles: 'Poster tiles',
     searchPh: 'Search title or director…',
     saved: 'Saved', savedTitle: 'Show only saved films',
@@ -1064,7 +1133,7 @@ const I18N = {
     notFussed: 'Not fussed', cantWait: "Can't wait", saveRating: 'Save my rating',
   },
   de: {
-    light: 'Hell', dark: 'Dunkel', settings: 'Einstellungen', region: 'Kinostart-Region', view: 'Ansicht',
+    light: 'Hell', dark: 'Dunkel', language: 'Sprache', region: 'Kinostart-Region', view: 'Ansicht', calendar: 'Kalender', classic: 'Klassisch',
     tiles: 'Kacheln', list: 'Liste', posterTiles: 'Poster-Kacheln',
     searchPh: 'Titel oder Regie suchen…',
     saved: 'Gemerkt', savedTitle: 'Nur gemerkte Filme zeigen',
@@ -1095,7 +1164,22 @@ const I18N = {
     notFussed: 'Eher egal', cantWait: 'Kann’s kaum erwarten', saveRating: 'Bewertung speichern',
   },
 };
-const lang = () => regionF === 'dach' ? 'de' : 'en';
+/* language follows the region (DACH → DE) until the visitor picks one with the header button */
+const savedLang = localStorage.getItem('vcg_lang');
+let langPref = ['de', 'en'].includes(savedLang) ? savedLang : null;
+const lang = () => langPref || (regionF === 'dach' ? 'de' : 'en');
+function setLang(l) {
+  closeMenus();
+  if (l === lang()) return;
+  langPref = l;
+  localStorage.setItem('vcg_lang', l);
+  route();
+}
+/* desktop: one tap switches DE ↔ EN; phones (icon only) open a dropdown */
+function langClick(e) {
+  if (isMobile()) toggleMenu(e, 'lang-menu');
+  else setLang(lang() === 'de' ? 'en' : 'de');
+}
 const loc  = () => lang() === 'de' ? 'de-DE' : 'en-US';
 function t(key, ...args) {
   const v = I18N[lang()][key] ?? I18N.en[key];
@@ -1104,6 +1188,9 @@ function t(key, ...args) {
 /* static markup: data-i18n="key" sets the text, data-i18n-attr="attr:key,attr:key" sets attributes */
 function applyLang() {
   document.documentElement.lang = lang();
+  const ll = document.getElementById('lang-label');
+  if (ll) ll.textContent = lang().toUpperCase();
+  ['de', 'en'].forEach(l => document.getElementById('lang-' + l)?.classList.toggle('on', lang() === l));
   document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
   document.querySelectorAll('[data-i18n-attr]').forEach(el => {
     el.dataset.i18nAttr.split(',').forEach(pair => { const [a, k] = pair.split(':'); el.setAttribute(a, t(k)); });
@@ -1418,25 +1505,33 @@ function applyTheme() {
    VIEW MODE
 ═══════════════════════════════════════════════ */
 function setView(mode) {
+  const rerender = (mode === 'calendar') !== (viewMode === 'calendar');   // tiles ↔ list is CSS only
   viewMode = mode;
   localStorage.setItem('vcg_view', mode);
+  if (rerender) renderApp();
+  else applyView();
+}
+function renderApp() {
+  document.getElementById('app').innerHTML = viewMode === 'calendar' ? pageCalendar() : pageHome();
   applyView();
-  closeSettings();
+  applyFilters();
+  syncStickyOffset();
 }
 function applyView() {
   const app = document.getElementById('app');
   if (app) {
     app.classList.toggle('view-list', viewMode === 'list');
+    app.classList.toggle('view-cal', viewMode === 'calendar');
   }
-  document.getElementById('seg-tiles')?.classList.toggle('on', viewMode === 'tiles');
-  document.getElementById('seg-list')?.classList.toggle('on', viewMode === 'list');
+  ['tiles', 'calendar', 'list'].forEach(v =>
+    document.getElementById('view-' + v)?.classList.toggle('on', viewMode === v));
 }
 
 /* ═══════════════════════════════════════════════
    RELEASE REGION
 ═══════════════════════════════════════════════ */
 function setRegion(r) {
-  closeSettings();
+  closeMenus();
   if (!REGION_SETS[r] || r === regionF) return;
   regionF = r;
   localStorage.setItem('vcg_region', r);
@@ -1446,17 +1541,22 @@ function setRegion(r) {
 function applyRegion() {
   Object.keys(REGION_SETS).forEach(r =>
     document.getElementById('reg-' + r)?.classList.toggle('on', regionF === r));
+  const rl = document.getElementById('region-label');
+  if (rl) rl.textContent = REGION_SETS[regionF].label;
 }
 
 /* ═══════════════════════════════════════════════
-   SETTINGS DROPDOWN (region + view)
+   REGION DROPDOWN
 ═══════════════════════════════════════════════ */
-function toggleSettings(e) {
+function toggleMenu(e, id) {
   if (e) e.stopPropagation();
-  document.getElementById('fbar-right')?.classList.toggle('open');
+  const m = document.getElementById(id);
+  const open = m && !m.classList.contains('open');
+  closeMenus();
+  if (open) m.classList.add('open');
 }
-function closeSettings() {
-  document.getElementById('fbar-right')?.classList.remove('open');
+function closeMenus() {
+  document.querySelectorAll('.hdr-menu.open').forEach(m => m.classList.remove('open'));
 }
 /* Keep month-section headers tucked right under the sticky filter bar,
    whatever its height (genre chips wrap, mobile stacks, etc.). */
@@ -1488,7 +1588,7 @@ function route() {
   const cap   = sixM.toISOString().slice(0, 10);
   applyLang();
   document.getElementById('hero-mount').innerHTML = heroHTML(today, today, cap);
-  document.getElementById('app').innerHTML = pageHome();
+  document.getElementById('app').innerHTML = viewMode === 'calendar' ? pageCalendar() : pageHome();
   buildGenreChips();
   applyRegion();
   applyView();
@@ -1562,11 +1662,12 @@ function syncGenreClamp() {
     if (sc) atEnd();
     return;
   }
-  const chip = wrap.querySelector('.chip');
-  if (!chip) { more.style.display = 'none'; return; }
-  const cs  = getComputedStyle(wrap);
-  const gap = parseFloat(cs.rowGap) || parseFloat(cs.gap) || 5;
-  const twoRows = Math.round(chip.offsetHeight * 2 + gap);
+  const rects = [...wrap.querySelectorAll('.chip, .bm-filter')].map(el => el.getBoundingClientRect());
+  const rowTops = [];
+  rects.map(r => r.top).sort((a, b) => a - b)
+    .forEach(top => { if (!rowTops.length || top - rowTops[rowTops.length - 1] > 8) rowTops.push(top); });
+  if (rowTops.length <= 2) { more.style.display = 'none'; return; }
+  const twoRows = Math.ceil(Math.max(...rects.filter(r => r.top < rowTops[2] - 8).map(r => r.bottom)) - wrap.getBoundingClientRect().top);
   wrap.dataset.clampPx = twoRows;
   if (wrap.scrollHeight > twoRows + 2) {
     wrap.style.maxHeight = twoRows + 'px';
@@ -1602,6 +1703,8 @@ function applyFilters() {
     const updated = DB.fetched_at ? t('updated', timeAgo(DB.fetched_at)) : t('offline');
     fs.textContent = `${REGION_SETS[regionF].label} Kinostart · ${updated}`;
   }
+
+  if (viewMode === 'calendar') renderCalendar(visible);
 
   // Show/hide cards
   document.querySelectorAll('.card').forEach(c => {
@@ -1733,7 +1836,7 @@ function cardHTML(f, today, ym) {
       <button class="card-bm${isBookmarked(f.id)?' on':''}" data-bm="${f.id}" onclick="toggleBookmark(event,'${f.id}')" aria-label="${t('bookmarkAria')}" title="${t('bookmark')}">
         <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h12a1 1 0 0 1 1 1v18l-7-4-7 4V3a1 1 0 0 1 1-1z"/></svg>
       </button>
-      <h3 class="ci-title">${esc(dispTitle(f))}${origTitle(f) ? `<span class="ci-otitle">${esc(origTitle(f))}</span>` : ''}</h3>
+      <h3 class="ci-title"><span class="ci-t">${esc(dispTitle(f))}</span>${origTitle(f) ? `<span class="ci-otitle">${esc(origTitle(f))}</span>` : ''}</h3>
       <div class="ci-date"><span class="dow">${dow}</span><span class="dm">${dm}</span>${isToday ? `<b>${t('today')}</b>` : ''}</div>
       <div class="ci-tags">${genreHTML(f.genre)}</div>
       ${ratingsEnabled() ? `<div class="ci-rate" data-rrow="${f.id}">${rateRowInnerHTML(f.id)}</div>` : ''}
@@ -1839,6 +1942,98 @@ function pageHome() {
   });
   h += `</div>`;
   return h;
+}
+
+/* ═══════════════════════════════════════════════
+   CALENDAR VIEW — filled by applyFilters() so search / Saved / Trending / genre apply
+═══════════════════════════════════════════════ */
+const TMDB_THUMB = 'https://image.tmdb.org/t/p/w92';
+let calSel = null;   // ISO date of the opened day
+let calCollapsed = null;   // months folded shut; first render folds the months before this one
+function toggleCalMonth(ym) {
+  calCollapsed.has(ym) ? calCollapsed.delete(ym) : calCollapsed.add(ym);
+  if (calCollapsed.has(ym) && calSel && calSel.startsWith(ym)) calSel = null;
+  applyFilters();
+}
+function pageCalendar() { return `<div class="page-wrap" id="cal-wrap"></div>`; }
+function selectCalDay(iso) {
+  calSel = calSel === iso ? null : iso;
+  applyFilters();
+  const p = document.querySelector('.cal-panel');
+  if (p) { const r = p.getBoundingClientRect(); if (r.top > innerHeight - 140) window.scrollBy({ top: r.top - innerHeight * .45, behavior: 'smooth' }); }
+}
+function renderCalendar(visible) {
+  const wrap = document.getElementById('cal-wrap');
+  if (!wrap) return;
+  const today = todayISO();
+  const byDay = {};
+  visible.forEach(r => (byDay[r.date] = byDay[r.date] || []).push(r));
+  Object.values(byDay).forEach(l => l.sort((a, b) => (b.popularity || 0) - (a.popularity || 0)));
+  if (calSel && !byDay[calSel]) calSel = null;
+
+  const back = new Date(); back.setDate(back.getDate() - 14);
+  const cap  = new Date(); cap.setMonth(cap.getMonth() + 6);
+  const weekStart = regionF === 'us' ? 0 : 1;   // US calendars start on Sunday
+  const weekdays = Array.from({ length: 7 }, (_, i) =>   // 4 Jan 2026 is a Sunday
+    `<span>${new Date(2026, 0, 4 + weekStart + i).toLocaleDateString(loc(), { weekday: 'short' }).replace('.', '')}</span>`).join('');
+  const dayLong = iso => new Date(iso + 'T12:00:00').toLocaleDateString(loc(), { weekday: 'short', day: 'numeric', month: 'long' });
+
+  const curYM = today.slice(0, 7);
+  if (!calCollapsed) {
+    calCollapsed = new Set();
+    for (let d = new Date(back.getFullYear(), back.getMonth(), 1); d <= cap; d.setMonth(d.getMonth() + 1)) {
+      const ym = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+      if (ym < curYM) calCollapsed.add(ym);
+    }
+  }
+
+  const panelHTML = (iso, films, ym) => `<div class="cal-panel">
+    <div class="cal-panel-head"><span class="m-label">${esc(dayLong(iso))}</span><span class="m-count">${films.length} ${t('filmWord', films.length)}</span></div>
+    <div class="m-grid">${films.map(f => cardHTML(f, today, ym)).join('')}</div>
+  </div>`;
+
+  let h = '';
+  for (let d = new Date(back.getFullYear(), back.getMonth(), 1); d <= cap; d.setMonth(d.getMonth() + 1)) {
+    const y = d.getFullYear(), m = d.getMonth();
+    const ym = `${y}-${String(m + 1).padStart(2, '0')}`;
+    const lead = (new Date(y, m, 1).getDay() - weekStart + 7) % 7;
+    const days = new Date(y, m + 1, 0).getDate();
+    let count = 0, weekSel = null, cells = '<div class="cal-day pad"></div>'.repeat(lead);
+    for (let day = 1; day <= days; day++) {
+      const iso = `${ym}-${String(day).padStart(2, '0')}`;
+      const films = byDay[iso] || [];
+      const dow = new Date(y, m, day).getDay();
+      if (iso === calSel) weekSel = iso;
+      const cls = `cal-day${films.length ? ' has' : ''}${dow === 0 || dow === 6 ? ' we' : ''}${iso < today ? ' past' : ''}${iso === today ? ' today' : ''}${iso === calSel ? ' sel' : ''}`;
+      if (!films.length) {
+        cells += `<div class="${cls}"><span class="cal-num">${day}</span></div>`;
+      } else {
+        count += films.length;
+        const posters = films.filter(f => f.poster).slice(0, 3);
+        const moreD = films.length - posters.length, moreM = films.length - Math.min(1, posters.length);
+        cells += `<button class="${cls}" onclick="selectCalDay('${iso}')" aria-label="${esc(dayLong(iso))}: ${films.length} ${t('filmWord', films.length)}">
+          <span class="cal-num">${day}</span>
+          <span class="cal-strip">${posters.map(f => `<img loading="lazy" src="${TMDB_THUMB}${esc(f.poster)}" alt="">`).join('')}</span>
+          ${moreD > 0 ? `<span class="cal-more cal-more-d">+${moreD}</span>` : ''}${moreM > 0 ? `<span class="cal-more cal-more-m">+${moreM}</span>` : ''}
+        </button>`;
+      }
+      // end of a week row (or the month): the opened day's films go right under it
+      if (((lead + day) % 7 === 0 || day === days) && weekSel) {
+        cells += panelHTML(weekSel, byDay[weekSel], ym);
+        weekSel = null;
+      }
+    }
+    h += `<section class="cal-month${ym === curYM ? ' m-now' : ''}${calCollapsed.has(ym) ? ' closed' : ''}">
+      <header class="m-head" onclick="toggleCalMonth('${ym}')">
+        <span class="m-chev">▶</span>
+        <span class="m-label">${monthLabel(ym)}</span>
+        <span class="m-count">${count ? `${count} ${t('filmWord', count)}` : ''}</span>
+      </header>
+      <div class="cal-week">${weekdays}</div>
+      <div class="cal-grid">${cells}</div>
+    </section>`;
+  }
+  wrap.innerHTML = h;
 }
 
 /* ═══════════════════════════════════════════════
@@ -1965,10 +2160,9 @@ async function init() {
     if (toTop) toTop.classList.toggle('show', window.scrollY > 500);
     syncNavDock();
   }, { passive: true });
-  // close the settings dropdown on any outside click
+  // close an open header dropdown on any outside click
   document.addEventListener('click', e => {
-    const fr = document.getElementById('fbar-right');
-    if (fr && fr.classList.contains('open') && !fr.contains(e.target)) fr.classList.remove('open');
+    if (!e.target.closest('.hdr-menu')) closeMenus();
   });
   window.addEventListener('hashchange', route);
   route();
