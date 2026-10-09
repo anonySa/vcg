@@ -621,6 +621,18 @@
       animation: excSlide .26s cubic-bezier(.2,.8,.2,1) both;
     }
     @keyframes excFade  { from { opacity: 0 } to { opacity: 1 } }
+    .sync-text { font-size: .82rem; line-height: 1.45; color: var(--text2); margin: 1rem 0 0; }
+    .sync-note { font-size: .7rem; line-height: 1.45; color: var(--muted); margin: .9rem 0 0; }
+    .sync-links { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 1rem; }
+    .sync-links .ci-lbd { justify-content: center; padding: 11px 12px; font-size: 12px; }
+    .sync-links .sync-msg { grid-column: 1 / -1; font-size: .78rem; color: var(--muted); }
+    @media (min-width: 769px) {   /* centred card on desktop instead of a bottom sheet */
+      .sync-sheet {
+        left: 50%; right: auto; top: 50%; bottom: auto; width: min(440px, calc(100vw - 32px));
+        transform: translate(-50%, -50%); border-radius: 20px; padding-bottom: 1.4rem;
+        animation: excFade .2s ease both;
+      }
+    }
     @keyframes excSlide { from { transform: translateY(100%) } to { transform: translateY(0) } }
     .exc-sheet-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
     .exc-sheet-kicker {
@@ -938,6 +950,10 @@
           <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h12a1 1 0 0 1 1 1v18l-7-4-7 4V3a1 1 0 0 1 1-1z"/></svg>
           <span data-i18n="saved">Saved</span> <span id="bm-count"></span>
         </button>
+        <button class="bm-filter" id="sync-btn" onclick="openSync()" title="Saved films in your own calendar" data-i18n-attr="title:syncHint">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 4H6C3.79086 4 2 5.79086 2 8V18C2 20.2091 3.79086 22 6 22H18C20.2091 22 22 20.2091 22 18V8C22 5.79086 20.2091 4 18 4Z"/><path d="M8 2V6M16 2V6M2 10H22"/></svg>
+          <span data-i18n="syncBtn">Calendar sync</span>
+        </button>
         <button class="bm-filter" id="hyped-filter" onclick="toggleHypedFilter()" aria-pressed="false" title="Show only trending films (community rating 22mm or more)" data-i18n-attr="title:trendTitle">
           <svg viewBox="0 0 24 24"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="15 7 21 7 21 13"/></svg>
           <span data-i18n="trending">Trending</span>
@@ -1015,6 +1031,23 @@
 </nav>
 
 <button id="to-top" class="to-top" aria-label="Back to top" data-i18n-attr="aria-label:toTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<!-- Calendar sync: subscribe to your saved films -->
+<div class="exc-modal" id="sync-modal" aria-hidden="true">
+  <div class="exc-modal-bg" onclick="closeSync()"></div>
+  <div class="exc-sheet sync-sheet" role="dialog" aria-modal="true" aria-labelledby="sync-title">
+    <div class="exc-sheet-top">
+      <div class="exc-sheet-head">
+        <span class="exc-sheet-kicker" id="sync-count"></span>
+        <span class="exc-sheet-title" id="sync-title" data-i18n="syncBtn">Calendar sync</span>
+      </div>
+      <button class="exc-sheet-x" onclick="closeSync()" aria-label="Close" data-i18n-attr="aria-label:close">✕</button>
+    </div>
+    <p class="sync-text" data-i18n="syncText"></p>
+    <div class="sync-links" id="sync-links"></div>
+    <p class="sync-note" data-i18n="syncNote"></p>
+  </div>
+</div>
 
 <!-- Excitement rating modal (mobile) -->
 <div class="exc-modal" id="exc-modal" aria-hidden="true">
@@ -1121,6 +1154,11 @@ const I18N = {
     bookmark: 'Bookmark', bookmarkAria: 'Bookmark this film',
     excited: 'Excited?',
     addCal: 'Add to calendar',
+    syncBtn: 'Calendar sync', syncHint: 'Saved films in your own calendar',
+    syncText: 'Your saved films as a calendar that keeps itself up to date: save or remove a film here and your calendar follows, and moved release dates move too.',
+    syncNote: 'Calendar apps decide how often they check: Apple usually within an hour, Google can take up to a day. On Android, open the Google link once in a browser.',
+    syncCount: n => n === 1 ? '1 saved film' : `${n} saved films`,
+    copyLink: 'Copy link', copied: 'Copied', syncError: 'Could not connect right now. Please try again later.',
     calSummary: t => `${t} – in cinemas`, calDir: d => `Director: ${d}`, calLen: m => `Runtime: ${m} min`,
     footerAbout: 'Your cinema release calendar for Germany, Austria, Switzerland, the UK, and the USA. 31mm tracks upcoming theatrical releases with local release dates, age ratings (FSK, BBFC, MPAA), genres, and directors. Updated daily from The Movie Database.',
     browse: 'Browse', relDach: 'DACH releases', relGb: 'UK releases', relUs: 'US releases',
@@ -1152,6 +1190,11 @@ const I18N = {
     bookmark: 'Merken', bookmarkAria: 'Film merken',
     excited: 'Vorfreude?',
     addCal: 'In den Kalender',
+    syncBtn: 'Kalender-Sync', syncHint: 'Gemerkte Filme in deinem eigenen Kalender',
+    syncText: 'Deine gemerkten Filme als Kalender, der sich selbst aktuell hält: Merkst du hier einen Film oder entfernst ihn, zieht dein Kalender nach. Verschobene Starttermine wandern mit.',
+    syncNote: 'Wie oft geprüft wird, entscheidet die Kalender-App: Apple meist innerhalb einer Stunde, Google kann bis zu einem Tag brauchen. Auf Android den Google-Link einmal im Browser öffnen.',
+    syncCount: n => n === 1 ? '1 gemerkter Film' : `${n} gemerkte Filme`,
+    copyLink: 'Link kopieren', copied: 'Kopiert', syncError: 'Gerade keine Verbindung. Bitte später nochmal versuchen.',
     calSummary: t => `${t} – Kinostart`, calDir: d => `Regie: ${d}`, calLen: m => `Länge: ${m} Min.`,
     footerAbout: 'Dein Kinostart-Kalender für Deutschland, Österreich, die Schweiz, Großbritannien und die USA. 31mm zeigt kommende Kinostarts mit lokalen Startterminen, Altersfreigaben (FSK, BBFC, MPAA), Genres und Regie. Täglich aktualisiert mit Daten von The Movie Database.',
     browse: 'Entdecken', relDach: 'Kinostarts DACH', relGb: 'Kinostarts UK', relUs: 'Kinostarts USA',
@@ -1462,8 +1505,70 @@ function toggleBookmark(e, id) {
   document.querySelectorAll(`.card-bm[data-bm="${CSS.escape(id)}"]`)
     .forEach(b => b.classList.toggle('on', BOOKMARKS.has(id)));
   updateBookmarkUI();
+  scheduleSync();
   if (bookmarkFilter) applyFilters();
 }
+/* ═══════════════════════════════════════════════
+   CALENDAR SYNC — saved films as a subscribable feed served by the ratings worker.
+   The browser keeps { id, key }; id is public (feed URL), key authorises updates.
+═══════════════════════════════════════════════ */
+let SYNC = null;
+try { SYNC = JSON.parse(localStorage.getItem('vcg_sync') || 'null'); } catch {}
+let syncTimer = null;
+function syncPayload() {
+  const films = [...BOOKMARKS].map(id => DB.releases.find(r => r.id === id)).filter(Boolean).map(f => {
+    const date = regionPrimaryDate(f);
+    return date ? { id: f.id, date, title: dispTitle(f), director: f.director || '', runtime: f.runtime || '' } : null;
+  }).filter(Boolean);
+  return { region: regionF, lang: lang(), ids: [...BOOKMARKS], films };
+}
+async function pushSync() {
+  const payload = syncPayload();
+  const sig = JSON.stringify(payload);
+  if (SYNC && SYNC.sig === sig) return SYNC;            // nothing changed since the last upload
+  const r = await fetch(RATING_API + '/list', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ...payload, id: SYNC && SYNC.id, key: SYNC && SYNC.key }),
+  });
+  if (!r.ok) throw new Error('sync ' + r.status);
+  const { id, key } = await r.json();
+  SYNC = { id, key, sig };
+  try { localStorage.setItem('vcg_sync', JSON.stringify(SYNC)); } catch {}
+  return SYNC;
+}
+/* linked lists follow every save / unsave / region / language change */
+function scheduleSync() {
+  if (!SYNC || !ratingsEnabled()) return;
+  clearTimeout(syncTimer);
+  syncTimer = setTimeout(() => pushSync().catch(e => console.warn('calendar sync failed', e)), 800);
+}
+function syncLinksHTML(s) {
+  const https = `${RATING_API}/cal/${s.id}.ics`, webcal = https.replace(/^https:/, 'webcal:');
+  return `<a class="ci-lbd" href="${webcal}">${CAL_IC}Apple</a>
+    <a class="ci-lbd" href="https://calendar.google.com/calendar/r?cid=${encodeURIComponent(webcal)}" target="_blank" rel="noopener">${CAL_IC}Google</a>
+    <a class="ci-lbd" href="https://outlook.live.com/calendar/0/addfromweb?url=${encodeURIComponent(https)}&name=31mm" target="_blank" rel="noopener">${CAL_IC}Outlook</a>
+    <button class="ci-lbd" onclick="copySyncLink(this, '${https}')">${t('copyLink')}</button>`;
+}
+async function openSync() {
+  const m = document.getElementById('sync-modal');
+  const links = document.getElementById('sync-links');
+  document.getElementById('sync-count').textContent = t('syncCount', BOOKMARKS.size);
+  links.innerHTML = `<span class="sync-msg">${t('loading')}</span>`;
+  m.classList.add('open'); m.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+  try { links.innerHTML = syncLinksHTML(await pushSync()); }
+  catch (e) { links.innerHTML = `<span class="sync-msg">${t('syncError')}</span>`; }
+}
+function closeSync() {
+  const m = document.getElementById('sync-modal');
+  m.classList.remove('open'); m.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow = '';
+}
+async function copySyncLink(btn, url) {
+  try { await navigator.clipboard.writeText(url); btn.textContent = t('copied'); }
+  catch { window.prompt(t('copyLink'), url); }
+}
+
 function toggleBookmarkFilter() {
   bookmarkFilter = !bookmarkFilter;
   document.getElementById('bm-filter')?.classList.toggle('on', bookmarkFilter);
@@ -1600,6 +1705,7 @@ function route() {
   syncStickyOffset();
   window.scrollTo(0, 0);
   syncNavDock();
+  scheduleSync();
 }
 
 /* ═══════════════════════════════════════════════
