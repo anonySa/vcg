@@ -86,7 +86,7 @@
       transition: top .3s ease, left .3s ease, right .3s ease;
     }
     .nav-inner {
-      max-width: 1236px; margin: 0 auto;
+      max-width: 1236px; margin: 0 auto; position: relative;
       height: var(--nav-h); padding: 0 14px 0 20px;
       display: flex; align-items: center; gap: 1rem;
       border-radius: 999px;
@@ -112,8 +112,9 @@
     html.light .logo-light { display: block; }
     .nav-divider { width: 1px; height: 24px; background: var(--border); flex-shrink: 0; }
     /* search */
+    .fbar-top { display: flex; align-items: center; gap: 8px; }
     .nav-search-wrap {
-      width: 100%;
+      flex: 1 1 auto; min-width: 0;
       position: relative; display: flex; align-items: center;
     }
     .nav-search-icon {
@@ -488,7 +489,7 @@
       font-size: 12px; font-weight: 700; color: #fff; line-height: 1; font-variant-numeric: tabular-nums;
     }
     .cp-mm:empty { display: none; }
-    #app:not(.view-list) .ci-rate { display: none; }   /* tiles show the score on the poster */
+    .view-cal .ci-rate, .my-cal .ci-rate { display: none; }   /* tile cards show the score on the poster */
     .view-list .cp-mm { display: none; }
     .card.expanded .cp::after, .card.f-today .cp::after { box-shadow: inset 0 0 0 2px var(--acc); }
     /* typographic fallback when TMDB has no poster */
@@ -673,8 +674,6 @@
     .card-bm.on svg { fill: currentColor; }
 
     .bm-filter svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-    #bm-filter.on svg { fill: currentColor; }
-    .bm-filter #bm-count:not(:empty) { opacity: .7; }
     .empty-note {
       max-width: 1280px; margin: 0 auto; padding: 2.5rem 1.25rem;
       text-align: center; color: var(--muted); font-size: .85rem;
@@ -778,14 +777,11 @@
     .cal-panel-head { display: flex; align-items: center; gap: .7rem; padding: 0 .25rem; }
     .cal-panel-head .m-label { font-size: 16px; }
 
-    /* ── VIEW SWITCH ── floating capsule at the bottom */
-    #wrap { padding-bottom: 76px; }
-    .view-nav {
-      position: fixed; left: 50%; bottom: calc(16px + env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 240;
-      display: flex; gap: 2px; padding: 4px; border-radius: 999px;
-      background: var(--nav); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-      box-shadow: inset 0 0 0 1px var(--ring);
-    }
+    /* ── PAGE SWITCH ── centred in the top bar on desktop, floating capsule at the bottom on phones */
+    .page-seg { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); }
+    .page-seg button { padding: .45rem 1.1rem; font-size: .72rem; }
+    .my-badge:not(:empty) { margin-left: 6px; opacity: .75; font-variant-numeric: tabular-nums; }
+    .view-nav { display: none; }
     .view-nav button {
       display: inline-flex; align-items: center; gap: 6px;
       border: 0; background: none; cursor: pointer; font-family: inherit;
@@ -795,6 +791,22 @@
     .view-nav button:hover { color: var(--text); }
     .view-nav button.on { background: var(--acc); color: #fff; }
     .view-nav svg { width: 15px; height: 15px; display: block; flex-shrink: 0; }
+
+    /* ── MY CALENDAR PAGE ── */
+    .page-my #hero-mount, .page-my .filter-bar, .page-my #list-empty, .page-my .nav-info { display: none; }
+    .page-my #app { padding-top: 80px; }
+    .my-head { display: flex; align-items: center; gap: .8rem; flex-wrap: wrap; padding: .5rem .25rem 1rem; }
+    .my-title { font-family: 'Anton', sans-serif; font-weight: 400; text-transform: uppercase; font-size: 30px; letter-spacing: .01em; line-height: 1; color: var(--text); }
+    .my-head .m-count { margin-left: 0; }
+    .my-sync { margin-left: auto; display: inline-flex; align-items: center; gap: .4rem; }
+    .my-sync svg { width: 14px; height: 14px; }
+    .my-empty { display: flex; flex-direction: column; align-items: center; gap: .8rem; text-align: center; padding: 4rem 1rem; font-size: .9rem; color: var(--text2); }
+    .my-empty p { max-width: 44ch; }
+    .my-empty-t { font-family: 'Anton', sans-serif; text-transform: uppercase; font-size: 22px; color: var(--text); }
+    .my-empty .btn { text-decoration: none; }
+    .my-sub { display: flex; align-items: center; gap: .7rem; padding: 1rem .25rem .6rem; border-bottom: 1px solid var(--border); }
+    .view-list.my-upcoming .card { grid-template-columns: 66px 44px minmax(0, 1fr) auto 24px; }   /* wider date column for the countdown */
+    .view-list .ci-date b { white-space: nowrap; }
 
     /* ── BACK TO TOP (mobile) ── */
     .to-top {
@@ -813,10 +825,28 @@
     @media (max-width: 1024px) {
       .m-grid { grid-template-columns: repeat(6, 1fr); }
     }
+    @media (max-width: 1100px) { .nav-info { display: none; } }
+    @media (min-width: 769px) and (max-width: 920px) {   /* keep the centred switch clear of the buttons */
+      .tb-label, .hdr-label { display: none; }
+      .hdr-btn { padding: 0; width: 40px; height: 40px; flex-shrink: 0; justify-content: center; }
+      .hdr-btn .hdr-ic, #theme-btn .tb-ic { width: 18px; height: 18px; }
+    }
     @media (max-width: 768px) {
       .to-top { display: flex; bottom: calc(76px + env(safe-area-inset-bottom)); }   /* sits above the view switch */
-      .view-nav { bottom: calc(10px + env(safe-area-inset-bottom)); }
-      .view-nav button { font-size: 11px; padding: 10px 12px; }
+      #wrap { padding-bottom: 76px; }
+      .view-nav {
+        display: flex; gap: 2px; padding: 4px; border-radius: 999px;
+        position: fixed; left: 50%; transform: translateX(-50%); z-index: 240;
+        bottom: calc(10px + env(safe-area-inset-bottom));
+        background: var(--nav); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+        box-shadow: inset 0 0 0 1px var(--ring);
+      }
+      .view-nav button { font-size: 11px; padding: 10px 14px; }
+      .page-seg { display: none; }
+      .view-seg .seg-ic + span { display: none; }   /* List / Classic: icons only on phones */
+      .page-my #app { padding-top: 72px; }
+      .view-list.my-upcoming .card { grid-template-columns: 66px 40px minmax(0, 1fr) auto 24px; }
+      .my-title { font-size: 26px; }
       .cal-week, .cal-grid { gap: 3px; }
       .cal-week span { padding-left: 4px; }
       .cal-day { min-height: 74px; padding: 4px; border-radius: 8px; gap: 4px; }
@@ -897,14 +927,14 @@
         <img class="logo-img logo-dark" src="assets/logo-dark.svg" alt="31mm">
         <img class="logo-img logo-light" src="assets/logo-light.svg" alt="31mm">
       </span>
+      <div class="seg page-seg" role="navigation" aria-label="Pages" data-i18n-attr="aria-label:quickNav">
+        <button data-page="releases" onclick="go('#/')"><span data-i18n="releases">Releases</span></button>
+        <button data-page="my" onclick="go('#/my')"><span data-i18n="myCalendar">My calendar</span><span class="my-badge" data-my-count></span></button>
+      </div>
       <div class="nav-right">
         <div class="nav-info">
-          <span class="nav-stat" id="fbar-stat"></span>
           <span class="result-count" id="res-count"></span>
         </div>
-        <button class="btn hdr-btn" id="sync-btn" onclick="openSync()" title="Saved films in your own calendar" data-i18n-attr="title:syncHint,aria-label:syncBtn" aria-label="Calendar sync">
-          <svg class="hdr-ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 4H6C3.79086 4 2 5.79086 2 8V18C2 20.2091 3.79086 22 6 22H18C20.2091 22 22 20.2091 22 18V8C22 5.79086 20.2091 4 18 4Z"/><path d="M8 2V6M16 2V6M2 10H22"/></svg><span class="hdr-label" data-i18n="syncBtn">Calendar sync</span>
-        </button>
         <div class="hdr-menu" id="lang-menu">
           <button class="btn hdr-btn" id="lang-btn" onclick="langClick(event)" aria-haspopup="true" aria-label="Language" data-i18n-attr="aria-label:language"><svg class="hdr-ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></svg><span class="hdr-label" id="lang-label"></span></button>
           <div class="settings-panel">
@@ -943,16 +973,18 @@
   <!-- FILTER BAR -->
   <div class="filter-bar" id="filter-bar">
     <div class="filter-bar-inner" id="filter-bar-inner">
+      <div class="fbar-top">
       <div class="nav-search-wrap">
         <span class="nav-search-icon">⌕</span>
         <input class="nav-search" id="q" type="text" placeholder="Search title or director…" data-i18n-attr="placeholder:searchPh" oninput="applyFilters()">
       </div>
+      <div class="seg view-seg" role="group" aria-label="View" data-i18n-attr="aria-label:view">
+        <button id="vt-list" onclick="setView('list')"><span class="seg-ic"><svg viewBox="0 0 30 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M28 14C29.1046 14 30 14.8954 30 16V22C30 23.1046 29.1046 24 28 24H2C0.895431 24 1.61066e-08 23.1046 0 22V16C0 14.8954 0.895431 14 2 14H28ZM28 0C29.1046 0 30 0.895431 30 2V8C30 9.10457 29.1046 10 28 10H2C0.895431 10 1.61066e-08 9.10457 0 8V2C0 0.895431 0.895431 5.63724e-08 2 0H28Z" fill="currentColor"/></svg></span><span data-i18n="list">List</span></button>
+        <button id="vt-calendar" onclick="setView('calendar')"><span class="seg-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg></span><span data-i18n="classic">Classic</span></button>
+      </div>
+      </div>
       <div class="fbar-scroll" id="fbar-scroll">
       <div class="fbar-genre" id="fbar-genre">
-        <button class="bm-filter" id="bm-filter" onclick="toggleBookmarkFilter()" aria-pressed="false" title="Show only saved films" data-i18n-attr="title:savedTitle">
-          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h12a1 1 0 0 1 1 1v18l-7-4-7 4V3a1 1 0 0 1 1-1z"/></svg>
-          <span data-i18n="saved">Saved</span> <span id="bm-count"></span>
-        </button>
         <button class="bm-filter" id="hyped-filter" onclick="toggleHypedFilter()" aria-pressed="false" title="Show only trending films (community rating 22mm or more)" data-i18n-attr="title:trendTitle">
           <svg viewBox="0 0 24 24"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="15 7 21 7 21 13"/></svg>
           <span data-i18n="trending">Trending</span>
@@ -990,9 +1022,9 @@
       <nav class="footer-nav" aria-label="View options" data-i18n-attr="aria-label:viewOpts">
         <h3 data-i18n="view">View</h3>
         <ul>
-          <li><a href="#/" onclick="setView('tiles')" data-i18n="posterTiles">Poster tiles</a></li>
-          <li><a href="#/" onclick="setView('calendar')" data-i18n="calendar">Calendar</a></li>
           <li><a href="#/" onclick="setView('list')" data-i18n="list">List</a></li>
+          <li><a href="#/" onclick="setView('calendar')" data-i18n="classic">Classic</a></li>
+          <li><a href="#/my" data-i18n="myCalendar">My calendar</a></li>
         </ul>
       </nav>
 
@@ -1016,6 +1048,7 @@
             <img class="footer-tmdb-logo" src="https://www.themoviedb.org/assets/2/v4/logos/v2/blue_short-8e7b30f73a4020692ccca9c88bafe5dcb20f684bfd2fb941ad8bc99f2d9fcc9c.svg" alt="TMDB" width="80" height="18">
           </a>
         </p>
+        <p class="nav-stat" id="fbar-stat"></p>
       </div>
 
     </div>
@@ -1023,10 +1056,9 @@
 
 </div>
 
-<nav class="view-nav" aria-label="View" data-i18n-attr="aria-label:view">
-  <button id="view-tiles" onclick="setView('tiles')"><svg viewBox="0 0 30 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 14C13.1046 14 14 14.8954 14 16V22C14 23.1046 13.1046 24 12 24H2C0.895431 24 1.61066e-08 23.1046 0 22V16C0 14.8954 0.895431 14 2 14H12ZM28 14C29.1046 14 30 14.8954 30 16V22C30 23.1046 29.1046 24 28 24H18C16.8954 24 16 23.1046 16 22V16C16 14.8954 16.8954 14 18 14H28ZM12 0C13.1046 0 14 0.895431 14 2V8C14 9.10457 13.1046 10 12 10H2C0.895431 10 1.61066e-08 9.10457 0 8V2C0 0.895431 0.895431 4.83192e-08 2 0H12ZM28 0C29.1046 0 30 0.895431 30 2V8C30 9.10457 29.1046 10 28 10H18C16.8954 10 16 9.10457 16 8V2C16 0.895431 16.8954 4.83192e-08 18 0H28Z" fill="currentColor"/></svg><span data-i18n="tiles">Tiles</span></button>
-  <button id="view-calendar" onclick="setView('calendar')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 4H6C3.79086 4 2 5.79086 2 8V18C2 20.2091 3.79086 22 6 22H18C20.2091 22 22 20.2091 22 18V8C22 5.79086 20.2091 4 18 4Z"/><path d="M8 2V6M16 2V6M2 10H22"/></svg><span data-i18n="classic">Classic</span></button>
-  <button id="view-list" onclick="setView('list')"><svg viewBox="0 0 30 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M28 14C29.1046 14 30 14.8954 30 16V22C30 23.1046 29.1046 24 28 24H2C0.895431 24 1.61066e-08 23.1046 0 22V16C0 14.8954 0.895431 14 2 14H28ZM28 0C29.1046 0 30 0.895431 30 2V8C30 9.10457 29.1046 10 28 10H2C0.895431 10 1.61066e-08 9.10457 0 8V2C0 0.895431 0.895431 5.63724e-08 2 0H28Z" fill="currentColor"/></svg><span data-i18n="list">List</span></button>
+<nav class="view-nav" aria-label="Pages" data-i18n-attr="aria-label:quickNav">
+  <button data-page="releases" onclick="go('#/')"><svg viewBox="0 0 18 18" fill="currentColor" aria-hidden="true"><path d="M15 16L15 14L18 14L18 4L15 4L15 2L18 2L18 0L0 0L0 2L3 2L3 4L0 4L0 14L3 14L3 16L0 16L0 18L18 18L18 16L15 16ZM13 16L10 16L10 14L13 14L13 16ZM13 4L10 4L10 2L13 2L13 4ZM5 2L8 2L8 4L5 4L5 2ZM5 14L8 14L8 16L5 16L5 14Z"/></svg><span data-i18n="releases">Releases</span></button>
+  <button data-page="my" onclick="go('#/my')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 4H6C3.79086 4 2 5.79086 2 8V18C2 20.2091 3.79086 22 6 22H18C20.2091 22 22 20.2091 22 18V8C22 5.79086 20.2091 4 18 4Z"/><path d="M8 2V6M16 2V6M2 10H22"/><path d="m9 16 2 2 4-4"/></svg><span data-i18n="myCalendar">My calendar</span><span class="my-badge" data-my-count></span></button>
 </nav>
 
 <button id="to-top" class="to-top" aria-label="Back to top" data-i18n-attr="aria-label:toTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
@@ -1113,7 +1145,8 @@ let collapsed = new Set();   // group keys e.g. '2026-06' or '__just_started__'
 let genreF    = 'all';
 let isDark    = true;
 const savedView = localStorage.getItem('vcg_view');
-let viewMode  = ['tiles', 'calendar', 'list'].includes(savedView) ? savedView : 'tiles';
+let viewMode  = ['calendar', 'list'].includes(savedView) ? savedView : 'list';   // old 'tiles' choices land on the list
+let page      = 'releases';   // 'releases' | 'my' — set from the URL hash in route()
 /* Default region from the visitor's timezone (privacy-friendly, no IP lookup):
    DACH → dach · rest of Europe → UK · everywhere else → USA.
    A saved manual choice always wins. */
@@ -1134,29 +1167,29 @@ let regionF   = ['dach','gb','us'].includes(savedRegion) ? savedRegion : detectR
 ═══════════════════════════════════════════════ */
 const I18N = {
   en: {
-    light: 'Light', dark: 'Dark', language: 'Language', region: 'Release region', view: 'View', calendar: 'Calendar', classic: 'Classic',
-    tiles: 'Tiles', list: 'List', posterTiles: 'Poster tiles',
+    light: 'Light', dark: 'Dark', language: 'Language', region: 'Release region', view: 'View', classic: 'Classic',
+    list: 'List', releases: 'Releases', myCalendar: 'My calendar', upcoming: 'Upcoming',
+    inDays: n => n === 1 ? 'tomorrow' : `in ${n} days`, myCount: n => n === 1 ? '1 film' : `${n} films`,
+    myEmptyTitle: 'Nothing on your calendar yet', myEmptyText: 'Tap the bookmark on any film to add it. Your films show up here and can sync to your own calendar.', browseReleases: 'Browse releases',
     searchPh: 'Search title or director…',
-    saved: 'Saved', savedTitle: 'Show only saved films',
     trending: 'Trending', trendTitle: 'Show only trending films (community rating 22mm or more)',
     all: 'All', showMore: 'Show more', showLess: 'Show less',
     filmWord: n => n === 1 ? 'film' : 'films',
     updated: ago => `Updated ${ago}`, offline: 'Offline · seed data',
     never: 'never', justNow: 'just now', minAgo: n => `${n} min ago`, hAgo: n => `${n} h ago`,
-    noSaved: 'No saved films yet. Tap the bookmark on any film to save it.',
     noTrending: 'No films are trending (22mm or more) yet.',
     noMatch: 'No films match your filters.', noReleases: 'No releases found.', loading: 'Loading…',
     justStarted: 'Just Started', inCinemasNow: 'In Cinemas Now', thisMonth: 'This Month', today: 'Today',
     dateTbc: 'date tbc', noDate: 'no release date yet', rated: 'Rated', min: 'min',
     mostAnticipated: 'Most anticipated', inCinemas: d => `In cinemas ${d}`,
     slide: n => `Slide ${n}`, prev: 'Previous', next: 'Next',
-    bookmark: 'Bookmark', bookmarkAria: 'Bookmark this film',
+    bookmark: 'My calendar', bookmarkAria: 'Add to my calendar',
     excited: 'Excited?',
     addCal: 'Add to calendar',
-    syncBtn: 'Calendar sync', syncHint: 'Saved films in your own calendar',
-    syncText: 'Your saved films as a calendar that keeps itself up to date: save or remove a film here and your calendar follows, and moved release dates move too.',
+    syncBtn: 'Calendar sync',
+    syncText: 'Your calendar as a feed that keeps itself up to date: add or remove a film here and your own calendar follows, and moved release dates move too.',
     syncNote: 'Calendar apps decide how often they check: Apple usually within an hour, Google can take up to a day. On Android, open the Google link once in a browser.',
-    syncCount: n => n === 1 ? '1 saved film' : `${n} saved films`,
+    syncCount: n => n === 1 ? '1 film on your calendar' : `${n} films on your calendar`,
     copyLink: 'Copy link', copied: 'Copied', syncError: 'Could not connect right now. Please try again later.',
     calSummary: t => `${t} – in cinemas`, calDir: d => `Director: ${d}`, calLen: m => `Runtime: ${m} min`,
     footerAbout: 'Your cinema release calendar for Germany, Austria, Switzerland, the UK, and the USA. 31mm tracks upcoming theatrical releases with local release dates, age ratings (FSK, BBFC, MPAA), genres, and directors. Updated daily from The Movie Database.',
@@ -1170,29 +1203,29 @@ const I18N = {
     notFussed: 'Not fussed', cantWait: "Can't wait", saveRating: 'Save my rating',
   },
   de: {
-    light: 'Hell', dark: 'Dunkel', language: 'Sprache', region: 'Kinostart-Region', view: 'Ansicht', calendar: 'Kalender', classic: 'Klassisch',
-    tiles: 'Kacheln', list: 'Liste', posterTiles: 'Poster-Kacheln',
+    light: 'Hell', dark: 'Dunkel', language: 'Sprache', region: 'Kinostart-Region', view: 'Ansicht', classic: 'Klassisch',
+    list: 'Liste', releases: 'Kinostarts', myCalendar: 'Mein Kalender', upcoming: 'Demnächst',
+    inDays: n => n === 1 ? 'morgen' : `in ${n} Tagen`, myCount: n => n === 1 ? '1 Film' : `${n} Filme`,
+    myEmptyTitle: 'Noch nichts in deinem Kalender', myEmptyText: 'Tippe bei einem Film auf das Lesezeichen, um ihn hinzuzufügen. Deine Filme erscheinen hier und lassen sich mit deinem eigenen Kalender synchronisieren.', browseReleases: 'Kinostarts ansehen',
     searchPh: 'Titel oder Regie suchen…',
-    saved: 'Gemerkt', savedTitle: 'Nur gemerkte Filme zeigen',
     trending: 'Trending', trendTitle: 'Nur Trending-Filme zeigen (Community-Wertung ab 22mm)',
     all: 'Alle', showMore: 'Mehr zeigen', showLess: 'Weniger zeigen',
     filmWord: n => n === 1 ? 'Film' : 'Filme',
     updated: ago => `Aktualisiert ${ago}`, offline: 'Offline · Beispieldaten',
     never: 'nie', justNow: 'gerade eben', minAgo: n => `vor ${n} Min.`, hAgo: n => `vor ${n} Std.`,
-    noSaved: 'Noch keine Filme gemerkt. Tippe bei einem Film auf das Lesezeichen, um ihn zu merken.',
     noTrending: 'Noch keine Trending-Filme (ab 22mm).',
     noMatch: 'Keine Filme passen zu deinen Filtern.', noReleases: 'Keine Filme gefunden.', loading: 'Lädt…',
     justStarted: 'Gerade gestartet', inCinemasNow: 'Jetzt im Kino', thisMonth: 'Diesen Monat', today: 'Heute',
     dateTbc: 'Datum offen', noDate: 'noch kein Starttermin', rated: 'Rated', min: 'Min.',
     mostAnticipated: 'Am meisten erwartet', inCinemas: d => `Im Kino ab ${d}`,
     slide: n => `Folie ${n}`, prev: 'Zurück', next: 'Weiter',
-    bookmark: 'Merken', bookmarkAria: 'Film merken',
+    bookmark: 'Mein Kalender', bookmarkAria: 'Zu meinem Kalender hinzufügen',
     excited: 'Vorfreude?',
     addCal: 'In den Kalender',
-    syncBtn: 'Kalender-Sync', syncHint: 'Gemerkte Filme in deinem eigenen Kalender',
-    syncText: 'Deine gemerkten Filme als Kalender, der sich selbst aktuell hält: Merkst du hier einen Film oder entfernst ihn, zieht dein Kalender nach. Verschobene Starttermine wandern mit.',
+    syncBtn: 'Kalender-Sync',
+    syncText: 'Dein Kalender als Feed, der sich selbst aktuell hält: Fügst du hier einen Film hinzu oder entfernst ihn, zieht dein eigener Kalender nach. Verschobene Starttermine wandern mit.',
     syncNote: 'Wie oft geprüft wird, entscheidet die Kalender-App: Apple meist innerhalb einer Stunde, Google kann bis zu einem Tag brauchen. Auf Android den Google-Link einmal im Browser öffnen.',
-    syncCount: n => n === 1 ? '1 gemerkter Film' : `${n} gemerkte Filme`,
+    syncCount: n => n === 1 ? '1 Film in deinem Kalender' : `${n} Filme in deinem Kalender`,
     copyLink: 'Link kopieren', copied: 'Kopiert', syncError: 'Gerade keine Verbindung. Bitte später nochmal versuchen.',
     calSummary: t => `${t} – Kinostart`, calDir: d => `Regie: ${d}`, calLen: m => `Länge: ${m} Min.`,
     footerAbout: 'Dein Kinostart-Kalender für Deutschland, Österreich, die Schweiz, Großbritannien und die USA. 31mm zeigt kommende Kinostarts mit lokalen Startterminen, Altersfreigaben (FSK, BBFC, MPAA), Genres und Regie. Täglich aktualisiert mit Daten von The Movie Database.',
@@ -1219,7 +1252,7 @@ function setLang(l) {
 }
 /* desktop: one tap switches DE ↔ EN; phones (icon only) open a dropdown */
 function langClick(e) {
-  if (isMobile()) toggleMenu(e, 'lang-menu');
+  if (window.matchMedia('(max-width: 920px)').matches) toggleMenu(e, 'lang-menu');
   else setLang(lang() === 'de' ? 'en' : 'de');
 }
 const loc  = () => lang() === 'de' ? 'de-DE' : 'en-US';
@@ -1493,7 +1526,6 @@ function syncRatingUI(id) {
 ═══════════════════════════════════════════════ */
 let BOOKMARKS = new Set();
 try { BOOKMARKS = new Set(JSON.parse(localStorage.getItem('vcg_bookmarks') || '[]')); } catch {}
-let bookmarkFilter = false;
 
 const isBookmarked = id => BOOKMARKS.has(id);
 
@@ -1505,7 +1537,7 @@ function toggleBookmark(e, id) {
     .forEach(b => b.classList.toggle('on', BOOKMARKS.has(id)));
   updateBookmarkUI();
   scheduleSync();
-  if (bookmarkFilter) applyFilters();
+  if (page === 'my') renderMy();
 }
 /* ═══════════════════════════════════════════════
    CALENDAR SYNC — saved films as a subscribable feed served by the ratings worker.
@@ -1568,14 +1600,8 @@ async function copySyncLink(btn, url) {
   catch { window.prompt(t('copyLink'), url); }
 }
 
-function toggleBookmarkFilter() {
-  bookmarkFilter = !bookmarkFilter;
-  document.getElementById('bm-filter')?.classList.toggle('on', bookmarkFilter);
-  applyFilters();
-}
 function updateBookmarkUI() {
-  const c = document.getElementById('bm-count');
-  if (c) c.textContent = BOOKMARKS.size ? BOOKMARKS.size : '';
+  document.querySelectorAll('[data-my-count]').forEach(el => { el.textContent = BOOKMARKS.size || ''; });
 }
 
 /* "Trending" filter — only films the community rates 22mm or more (≥70%) */
@@ -1609,9 +1635,10 @@ function applyTheme() {
    VIEW MODE
 ═══════════════════════════════════════════════ */
 function setView(mode) {
-  const rerender = (mode === 'calendar') !== (viewMode === 'calendar');   // tiles ↔ list is CSS only
+  const rerender = (mode === 'calendar') !== (viewMode === 'calendar');   // list ↔ classic swap the whole page
   viewMode = mode;
   localStorage.setItem('vcg_view', mode);
+  if (page !== 'releases') return;   // the My calendar page ignores it; the route that follows renders the new view
   if (rerender) renderApp();
   else applyView();
 }
@@ -1624,11 +1651,14 @@ function renderApp() {
 function applyView() {
   const app = document.getElementById('app');
   if (app) {
-    app.classList.toggle('view-list', viewMode === 'list');
-    app.classList.toggle('view-cal', viewMode === 'calendar');
+    app.classList.toggle('view-list', page === 'releases' && viewMode === 'list');
+    app.classList.toggle('view-cal', page === 'releases' && viewMode === 'calendar');
+    app.classList.toggle('view-my', page === 'my');
   }
-  ['tiles', 'calendar', 'list'].forEach(v =>
-    document.getElementById('view-' + v)?.classList.toggle('on', viewMode === v));
+  ['list', 'calendar'].forEach(v => document.getElementById('vt-' + v)?.classList.toggle('on', viewMode === v));
+}
+function applyPage() {
+  document.querySelectorAll('[data-page]').forEach(b => b.classList.toggle('on', b.dataset.page === page));
 }
 
 /* ═══════════════════════════════════════════════
@@ -1679,18 +1709,48 @@ function syncNavDock() {
   if (!nav || !fb) return;
   const inner = nav.querySelector('.nav-inner');
   const floatBottom = 14 + (inner ? inner.offsetHeight : 52);   // capsule bottom edge while floating
-  nav.classList.toggle('docked', fb.getBoundingClientRect().top <= floatBottom);
+  // no filter bar on My calendar: dock as soon as the page scrolls
+  nav.classList.toggle('docked', page === 'my' ? window.scrollY > 40 : fb.getBoundingClientRect().top <= floatBottom);
 }
 
 /* ═══════════════════════════════════════════════
    ROUTER
 ═══════════════════════════════════════════════ */
 function go(hash) { window.location.hash = hash; }
+function updateStat() {
+  const fs = document.getElementById('fbar-stat');
+  if (fs) {
+    const updated = DB.fetched_at ? t('updated', timeAgo(DB.fetched_at)) : t('offline');
+    fs.textContent = `${REGION_SETS[regionF].label} Kinostart · ${updated}`;
+  }
+}
 function route() {
+  page = location.hash === '#/my' ? 'my' : 'releases';
+  document.body.classList.toggle('page-my', page === 'my');
+  if (page === 'my') {
+    applyLang();
+    applyPage();
+    clearInterval(heroTimer);
+    document.getElementById('hero-mount').innerHTML = '';
+    document.getElementById('list-empty').style.display = 'none';
+    document.getElementById('app').innerHTML = pageMy();
+    renderMy();
+    applyRegion();
+    applyView();
+    updateBookmarkUI();
+    updateStat();
+    applyTheme();
+    syncStickyOffset();
+    window.scrollTo(0, 0);
+    syncNavDock();
+    scheduleSync();
+    return;
+  }
   const today = todayISO();
   const sixM  = new Date(); sixM.setMonth(sixM.getMonth() + 6);
   const cap   = sixM.toISOString().slice(0, 10);
   applyLang();
+  applyPage();
   document.getElementById('hero-mount').innerHTML = heroHTML(today, today, cap);
   document.getElementById('app').innerHTML = viewMode === 'calendar' ? pageCalendar() : pageHome();
   buildGenreChips();
@@ -1795,21 +1855,19 @@ function applyFilters() {
   const visible = currentReleases().filter(r => {
     const matchQ = !q || r.title.toLowerCase().includes(q) || (r.title_de||'').toLowerCase().includes(q) || (r.director||'').toLowerCase().includes(q);
     const matchG = genreF === 'all' || r.genre.includes(genreF);
-    const matchB = !bookmarkFilter || BOOKMARKS.has(r.id);
     const matchH = !hypedFilter || isHyped(r.id);
-    return matchQ && matchG && matchB && matchH && r.date >= lo && r.date <= cap;
+    return matchQ && matchG && matchH && r.date >= lo && r.date <= cap;
   });
 
   const rc = document.getElementById('res-count');
   if (rc) rc.innerHTML = `<strong>${visible.length}</strong>&nbsp;${t('filmWord', visible.length)}`;
 
-  const fs = document.getElementById('fbar-stat');
-  if (fs) {
-    const updated = DB.fetched_at ? t('updated', timeAgo(DB.fetched_at)) : t('offline');
-    fs.textContent = `${REGION_SETS[regionF].label} Kinostart · ${updated}`;
-  }
+  updateStat();
 
-  if (viewMode === 'calendar') renderCalendar(visible);
+  if (viewMode === 'calendar') {
+    const calWrap = document.getElementById('cal-wrap');
+    if (calWrap) calWrap.innerHTML = calendarHTML(visible, 'rel', relMonths());
+  }
 
   // Show/hide cards
   document.querySelectorAll('.card').forEach(c => {
@@ -1818,8 +1876,8 @@ function applyFilters() {
   });
 
   // Month sections: counts + collapse state.
-  // When searching or filtering to saved, force-expand months with matches.
-  const forceOpen = !!q || bookmarkFilter || hypedFilter;
+  // When searching or filtering, force-expand months with matches.
+  const forceOpen = !!q || hypedFilter;
   document.querySelectorAll('.m-sec').forEach(sec => {
     const ym = sec.dataset.ym;
     const count = visible.filter(r => groupKeyFor(r.date, today) === ym).length;
@@ -1834,11 +1892,7 @@ function applyFilters() {
   const empty = document.getElementById('list-empty');
   if (empty) {
     if (!visible.length) {
-      empty.textContent = bookmarkFilter && !BOOKMARKS.size
-        ? t('noSaved')
-        : hypedFilter
-          ? t('noTrending')
-          : t('noMatch');
+      empty.textContent = hypedFilter ? t('noTrending') : t('noMatch');
       empty.style.display = 'block';
     } else {
       empty.style.display = 'none';
@@ -1928,11 +1982,12 @@ function genreHTML(list) {
 }
 
 /* Poster tile. Tier S/A films get the `lg` class and a 2x2 slot in the grid. */
-function cardHTML(f, today, ym) {
+function cardHTML(f, today, ym, countdown) {
   const isToday = f.date === today;
   const d0  = new Date(f.date+'T12:00:00');
   const dow = d0.toLocaleDateString(loc(), { weekday:'short' });
   const dm  = d0.toLocaleDateString(loc(), { day:'numeric', month:'short' });
+  const daysTo = countdown ? Math.round((d0 - new Date(today + 'T12:00:00')) / 864e5) : 0;
   return `<article class="card${isToday?' f-today':''}" data-id="${f.id}" data-ym="${ym}" onclick="toggleCard(event,this)">
     <div class="cp">${f.poster
       ? `<img loading="lazy" src="${TMDB_IMG}${esc(f.poster)}" alt="">`
@@ -1942,7 +1997,7 @@ function cardHTML(f, today, ym) {
         <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h12a1 1 0 0 1 1 1v18l-7-4-7 4V3a1 1 0 0 1 1-1z"/></svg>
       </button>
       <h3 class="ci-title"><span class="ci-t">${esc(dispTitle(f))}</span>${origTitle(f) ? `<span class="ci-otitle">${esc(origTitle(f))}</span>` : ''}</h3>
-      <div class="ci-date"><span class="dow">${dow}</span><span class="dm">${dm}</span>${isToday ? `<b>${t('today')}</b>` : ''}</div>
+      <div class="ci-date"><span class="dow">${dow}</span><span class="dm">${dm}</span>${isToday ? `<b>${t('today')}</b>` : daysTo > 0 ? `<b>${t('inDays', daysTo)}</b>` : ''}</div>
       <div class="ci-tags">${genreHTML(f.genre)}</div>
       ${ratingsEnabled() ? `<div class="ci-rate" data-rrow="${f.id}">${rateRowInnerHTML(f.id)}</div>` : ''}
       <div class="ci-extra"><div class="ci-extra-in">
@@ -2050,47 +2105,52 @@ function pageHome() {
 }
 
 /* ═══════════════════════════════════════════════
-   CALENDAR VIEW — filled by applyFilters() so search / Saved / Trending / genre apply
+   CALENDAR GRIDS — one renderer for the release schedule ('rel', filled by applyFilters)
+   and the visitor's own calendar ('my')
 ═══════════════════════════════════════════════ */
 const TMDB_THUMB = 'https://image.tmdb.org/t/p/w92';
-let calSel = null;   // ISO date of the opened day
-let calCollapsed = null;   // months folded shut; first render folds the months before this one
-function toggleCalMonth(ym) {
-  calCollapsed.has(ym) ? calCollapsed.delete(ym) : calCollapsed.add(ym);
-  if (calCollapsed.has(ym) && calSel && calSel.startsWith(ym)) calSel = null;
-  applyFilters();
+const CAL = { rel: { sel: null, collapsed: null }, my: { sel: null, collapsed: null } };
+const refreshCal = key => key === 'my' ? renderMy() : applyFilters();
+function toggleCalMonth(key, ym) {
+  const c = CAL[key];
+  c.collapsed.has(ym) ? c.collapsed.delete(ym) : c.collapsed.add(ym);
+  if (c.collapsed.has(ym) && c.sel && c.sel.startsWith(ym)) c.sel = null;
+  refreshCal(key);
 }
 function pageCalendar() { return `<div class="page-wrap" id="cal-wrap"></div>`; }
-function selectCalDay(iso) {
-  calSel = calSel === iso ? null : iso;
-  applyFilters();
+function selectCalDay(key, iso) {
+  const c = CAL[key];
+  c.sel = c.sel === iso ? null : iso;
+  refreshCal(key);
   const p = document.querySelector('.cal-panel');
   if (p) { const r = p.getBoundingClientRect(); if (r.top > innerHeight - 140) window.scrollBy({ top: r.top - innerHeight * .45, behavior: 'smooth' }); }
 }
-function renderCalendar(visible) {
-  const wrap = document.getElementById('cal-wrap');
-  if (!wrap) return;
-  const today = todayISO();
-  const byDay = {};
-  visible.forEach(r => (byDay[r.date] = byDay[r.date] || []).push(r));
-  Object.values(byDay).forEach(l => l.sort((a, b) => (b.popularity || 0) - (a.popularity || 0)));
-  if (calSel && !byDay[calSel]) calSel = null;
-
+const ymOf = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+function monthRange(a, b) {
+  const out = [];
+  for (const d = new Date(+a.slice(0, 4), +a.slice(5, 7) - 1, 1); ymOf(d) <= b; d.setMonth(d.getMonth() + 1)) out.push(ymOf(d));
+  return out;
+}
+function relMonths() {
   const back = new Date(); back.setDate(back.getDate() - 14);
   const cap  = new Date(); cap.setMonth(cap.getMonth() + 6);
+  return monthRange(ymOf(back), ymOf(cap));
+}
+function calendarHTML(films, key, months) {
+  const c = CAL[key];
+  const today = todayISO();
+  const byDay = {};
+  films.forEach(r => (byDay[r.date] = byDay[r.date] || []).push(r));
+  Object.values(byDay).forEach(l => l.sort((a, b) => (b.popularity || 0) - (a.popularity || 0)));
+  if (c.sel && !byDay[c.sel]) c.sel = null;
+
   const weekStart = regionF === 'us' ? 0 : 1;   // US calendars start on Sunday
   const weekdays = Array.from({ length: 7 }, (_, i) =>   // 4 Jan 2026 is a Sunday
     `<span>${new Date(2026, 0, 4 + weekStart + i).toLocaleDateString(loc(), { weekday: 'short' }).replace('.', '')}</span>`).join('');
   const dayLong = iso => new Date(iso + 'T12:00:00').toLocaleDateString(loc(), { weekday: 'short', day: 'numeric', month: 'long' });
 
   const curYM = today.slice(0, 7);
-  if (!calCollapsed) {
-    calCollapsed = new Set();
-    for (let d = new Date(back.getFullYear(), back.getMonth(), 1); d <= cap; d.setMonth(d.getMonth() + 1)) {
-      const ym = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-      if (ym < curYM) calCollapsed.add(ym);
-    }
-  }
+  if (!c.collapsed) c.collapsed = new Set(months.filter(ym => ym < curYM));   // earlier months start folded
 
   const panelHTML = (iso, films, ym) => `<div class="cal-panel">
     <div class="cal-panel-head"><span class="m-label">${esc(dayLong(iso))}</span><span class="m-count">${films.length} ${t('filmWord', films.length)}</span></div>
@@ -2098,9 +2158,8 @@ function renderCalendar(visible) {
   </div>`;
 
   let h = '';
-  for (let d = new Date(back.getFullYear(), back.getMonth(), 1); d <= cap; d.setMonth(d.getMonth() + 1)) {
-    const y = d.getFullYear(), m = d.getMonth();
-    const ym = `${y}-${String(m + 1).padStart(2, '0')}`;
+  for (const ym of months) {
+    const y = +ym.slice(0, 4), m = +ym.slice(5, 7) - 1;
     const lead = (new Date(y, m, 1).getDay() - weekStart + 7) % 7;
     const days = new Date(y, m + 1, 0).getDate();
     let count = 0, weekSel = null, cells = '<div class="cal-day pad"></div>'.repeat(lead);
@@ -2108,15 +2167,15 @@ function renderCalendar(visible) {
       const iso = `${ym}-${String(day).padStart(2, '0')}`;
       const films = byDay[iso] || [];
       const dow = new Date(y, m, day).getDay();
-      if (iso === calSel) weekSel = iso;
-      const cls = `cal-day${films.length ? ' has' : ''}${dow === 0 || dow === 6 ? ' we' : ''}${iso < today ? ' past' : ''}${iso === today ? ' today' : ''}${iso === calSel ? ' sel' : ''}`;
+      if (iso === c.sel) weekSel = iso;
+      const cls = `cal-day${films.length ? ' has' : ''}${dow === 0 || dow === 6 ? ' we' : ''}${iso < today ? ' past' : ''}${iso === today ? ' today' : ''}${iso === c.sel ? ' sel' : ''}`;
       if (!films.length) {
         cells += `<div class="${cls}"><span class="cal-num">${day}</span></div>`;
       } else {
         count += films.length;
         const posters = films.filter(f => f.poster).slice(0, 3);
         const moreD = films.length - posters.length, moreM = films.length - Math.min(1, posters.length);
-        cells += `<button class="${cls}" onclick="selectCalDay('${iso}')" aria-label="${esc(dayLong(iso))}: ${films.length} ${t('filmWord', films.length)}">
+        cells += `<button class="${cls}" onclick="selectCalDay('${key}','${iso}')" aria-label="${esc(dayLong(iso))}: ${films.length} ${t('filmWord', films.length)}">
           <span class="cal-num">${day}</span>
           <span class="cal-strip">${posters.map(f => `<img loading="lazy" src="${TMDB_THUMB}${esc(f.poster)}" alt="">`).join('')}</span>
           ${moreD > 0 ? `<span class="cal-more cal-more-d">+${moreD}</span>` : ''}${moreM > 0 ? `<span class="cal-more cal-more-m">+${moreM}</span>` : ''}
@@ -2128,8 +2187,8 @@ function renderCalendar(visible) {
         weekSel = null;
       }
     }
-    h += `<section class="cal-month${ym === curYM ? ' m-now' : ''}${calCollapsed.has(ym) ? ' closed' : ''}">
-      <header class="m-head" onclick="toggleCalMonth('${ym}')">
+    h += `<section class="cal-month${ym === curYM ? ' m-now' : ''}${c.collapsed.has(ym) ? ' closed' : ''}">
+      <header class="m-head" onclick="toggleCalMonth('${key}','${ym}')">
         <span class="m-chev">▶</span>
         <span class="m-label">${monthLabel(ym)}</span>
         <span class="m-count">${count ? `${count} ${t('filmWord', count)}` : ''}</span>
@@ -2138,7 +2197,37 @@ function renderCalendar(visible) {
       <div class="cal-grid">${cells}</div>
     </section>`;
   }
-  wrap.innerHTML = h;
+  return h;
+}
+
+/* ═══════════════════════════════════════════════
+   MY CALENDAR — the films the visitor bookmarked: month grids + an upcoming list
+═══════════════════════════════════════════════ */
+const MY_SYNC_IC = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 4H6C3.79086 4 2 5.79086 2 8V18C2 20.2091 3.79086 22 6 22H18C20.2091 22 22 20.2091 22 18V8C22 5.79086 20.2091 4 18 4Z"/><path d="M8 2V6M16 2V6M2 10H22"/></svg>';
+function pageMy() { return `<div class="page-wrap" id="my-wrap"></div>`; }
+function renderMy() {
+  const wrap = document.getElementById('my-wrap');
+  if (!wrap) return;
+  const today = todayISO();
+  const films = currentReleases().filter(r => BOOKMARKS.has(r.id));
+  const head = `<div class="my-head">
+    <h1 class="my-title">${t('myCalendar')}</h1>
+    <span class="m-count">${t('myCount', films.length)}</span>
+    <button class="btn my-sync" onclick="openSync()">${MY_SYNC_IC}<span>${t('syncBtn')}</span></button>
+  </div>`;
+  if (!films.length) {
+    wrap.innerHTML = head + `<div class="my-empty"><p class="my-empty-t">${t('myEmptyTitle')}</p><p>${t('myEmptyText')}</p><a class="btn" href="#/">${t('browseReleases')}</a></div>`;
+    return;
+  }
+  const months = [...new Set([today.slice(0, 7), ...films.map(f => f.date.slice(0, 7))])].sort();   // the current month plus months with films
+  const up = films.filter(f => f.date >= today)
+    .sort((a, b) => a.date.localeCompare(b.date) || (b.popularity || 0) - (a.popularity || 0));
+  wrap.innerHTML = head
+    + `<div class="my-cal">${calendarHTML(films, 'my', months)}</div>`
+    + (up.length ? `<section class="my-upcoming view-list">
+        <header class="my-sub"><span class="m-label">${t('upcoming')}</span><span class="m-count">${up.length} ${t('filmWord', up.length)}</span></header>
+        <div class="m-grid">${up.map(f => cardHTML(f, today, f.date.slice(0, 7), true)).join('')}</div>
+      </section>` : '');
 }
 
 /* ═══════════════════════════════════════════════
