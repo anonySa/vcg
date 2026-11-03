@@ -489,7 +489,7 @@
       font-size: 12px; font-weight: 700; color: #fff; line-height: 1; font-variant-numeric: tabular-nums;
     }
     .cp-mm:empty { display: none; }
-    .view-cal .ci-rate, .my-cal .ci-rate { display: none; }   /* tile cards show the score on the poster */
+    .view-tiles .ci-rate, .my-cal .ci-rate { display: none; }   /* tile cards show the score on the poster */
     .view-list .cp-mm { display: none; }
     .card.expanded .cp::after, .card.f-today .cp::after { box-shadow: inset 0 0 0 2px var(--acc); }
     /* typographic fallback when TMDB has no poster */
@@ -980,7 +980,7 @@
       </div>
       <div class="seg view-seg" role="group" aria-label="View" data-i18n-attr="aria-label:view">
         <button id="vt-list" onclick="setView('list')"><span class="seg-ic"><svg viewBox="0 0 30 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M28 14C29.1046 14 30 14.8954 30 16V22C30 23.1046 29.1046 24 28 24H2C0.895431 24 1.61066e-08 23.1046 0 22V16C0 14.8954 0.895431 14 2 14H28ZM28 0C29.1046 0 30 0.895431 30 2V8C30 9.10457 29.1046 10 28 10H2C0.895431 10 1.61066e-08 9.10457 0 8V2C0 0.895431 0.895431 5.63724e-08 2 0H28Z" fill="currentColor"/></svg></span><span data-i18n="list">List</span></button>
-        <button id="vt-calendar" onclick="setView('calendar')"><span class="seg-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg></span><span data-i18n="classic">Classic</span></button>
+        <button id="vt-tiles" onclick="setView('tiles')"><span class="seg-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg></span><span data-i18n="tiles">Tiles</span></button>
       </div>
       </div>
       <div class="fbar-scroll" id="fbar-scroll">
@@ -1023,7 +1023,7 @@
         <h3 data-i18n="view">View</h3>
         <ul>
           <li><a href="#/" onclick="setView('list')" data-i18n="list">List</a></li>
-          <li><a href="#/" onclick="setView('calendar')" data-i18n="classic">Classic</a></li>
+          <li><a href="#/" onclick="setView('tiles')" data-i18n="tiles">Tiles</a></li>
           <li><a href="#/my" data-i18n="myCalendar">My calendar</a></li>
         </ul>
       </nav>
@@ -1145,7 +1145,7 @@ let collapsed = new Set();   // group keys e.g. '2026-06' or '__just_started__'
 let genreF    = 'all';
 let isDark    = true;
 const savedView = localStorage.getItem('vcg_view');
-let viewMode  = ['calendar', 'list'].includes(savedView) ? savedView : 'list';   // old 'tiles' choices land on the list
+let viewMode  = savedView === 'calendar' ? 'tiles' : ['tiles', 'list'].includes(savedView) ? savedView : 'list';   // the old Classic choice lands on the tiles
 let page      = 'releases';   // 'releases' | 'my' — set from the URL hash in route()
 /* Default region from the visitor's timezone (privacy-friendly, no IP lookup):
    DACH → dach · rest of Europe → UK · everywhere else → USA.
@@ -1167,7 +1167,7 @@ let regionF   = ['dach','gb','us'].includes(savedRegion) ? savedRegion : detectR
 ═══════════════════════════════════════════════ */
 const I18N = {
   en: {
-    light: 'Light', dark: 'Dark', language: 'Language', region: 'Release region', view: 'View', classic: 'Classic',
+    light: 'Light', dark: 'Dark', language: 'Language', region: 'Release region', view: 'View', tiles: 'Tiles',
     list: 'List', releases: 'Releases', myCalendar: 'My calendar', upcoming: 'Upcoming',
     inDays: n => n === 1 ? 'tomorrow' : `in ${n} days`, myCount: n => n === 1 ? '1 film' : `${n} films`,
     myEmptyTitle: 'Nothing on your calendar yet', myEmptyText: 'Tap the bookmark on any film to add it. Your films show up here and can sync to your own calendar.', browseReleases: 'Browse releases',
@@ -1203,7 +1203,7 @@ const I18N = {
     notFussed: 'Not fussed', cantWait: "Can't wait", saveRating: 'Save my rating',
   },
   de: {
-    light: 'Hell', dark: 'Dunkel', language: 'Sprache', region: 'Kinostart-Region', view: 'Ansicht', classic: 'Klassisch',
+    light: 'Hell', dark: 'Dunkel', language: 'Sprache', region: 'Kinostart-Region', view: 'Ansicht', tiles: 'Kacheln',
     list: 'Liste', releases: 'Kinostarts', myCalendar: 'Mein Kalender', upcoming: 'Demnächst',
     inDays: n => n === 1 ? 'morgen' : `in ${n} Tagen`, myCount: n => n === 1 ? '1 Film' : `${n} Filme`,
     myEmptyTitle: 'Noch nichts in deinem Kalender', myEmptyText: 'Tippe bei einem Film auf das Lesezeichen, um ihn hinzuzufügen. Deine Filme erscheinen hier und lassen sich mit deinem eigenen Kalender synchronisieren.', browseReleases: 'Kinostarts ansehen',
@@ -1635,27 +1635,18 @@ function applyTheme() {
    VIEW MODE
 ═══════════════════════════════════════════════ */
 function setView(mode) {
-  const rerender = (mode === 'calendar') !== (viewMode === 'calendar');   // list ↔ classic swap the whole page
   viewMode = mode;
   localStorage.setItem('vcg_view', mode);
-  if (page !== 'releases') return;   // the My calendar page ignores it; the route that follows renders the new view
-  if (rerender) renderApp();
-  else applyView();
-}
-function renderApp() {
-  document.getElementById('app').innerHTML = viewMode === 'calendar' ? pageCalendar() : pageHome();
-  applyView();
-  applyFilters();
-  syncStickyOffset();
+  if (page === 'releases') applyView();   // tiles ↔ list is CSS only; the My calendar page just remembers it
 }
 function applyView() {
   const app = document.getElementById('app');
   if (app) {
     app.classList.toggle('view-list', page === 'releases' && viewMode === 'list');
-    app.classList.toggle('view-cal', page === 'releases' && viewMode === 'calendar');
+    app.classList.toggle('view-tiles', page === 'releases' && viewMode === 'tiles');
     app.classList.toggle('view-my', page === 'my');
   }
-  ['list', 'calendar'].forEach(v => document.getElementById('vt-' + v)?.classList.toggle('on', viewMode === v));
+  ['list', 'tiles'].forEach(v => document.getElementById('vt-' + v)?.classList.toggle('on', viewMode === v));
 }
 function applyPage() {
   document.querySelectorAll('[data-page]').forEach(b => b.classList.toggle('on', b.dataset.page === page));
@@ -1752,7 +1743,7 @@ function route() {
   applyLang();
   applyPage();
   document.getElementById('hero-mount').innerHTML = heroHTML(today, today, cap);
-  document.getElementById('app').innerHTML = viewMode === 'calendar' ? pageCalendar() : pageHome();
+  document.getElementById('app').innerHTML = pageHome();
   buildGenreChips();
   applyRegion();
   applyView();
@@ -1864,10 +1855,6 @@ function applyFilters() {
 
   updateStat();
 
-  if (viewMode === 'calendar') {
-    const calWrap = document.getElementById('cal-wrap');
-    if (calWrap) calWrap.innerHTML = calendarHTML(visible, 'rel', relMonths());
-  }
 
   // Show/hide cards
   document.querySelectorAll('.card').forEach(c => {
@@ -2105,19 +2092,17 @@ function pageHome() {
 }
 
 /* ═══════════════════════════════════════════════
-   CALENDAR GRIDS — one renderer for the release schedule ('rel', filled by applyFilters)
-   and the visitor's own calendar ('my')
+   CALENDAR GRID — the month grids on the My calendar page
 ═══════════════════════════════════════════════ */
 const TMDB_THUMB = 'https://image.tmdb.org/t/p/w92';
-const CAL = { rel: { sel: null, collapsed: null }, my: { sel: null, collapsed: null } };
-const refreshCal = key => key === 'my' ? renderMy() : applyFilters();
+const CAL = { my: { sel: null, collapsed: null } };
+const refreshCal = () => renderMy();
 function toggleCalMonth(key, ym) {
   const c = CAL[key];
   c.collapsed.has(ym) ? c.collapsed.delete(ym) : c.collapsed.add(ym);
   if (c.collapsed.has(ym) && c.sel && c.sel.startsWith(ym)) c.sel = null;
   refreshCal(key);
 }
-function pageCalendar() { return `<div class="page-wrap" id="cal-wrap"></div>`; }
 function selectCalDay(key, iso) {
   const c = CAL[key];
   c.sel = c.sel === iso ? null : iso;
@@ -2130,11 +2115,6 @@ function monthRange(a, b) {
   const out = [];
   for (const d = new Date(+a.slice(0, 4), +a.slice(5, 7) - 1, 1); ymOf(d) <= b; d.setMonth(d.getMonth() + 1)) out.push(ymOf(d));
   return out;
-}
-function relMonths() {
-  const back = new Date(); back.setDate(back.getDate() - 14);
-  const cap  = new Date(); cap.setMonth(cap.getMonth() + 6);
-  return monthRange(ymOf(back), ymOf(cap));
 }
 function calendarHTML(films, key, months) {
   const c = CAL[key];
